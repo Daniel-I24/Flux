@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently -n \"web,server\" -c \"cyan,magenta\" \"npm run dev:web\" \"npm run dev:server\"",
+    "dev:web": "vite",
+    "dev:server": "npm --prefix server run dev",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
@@ -21,6 +23,7 @@
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^10.0.6",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "happy-dom": "^21.0.3",
