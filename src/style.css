@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --flux-bg: #F8FAFC;
+    --flux-elevated: #FFFFFF;
+    --flux-surface: #F1F5F9;
+    --flux-hover: #E2E8F0;
+    --flux-border: rgba(0, 0, 0, 0.08);
+  }
+
+  .dark {
+    --flux-bg: #07090E;
+    --flux-elevated: #0E131F;
+    --flux-surface: #141A29;
+    --flux-hover: #1A2236;
+    --flux-border: rgba(255, 255, 255, 0.08);
+  }
+
+  body {
+    background-color: var(--flux-bg);
+  }
+}
