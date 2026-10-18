@@ -22,7 +22,7 @@ export const APP_CONFIG = {
   watch: {
     autoSaveSeconds: 5,
     savedScreenMs: 1800,
-    simulatedTypingMs: 35,
+    simulatedWordMs: 160,
     maxNoteLength: 500,
     vibrationPattern: [60, 40, 60],
   },

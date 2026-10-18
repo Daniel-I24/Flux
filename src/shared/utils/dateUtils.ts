@@ -45,5 +45,11 @@ export const formatDateTime = (date: Date, locale: string): string =>
 export const formatClock = (date: Date, locale: string): string =>
   date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
 
-export const formatShortDate = (date: Date, locale: string): string =>
+/** Near dates read better as "dentro de 10 segundos"; far ones as "lun, 19 oct, 08:00". */
+export const formatDueDate = (date: Date, now: Date, locale: string): string =>
+  Math.abs(date.getTime() - now.getTime()) < HOUR_MS
+    ? formatRelativeTime(date, now, locale)
+    : formatDateTime(date, locale);
+
+export const formatShortDate =(date: Date, locale: string): string =>
   date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' });
