@@ -5,6 +5,7 @@ export const esCommon = {
     loading: 'Cargando…',
     routeError: 'No se pudo cargar esta vista.',
     skipToContent: 'Saltar al contenido',
+    backToDemo: 'Volver a la demo',
   },
   actions: {
     save: 'Guardar',

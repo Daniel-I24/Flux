@@ -8,6 +8,7 @@ export const enCommon: DeepStrings<typeof esCommon> = {
     loading: 'Loading…',
     routeError: 'This view could not be loaded.',
     skipToContent: 'Skip to content',
+    backToDemo: 'Back to the demo',
   },
   actions: {
     save: 'Save',

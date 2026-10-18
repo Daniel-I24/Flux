@@ -27,7 +27,7 @@ export class PhoneHeader {
   }
 
   setCount(total: number): void {
-    this.count.textContent = t('phone.count', { count: total });
+    this.count.textContent = total === 1 ? t('phone.countOne') : t('phone.count', { count: total });
   }
 
   setConnection(view: ConnectionView): void {

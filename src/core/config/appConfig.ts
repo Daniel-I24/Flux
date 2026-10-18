@@ -12,6 +12,8 @@ export const APP_CONFIG = {
   appName: 'FLUX',
   apiBaseUrl: env.VITE_API_BASE_URL ?? '',
   socketUrl: env.VITE_SOCKET_URL ?? '',
+  /** Origin encoded in the pairing QR (set by `npm run dev:lan` to the LAN HTTPS URL). */
+  publicOrigin: env.VITE_PUBLIC_ORIGIN ?? '',
   defaultLocale: resolveLocale(env.VITE_DEFAULT_LOCALE),
   speechLang: env.VITE_SPEECH_LANG ?? 'es-CO',
   timeouts: {
