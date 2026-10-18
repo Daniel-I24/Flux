@@ -3,7 +3,7 @@ import { capitalize, normalizeForSearch, sanitizeUserText, truncate } from '../.
 import { MAX_TEXT_LENGTH, MAX_TITLE_LENGTH, type Classification, type ClassifyRequest } from '../../models/classification';
 import { parseSpanishDate } from '../dateParser';
 import type { IClassifierStrategy } from './IClassifierStrategy';
-import { CATEGORY_PRIORITY, DATE_REMINDER_WEIGHT, KEYWORD_RULES, SPOKEN_FILLERS } from './keywordRules';
+import { CATEGORY_PRIORITY, DATE_REMINDER_WEIGHT, KEYWORD_RULES, SPOKEN_FILLERS, TRAILING_CONNECTORS } from './keywordRules';
 
 const TITLE_LENGTH = 60;
 const BASE_CONFIDENCE = 0.55;
@@ -47,7 +47,11 @@ const buildTitle = (text: string, dateMatches: string[]): string => {
     const index = normalizeForSearch(title).indexOf(match);
     if (index >= 0) title = `${title.slice(0, index)}${title.slice(index + match.length)}`;
   });
-  const cleaned = title.replace(/\s+/g, ' ').replace(/[\s,.;:]+$/, '').trim();
+  const cleaned = title
+    .replace(/\s+/g, ' ')
+    .replace(/[\s,.;:]+$/, '')
+    .replace(TRAILING_CONNECTORS, '')
+    .trim();
   return truncate(capitalize(cleaned || text), Math.min(TITLE_LENGTH, MAX_TITLE_LENGTH));
 };
 

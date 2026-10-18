@@ -24,6 +24,18 @@ describe('LocalNlpStrategy', () => {
     expect(result.dueAt).toBeNull();
   });
 
+  it('treats an action with a date as a task and cleans the title', async () => {
+    const result = await classify('Comprar café para la reunión del viernes');
+    expect(result.category).toBe('task');
+    expect(result.title).toBe('Comprar café para la reunión');
+    expect(result.dueAt).not.toBeNull();
+  });
+
+  it('classifies a bare date as a reminder', async () => {
+    const result = await classify('Reunión con el equipo mañana a las 9');
+    expect(result.category).toBe('reminder');
+  });
+
   it('classifies ideas', async () => {
     const result = await classify('Se me ocurrió una idea: usar algoritmos genéticos para ahorrar batería');
     expect(result.category).toBe('idea');

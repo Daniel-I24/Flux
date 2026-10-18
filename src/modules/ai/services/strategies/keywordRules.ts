@@ -45,11 +45,14 @@ export const KEYWORD_RULES: KeywordRule[] = [
   },
 ];
 
-/** Adds extra reminder weight when a concrete date was detected. */
-export const DATE_REMINDER_WEIGHT = 1.5;
+/** Adds reminder weight when a concrete date was detected. */
+export const DATE_REMINDER_WEIGHT = 1;
 
-/** Tie-break order when two categories score the same. */
-export const CATEGORY_PRIORITY: NoteCategory[] = ['reminder', 'task', 'idea', 'info'];
+/** Tie-break order: "comprar café el viernes" is a task with a date, not a reminder. */
+export const CATEGORY_PRIORITY: NoteCategory[] = ['task', 'reminder', 'idea', 'info'];
+
+/** Dangling connectors left at the end of a title after removing the date phrase. */
+export const TRAILING_CONNECTORS = /(\s+(del|de|el|la|los|las|para|a|al|en|este|esta|hoy|antes|despues|por))+$/i;
 
 /** Spoken prefixes removed when building a short title. */
 export const SPOKEN_FILLERS: RegExp[] = [

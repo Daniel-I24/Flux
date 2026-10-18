@@ -9,7 +9,7 @@ export class ToastHost {
 
   constructor(positionClass = 'bottom-24') {
     this.element = h('div', {
-      class: `pointer-events-none absolute inset-x-0 ${positionClass} z-50 flex justify-center px-4`,
+      class: `pointer-events-none absolute inset-x-0 ${positionClass} z-30 flex justify-center px-4`,
       attrs: { role: 'status', 'aria-live': 'polite' },
     });
   }

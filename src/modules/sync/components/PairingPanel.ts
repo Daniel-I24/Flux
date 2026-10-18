@@ -24,7 +24,7 @@ export const createPairingPanel = (options: PairingPanelOptions): HTMLElement =>
     logger.warn('QR generation failed', error)
   );
 
-  return h('section', { class: 'flex w-full max-w-sm flex-col items-center gap-4 rounded-3xl border border-border bg-surface p-6 text-center shadow-card', attrs: { 'aria-labelledby': 'pairing-title' } }, [
+  return h('section', { class: 'flex w-full max-w-sm shrink-0 flex-col items-center gap-4 rounded-3xl border border-border bg-surface p-6 text-center shadow-card', attrs: { 'aria-labelledby': 'pairing-title' } }, [
     h('h2', { class: 'text-lg font-semibold text-fg', attrs: { id: 'pairing-title' } }, [t('watch.pairTitle')]),
     h('p', { class: 'text-sm text-muted' }, [t('watch.pairHint')]),
     canvas,

@@ -5,6 +5,7 @@ import { createWatchFrame, WATCH_FRAME_SIZE } from '../../modules/watch/componen
 import { fitToContainer } from '../../shared/components/FitToContainer';
 import { ScaledBox } from '../../shared/components/ScaledBox';
 import { h } from '../../shared/dom/h';
+import { t } from '../../shared/i18n';
 import { createDeviceSync } from '../devices/createDeviceSync';
 import { createWatchDevice } from '../devices/createWatchDevice';
 import { createPairedTransport, pairingFor, publicOrigin } from '../devices/transports';
@@ -17,7 +18,7 @@ export const createWatchPage: ViewFactory = (outlet, context) => {
   const watch = createWatchDevice(createDeviceSync('watch', code, createPairedTransport('watch', code)));
 
   const box = new ScaledBox(createWatchFrame(watch.component.element), WATCH_FRAME_SIZE);
-  const stage = h('div', { class: 'flex min-h-[60vh] flex-1 items-center justify-center p-4 lg:min-h-0' }, [box.element]);
+  const stage = h('div', { class: 'flex min-h-[60vh] w-full min-w-0 items-center justify-center overflow-hidden p-4 lg:min-h-0 lg:flex-1 lg:self-stretch' }, [box.element]);
   const panel = createPairingPanel({
     code,
     url: PairingService.buildPairingUrl(publicOrigin(), code),
@@ -29,8 +30,9 @@ export const createWatchPage: ViewFactory = (outlet, context) => {
 
   outlet.append(
     h('div', { class: 'theme-dark flex min-h-dvh flex-col bg-bg' }, [
+      h('h1', { class: 'sr-only' }, [`${t('app.name')} · ${t('watch.deviceLabel')}`]),
       h('div', { class: 'px-2 pt-2' }, [createBackLink(context.navigate)]),
-      h('div', { class: 'flex flex-1 flex-col items-center gap-6 px-4 pb-8 lg:flex-row lg:justify-center lg:gap-12 lg:pb-4' }, [stage, panel]),
+      h('div', { class: 'mx-auto flex w-full max-w-[1400px] flex-1 flex-col items-center gap-6 px-4 pb-8 lg:flex-row lg:justify-center lg:gap-12 lg:px-12 lg:pb-4' }, [stage, panel]),
     ])
   );
   const stopFitting = fitToContainer(box, stage, 0.6, 1.6);
