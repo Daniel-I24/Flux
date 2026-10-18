@@ -20,7 +20,7 @@ import { openComposer } from './ComposerSheet';
 import { confirmAction } from './confirmDialog';
 import { PhoneHeader } from './PhoneHeader';
 
-const RELATIVE_TIME_REFRESH_MS = 15_000;
+const RELATIVE_TIME_REFRESH_MS = 5_000;
 
 export interface PhoneComponentOptions {
   notes: NoteService;
@@ -35,7 +35,7 @@ export interface PhoneComponentOptions {
 export class PhoneComponent implements Component {
   readonly element: HTMLElement;
   /** Other modules (reminders) mount their banner here without touching this class. */
-  readonly alarmSlot = h('div', { class: 'px-4 empty:hidden' });
+  readonly alarmSlot = h('div', { class: 'z-10 shrink-0 px-4 pt-3 [&:not(:has(*))]:hidden' });
   readonly header = new PhoneHeader();
   readonly toasts = new ToastHost();
   private readonly list: NoteList;
@@ -67,8 +67,8 @@ export class PhoneComponent implements Component {
 
     this.element = h('div', { class: 'relative flex h-full min-h-0 flex-col overflow-hidden bg-bg text-fg' }, [
       this.header.element,
+      this.alarmSlot,
       h('div', { class: 'flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain pb-28 pt-3 [&>*]:shrink-0' }, [
-        this.alarmSlot,
         h('div', { class: 'px-4' }, [this.search.element]),
         this.filterChips.element,
         h('div', { class: 'px-4' }, [this.list.element]),

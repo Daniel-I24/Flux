@@ -5,7 +5,9 @@ import { NoteService } from '../../modules/notes/services/NoteService';
 import { PhoneComponent } from '../../modules/phone/components/PhoneComponent';
 import { toConnectionView } from '../../modules/sync/components/connectionView';
 import type { SyncService } from '../../modules/sync/services/SyncService';
+import { mountReminders } from '../../modules/reminders/mountReminders';
 import { i18n } from '../../shared/i18n';
+import { audioSynthesizer } from '../../shared/utils/audioSynthesizer';
 import { browserStorage } from '../../shared/storage/KeyValueStore';
 import { captureModeService, createClassifier, speechService } from '../services';
 
@@ -35,6 +37,21 @@ export const createPhoneDevice = (sync: SyncService<Note>, linkLabel?: string): 
     notes.on('note:local-change', ({ note }) => sync.publish(note)),
     sync.onPayload((note) => void notes.applyRemote(note)),
     sync.onState((state) => component.setConnection(toConnectionView(state, linkLabel))),
+    mountReminders({
+      notes,
+      host: {
+        alarmSlot: component.alarmSlot,
+        addHeaderAction: (element) => component.header.addAction(element),
+        showMessage: (text) => component.toasts.show(text),
+      },
+      languageTag: i18n.languageTag,
+      tickMs: APP_CONFIG.reminders.tickMs,
+      snoozeMinutes: APP_CONFIG.reminders.snoozeMinutes,
+      playAlarm: () => audioSynthesizer.playAlarm(),
+      vibrate: (pattern) => {
+        if (typeof navigator.vibrate === 'function') navigator.vibrate(pattern);
+      },
+    }),
   ];
   sync.start();
 

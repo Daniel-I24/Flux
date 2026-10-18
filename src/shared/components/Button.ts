@@ -32,7 +32,7 @@ const VARIANTS: Record<ButtonVariant, string> = {
 
 const SIZES: Record<ButtonSize, { text: string; icon: string; iconPx: number }> = {
   sm: { text: 'h-9 px-3 text-sm', icon: 'h-9 w-9', iconPx: 16 },
-  md: { text: 'h-11 px-4 text-sm', icon: 'h-11 w-11', iconPx: 20 },
+  md: { text: 'h-11 px-4 text-sm', icon: 'h-11 w-11', iconPx: 18 },
   lg: { text: 'h-12 px-5 text-base', icon: 'h-14 w-14', iconPx: 24 },
 };
 
