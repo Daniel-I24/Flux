@@ -1,29 +1,49 @@
-/**
- * Centralized Application Configuration.
- */
+import type { Locale } from '../types/domain';
 
+const env = import.meta.env;
+
+const resolveLocale = (value: string | undefined): Locale => (value === 'en' ? 'en' : 'es');
+
+/**
+ * Single source of runtime configuration. Values come from Vite env vars
+ * (see .env.example); an empty base URL means "same origin" (Vite proxy in dev).
+ */
 export const APP_CONFIG = {
-  app: {
-    name: 'Flux',
-    version: '1.0.0',
-    defaultLanguage: 'es',
-  },
-  storage: {
-    notesKey: 'flux_notes_v2',
-    themeKey: 'flux_theme_mode',
-    languageKey: 'flux_locale_preference',
-  },
-  api: {
-    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001',
-    timeoutMs: 8000,
+  appName: 'FLUX',
+  apiBaseUrl: env.VITE_API_BASE_URL ?? '',
+  socketUrl: env.VITE_SOCKET_URL ?? '',
+  defaultLocale: resolveLocale(env.VITE_DEFAULT_LOCALE),
+  speechLang: env.VITE_SPEECH_LANG ?? 'es-CO',
+  timeouts: {
+    classifyMs: 7000,
+    healthMs: 2500,
+    socketAckMs: 4000,
   },
   watch: {
-    autoSaveCountdownSeconds: 5,
-    simulatedSyncLatencyMs: 250,
-    waveformSampleCount: 18,
+    autoSaveSeconds: 5,
+    savedScreenMs: 1800,
+    simulatedTypingMs: 35,
+    maxNoteLength: 500,
+    vibrationPattern: [60, 40, 60],
   },
   reminders: {
-    checkIntervalMs: 3000,
-    defaultSnoozeMinutes: 5,
+    tickMs: 1000,
+    snoozeMinutes: 5,
+  },
+  sync: {
+    pairCodeLength: 6,
+    seenMessagesLimit: 500,
+    demoRoomCode: 'DEMO00',
+    channelPrefix: 'flux-sync',
+    activityPulseMs: 900,
+  },
+  storageKeys: {
+    notes: 'flux.notes.v3',
+    theme: 'flux.theme',
+    locale: 'flux.locale',
+    captureMode: 'flux.captureMode',
+    pairCode: 'flux.pairCode',
+    deviceId: 'flux.deviceId',
+    outbox: 'flux.outbox',
   },
 } as const;

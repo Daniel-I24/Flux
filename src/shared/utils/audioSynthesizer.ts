@@ -1,66 +1,79 @@
+import { logger } from '../../core/logger/logger';
+
+interface Tone {
+  frequency: number;
+  startOffset: number;
+  duration: number;
+}
+
+const CHIME: Tone[] = [
+  { frequency: 880, startOffset: 0, duration: 0.12 },
+  { frequency: 1320, startOffset: 0.12, duration: 0.18 },
+];
+
+const ALARM: Tone[] = [0, 0.3, 0.6].flatMap((offset) => [
+  { frequency: 988, startOffset: offset, duration: 0.12 },
+  { frequency: 1319, startOffset: offset + 0.13, duration: 0.12 },
+]);
+
+const PEAK_GAIN = 0.18;
+
 /**
- * Audio Synthesizer service using Web Audio API.
- * Produces pure harmonic tones and notifications without external audio assets.
+ * Generates short UI sounds with the Web Audio API (no audio files to ship).
+ * The context is created lazily and must be unlocked by a user gesture.
  */
-
-export type SoundType = 'tap' | 'alarm' | 'success' | 'cancel';
-
 export class AudioSynthesizer {
-  private audioCtx: AudioContext | null = null;
+  private context: AudioContext | null = null;
+
+  unlock(): void {
+    const context = this.getContext();
+    if (context?.state === 'suspended') void context.resume();
+  }
+
+  playChime(): void {
+    this.play(CHIME);
+  }
+
+  playAlarm(): void {
+    this.play(ALARM);
+  }
+
+  dispose(): void {
+    void this.context?.close();
+    this.context = null;
+  }
 
   private getContext(): AudioContext | null {
-    if (typeof window === 'undefined') return null;
-    if (!this.audioCtx) {
-      const AudioCtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (AudioCtxClass) {
-        this.audioCtx = new AudioCtxClass();
-      }
-    }
-    if (this.audioCtx && this.audioCtx.state === 'suspended') {
-      this.audioCtx.resume().catch(() => {});
-    }
-    return this.audioCtx;
+    if (this.context) return this.context;
+    if (typeof window === 'undefined' || typeof window.AudioContext !== 'function') return null;
+    this.context = new window.AudioContext();
+    return this.context;
   }
 
-  public play(type: SoundType): void {
+  private play(tones: Tone[]): void {
+    const context = this.getContext();
+    if (!context) return;
     try {
-      const ctx = this.getContext();
-      if (!ctx) return;
-      const now = ctx.currentTime;
-
-      if (type === 'tap') {
-        this.synthesizeTone(ctx, 880, 'sine', now, 0.06, 0.05);
-      } else if (type === 'cancel') {
-        this.synthesizeTone(ctx, 330, 'triangle', now, 0.12, 0.08);
-      } else if (type === 'success') {
-        [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
-          this.synthesizeTone(ctx, freq, 'sine', now + idx * 0.06, 0.25, 0.08);
-        });
-      } else if (type === 'alarm') {
-        [587.33, 880.0, 1174.66, 880.0].forEach((freq, idx) => {
-          this.synthesizeTone(ctx, freq, 'sine', now + idx * 0.14, 0.35, 0.14);
-        });
-      }
-    } catch (err) {
-      console.warn('Audio synthesis unavailable:', err);
+      const start = context.currentTime;
+      tones.forEach((tone) => this.scheduleTone(context, tone, start));
+    } catch (error) {
+      logger.warn('Unable to play sound', error);
     }
   }
 
-  private synthesizeTone(ctx: AudioContext, freq: number, type: OscillatorType, start: number, duration: number, peakVol: number): void {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, start);
-
-    gain.gain.setValueAtTime(0.001, start);
-    gain.gain.exponentialRampToValueAtTime(peakVol, start + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start(start);
-    osc.stop(start + duration + 0.05);
+  private scheduleTone(context: AudioContext, tone: Tone, start: number): void {
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const begin = start + tone.startOffset;
+    const end = begin + tone.duration;
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(tone.frequency, begin);
+    gain.gain.setValueAtTime(0, begin);
+    gain.gain.linearRampToValueAtTime(PEAK_GAIN, begin + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, end);
+    oscillator.connect(gain).connect(context.destination);
+    oscillator.start(begin);
+    oscillator.stop(end + 0.02);
   }
 }
 

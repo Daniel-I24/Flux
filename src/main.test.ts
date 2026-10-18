@@ -1,11 +1,8 @@
-import { describe, it, expect } from 'vitest';
-import { initializeApp } from './main';
+import { describe, expect, it } from 'vitest';
+import { ROUTES } from './app/routes';
 
-describe('App Bootstrap', () => {
-  it('should initialize DOM element without throwing', () => {
-    document.body.innerHTML = '<div id="app"></div>';
-    expect(() => initializeApp()).not.toThrow();
-    const app = document.getElementById('app');
-    expect(app?.textContent).toContain('Flux Professional Initialized');
+describe('route registry', () => {
+  it('exposes the three device views', () => {
+    expect(ROUTES.map((route) => route.path)).toEqual(['/demo', '/watch', '/phone']);
   });
 });

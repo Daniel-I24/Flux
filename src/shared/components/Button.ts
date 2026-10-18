@@ -1,52 +1,61 @@
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
+import type { IconNode } from 'lucide';
+import { h } from '../dom/h';
+import { icon as renderIcon } from '../dom/icon';
+
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonOptions {
   label: string;
   variant?: ButtonVariant;
-  iconSvg?: string;
-  ariaLabel?: string;
+  size?: ButtonSize;
+  icon?: IconNode;
+  /** Renders only the icon; `label` becomes the accessible name and tooltip. */
+  iconOnly?: boolean;
+  type?: 'button' | 'submit';
   className?: string;
+  disabled?: boolean;
+  pressed?: boolean;
   onClick?: (event: MouseEvent) => void;
 }
 
-export function createButton(options: ButtonOptions): HTMLButtonElement {
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.setAttribute('aria-label', options.ariaLabel || options.label);
+const BASE =
+  'inline-flex select-none items-center justify-center gap-2 rounded-xl font-medium ' +
+  'transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50';
 
-  const baseClasses = 'inline-flex items-center justify-center gap-2 font-medium text-xs sm:text-sm rounded-xl px-3 py-1.5 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-flux-cyan disabled:opacity-50 disabled:cursor-not-allowed select-none';
+const VARIANTS: Record<ButtonVariant, string> = {
+  primary: 'bg-primary text-on-primary shadow-sm hover:bg-primary/90',
+  secondary: 'border border-border bg-surface-2 text-fg hover:bg-border/70',
+  ghost: 'text-fg hover:bg-surface-2',
+  danger: 'bg-danger text-on-primary hover:bg-danger/90',
+};
 
-  let variantClasses = '';
-  switch (options.variant || 'primary') {
-    case 'primary':
-      variantClasses = 'bg-flux-cyan hover:bg-flux-cyan-deep text-slate-950 font-semibold shadow-glow-cyan';
-      break;
-    case 'secondary':
-      variantClasses = 'bg-flux-surface hover:bg-flux-hover text-slate-200 border border-flux-border';
-      break;
-    case 'danger':
-      variantClasses = 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30';
-      break;
-    case 'ghost':
-      variantClasses = 'hover:bg-slate-500/10 text-slate-400 hover:text-slate-200';
-      break;
-  }
+const SIZES: Record<ButtonSize, { text: string; icon: string; iconPx: number }> = {
+  sm: { text: 'h-9 px-3 text-sm', icon: 'h-9 w-9', iconPx: 16 },
+  md: { text: 'h-11 px-4 text-sm', icon: 'h-11 w-11', iconPx: 20 },
+  lg: { text: 'h-12 px-5 text-base', icon: 'h-14 w-14', iconPx: 24 },
+};
 
-  btn.className = `${baseClasses} ${variantClasses} ${options.className || ''}`;
-  
-  if (options.iconSvg) {
-    const iconSpan = document.createElement('span');
-    iconSpan.innerHTML = options.iconSvg;
-    btn.appendChild(iconSpan);
-  }
-
-  const textSpan = document.createElement('span');
-  textSpan.textContent = options.label;
-  btn.appendChild(textSpan);
-
-  if (options.onClick) {
-    btn.addEventListener('click', options.onClick);
-  }
-
-  return btn;
-}
+export const createButton = (options: ButtonOptions): HTMLButtonElement => {
+  const variant = options.variant ?? 'secondary';
+  const size = SIZES[options.size ?? 'md'];
+  const shape = options.iconOnly ? `${size.icon} rounded-full` : size.text;
+  return h(
+    'button',
+    {
+      class: `${BASE} ${VARIANTS[variant]} ${shape} ${options.className ?? ''}`.trim(),
+      attrs: {
+        type: options.type ?? 'button',
+        disabled: options.disabled,
+        'aria-label': options.iconOnly ? options.label : undefined,
+        title: options.iconOnly ? options.label : undefined,
+        'aria-pressed': options.pressed === undefined ? undefined : String(options.pressed),
+      },
+      on: options.onClick ? { click: options.onClick } : {},
+    },
+    [
+      options.icon ? renderIcon(options.icon, size.iconPx) : null,
+      options.iconOnly ? null : h('span', { class: 'truncate' }, [options.label]),
+    ]
+  );
+};

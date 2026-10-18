@@ -1,27 +1,36 @@
+// eslint-disable-next-line no-control-regex
+const CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
+const INVISIBLE_CHARS = /[\u200B-\u200D\u2060\uFEFF]/g;
+const MARKUP_TAGS = /<\/?[a-z][^>]*>/gi;
+const WHITESPACE = /\s+/g;
+const ELLIPSIS = '…';
+
 /**
- * Text sanitization and safety utilities to prevent XSS.
+ * Normalizes any user-provided text before it is stored, classified or synced:
+ * removes control/invisible characters and markup tags, collapses whitespace and caps length.
+ * Rendering still uses textContent; this is defense in depth.
  */
-
-export function sanitizeText(input: string): string {
-  if (!input) return '';
+export const sanitizeUserText = (input: unknown, maxLength = 500): string => {
+  if (typeof input !== 'string') return '';
   return input
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;');
-}
+    .normalize('NFC')
+    .replace(CONTROL_CHARS, ' ')
+    .replace(INVISIBLE_CHARS, '')
+    .replace(MARKUP_TAGS, '')
+    .replace(WHITESPACE, ' ')
+    .trim()
+    .slice(0, maxLength);
+};
 
-export function truncateText(text: string, maxLength: number): string {
-  if (!text) return '';
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength).trimEnd() + '...';
-}
+export const truncate = (text: string, maxLength: number): string =>
+  text.length <= maxLength ? text : `${text.slice(0, maxLength - 1).trimEnd()}${ELLIPSIS}`;
 
-export function cleanSpokenFillers(text: string): string {
-  if (!text) return '';
-  return text
-    .replace(/^(por favor\s+)?(recuérdame|recuerdame|avísame|avisame|anota|guarda|registra)\s+(que\s+)?/i, '')
-    .replace(/^(tengo que|debo|hay que)\s+/i, '')
-    .trim();
-}
+export const capitalize = (text: string): string =>
+  text.length === 0 ? text : `${text.charAt(0).toLocaleUpperCase()}${text.slice(1)}`;
+
+/** Accent-insensitive lowercase form used for search and keyword matching. */
+export const normalizeForSearch = (text: string): string =>
+  text
+    .toLocaleLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '');

@@ -1,23 +1,37 @@
-import { describe, it, expect } from 'vitest';
-import { sanitizeText, truncateText, cleanSpokenFillers } from './sanitizer';
+import { describe, expect, it } from 'vitest';
+import { capitalize, normalizeForSearch, sanitizeUserText, truncate } from './sanitizer';
 
-describe('Sanitizer Utilities', () => {
-  it('should escape dangerous HTML characters to prevent XSS', () => {
-    const malicious = '<script>alert("xss")</script>&foo=\'bar\'';
-    const cleaned = sanitizeText(malicious);
-    expect(cleaned).not.toContain('<script>');
-    expect(cleaned).toContain('&lt;script&gt;');
-    expect(cleaned).toContain('&amp;foo=&#x27;bar&#x27;');
+describe('sanitizeUserText', () => {
+  it('removes markup tags, control and invisible characters', () => {
+    const dirty = '  <script>alert(1)</script>Hola\u0007 \u200Bmundo  ';
+    expect(sanitizeUserText(dirty)).toBe('alert(1)Hola mundo');
   });
 
-  it('should truncate text without breaking words if possible', () => {
-    const text = 'Esta es una nota larga para recortar';
-    expect(truncateText(text, 10)).toBe('Esta es un...');
-    expect(truncateText('Corta', 10)).toBe('Corta');
+  it('collapses whitespace and line breaks', () => {
+    expect(sanitizeUserText('comprar\n\n  pan\t hoy')).toBe('comprar pan hoy');
   });
 
-  it('should strip common Spanish spoken filler prefixes', () => {
-    expect(cleanSpokenFillers('Recuérdame entregar el reporte')).toBe('entregar el reporte');
-    expect(cleanSpokenFillers('Por favor avísame que tengo que salir')).toBe('salir');
+  it('caps the length', () => {
+    expect(sanitizeUserText('a'.repeat(50), 10)).toHaveLength(10);
+  });
+
+  it('returns an empty string for non-string input', () => {
+    expect(sanitizeUserText(42)).toBe('');
+    expect(sanitizeUserText(undefined)).toBe('');
+  });
+});
+
+describe('text helpers', () => {
+  it('truncates with an ellipsis', () => {
+    expect(truncate('Entregar proyecto final', 10)).toBe('Entregar…');
+    expect(truncate('corto', 10)).toBe('corto');
+  });
+
+  it('capitalizes the first letter', () => {
+    expect(capitalize('ñandú')).toBe('Ñandú');
+  });
+
+  it('normalizes accents for search', () => {
+    expect(normalizeForSearch('Recuérdame MAÑANA')).toBe('recuerdame manana');
   });
 });
