@@ -84,6 +84,10 @@ export class SyncService<T> {
     return envelope;
   }
 
+  isPending(envelopeId: string): boolean {
+    return this.options.outbox.peekAll().some((envelope) => envelope.id === envelopeId);
+  }
+
   /** Delivers queued envelopes in order; stops at the first one no peer received. */
   flush(): Promise<void> {
     if (this.flushing) {

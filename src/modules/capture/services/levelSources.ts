@@ -2,9 +2,9 @@ import { logger } from '../../../core/logger/logger';
 
 export type LevelSource = () => number;
 
-const IDLE_LEVEL = 0.18;
-const BUMP_LEVEL = 0.9;
-const DECAY = 0.9;
+const IDLE_LEVEL = 0.4;
+const BUMP_LEVEL = 1;
+const DECAY = 0.94;
 
 /**
  * Plausible voice-like levels for when the microphone is not read directly
@@ -15,7 +15,7 @@ export const createSyntheticLevels = (random: () => number = Math.random) => {
   return {
     next: (): number => {
       energy = Math.max(IDLE_LEVEL, energy * DECAY);
-      return Math.min(1, energy * (0.6 + random() * 0.6));
+      return Math.min(1, energy * (0.7 + random() * 0.7));
     },
     bump: (): void => {
       energy = BUMP_LEVEL;

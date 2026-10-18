@@ -28,6 +28,7 @@ export const enDevices: DeepStrings<typeof esDevices> = {
   phone: {
     deviceLabel: 'Companion phone',
     title: 'My notes',
+    count: '{count} notes',
     searchPlaceholder: 'Search notes',
     searchLabel: 'Search notes',
     clearSearch: 'Clear search',

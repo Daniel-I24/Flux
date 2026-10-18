@@ -25,6 +25,7 @@ export const esDevices = {
   phone: {
     deviceLabel: 'Celular companion',
     title: 'Mis notas',
+    count: '{count} notas',
     searchPlaceholder: 'Buscar notas',
     searchLabel: 'Buscar notas',
     clearSearch: 'Limpiar búsqueda',

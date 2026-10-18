@@ -2,9 +2,9 @@ import { NotFoundError } from '../../../core/errors/AppError';
 import { EventBus } from '../../../core/events/EventBus';
 import type { DeviceRole, Unsubscribe } from '../../../core/types/domain';
 import { addMinutes } from '../../../shared/utils/dateUtils';
-import { createId } from '../../../shared/utils/id';
 import type { ClassificationResult } from '../../ai/models/classification';
 import { isActive, isNewerRevision, type Note } from '../models/note';
+import { createNoteFromClassification } from '../models/noteFactory';
 import { sortNotes } from './noteFilters';
 import type { INoteRepository } from './INoteRepository';
 
@@ -46,22 +46,8 @@ export class NoteService {
     return sortNotes([...this.cache.values()].filter(isActive));
   }
 
-  /** Builds a note from a classification (used by the phone composer). */
   buildFromClassification(classification: ClassificationResult, source: DeviceRole): Note {
-    const timestamp = this.now().toISOString();
-    return {
-      id: createId(),
-      title: classification.title,
-      text: classification.text,
-      category: classification.category,
-      dueAt: classification.dueAt,
-      completed: false,
-      source,
-      engine: classification.engine,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-      deletedAt: null,
-    };
+    return createNoteFromClassification(classification, source, this.now());
   }
 
   async create(classification: ClassificationResult, source: DeviceRole): Promise<Note> {
