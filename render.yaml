@@ -1,0 +1,32 @@
+# Render Blueprint for the FLUX classification server.
+# Dashboard > New > Blueprint > select this repository. Secrets marked `sync: false`
+# are requested by Render on creation and never stored in the repository.
+services:
+  - type: web
+    name: flux-server
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: GEMINI_TIMEOUT_MS
+        value: "6000"
+      - key: APP_CHECK_REQUIRED
+        value: "true"
+      - key: CORS_ORIGINS
+        value: ""
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_BASE64
+        sync: false

@@ -20,26 +20,26 @@ describe('GeminiClient', () => {
     await expect(client.classify(validBody)).rejects.toBeInstanceOf(AiUnavailableError);
   });
 
-  it('sends the key in a header and parses structured output', async () => {
+  it('sends the key in a header, restricts categories and parses structured output', async () => {
     const { client, fetchImpl } = clientWith(new Response(JSON.stringify(geminiAnswer(JSON.stringify(SAMPLE)))));
     await expect(client.classify(validBody)).resolves.toEqual(SAMPLE);
     const [url, init] = fetchImpl.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toContain('gemini-test:generateContent');
     expect(url).not.toContain('test-key');
     expect((init.headers as Record<string, string>)['x-goog-api-key']).toBe('test-key');
+    const body = JSON.parse(init.body as string);
+    expect(body.generationConfig.responseSchema.properties.categoryId.enum).toEqual(['shopping', 'tasks', 'gym']);
+    expect(body.contents[0].parts[0].text).toContain('Gimnasio');
   });
 
-  it('rejects answers that do not match the schema', async () => {
-    const { client } = clientWith(new Response(JSON.stringify(geminiAnswer('{"category":"other"}'))));
-    await expect(client.classify(validBody)).rejects.toBeInstanceOf(UpstreamError);
-  });
-
-  it('rejects invalid JSON and HTTP errors', async () => {
+  it('rejects categories the app did not send and malformed answers', async () => {
+    const foreign = JSON.stringify({ ...SAMPLE, categoryId: 'hacked' });
+    await expect(clientWith(new Response(JSON.stringify(geminiAnswer(foreign)))).client.classify(validBody)).rejects.toBeInstanceOf(UpstreamError);
     await expect(clientWith(new Response(JSON.stringify(geminiAnswer('not json')))).client.classify(validBody)).rejects.toBeInstanceOf(UpstreamError);
-    await expect(clientWith(new Response('{}', { status: 429 })).client.classify(validBody)).rejects.toBeInstanceOf(UpstreamError);
   });
 
-  it('wraps network failures', async () => {
+  it('wraps HTTP and network failures', async () => {
+    await expect(clientWith(new Response('{}', { status: 429 })).client.classify(validBody)).rejects.toBeInstanceOf(UpstreamError);
     await expect(clientWith(new Error('ECONNRESET')).client.classify(validBody)).rejects.toBeInstanceOf(UpstreamError);
   });
 });

@@ -1,0 +1,42 @@
+rules_version = '2';
+
+// FLUX stores one document per account: users/{uid} = { displayName, link, updatedAt }.
+// Notes never leave the phone; Firestore only keeps the account <-> devices link.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function optionalString(map, key, maxLength) {
+      return !(key in map) || map[key] == null || (map[key] is string && map[key].size() <= maxLength);
+    }
+
+    function validLink(link) {
+      return link is map
+        && link.keys().hasOnly(['phoneInstallationId', 'watchNodeId', 'linkedAt'])
+        && optionalString(link, 'phoneInstallationId', 64)
+        && optionalString(link, 'watchNodeId', 128)
+        && (!('linkedAt' in link) || link.linkedAt is int);
+    }
+
+    function validUser(data) {
+      return data.keys().hasOnly(['displayName', 'link', 'updatedAt'])
+        && optionalString(data, 'displayName', 40)
+        && (!('link' in data) || validLink(data.link))
+        && (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid) && validUser(request.resource.data);
+      allow delete: if false;
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

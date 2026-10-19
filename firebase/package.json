@@ -1,0 +1,17 @@
+{
+  "name": "flux-firestore-rules",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "firebase emulators:exec --only firestore --project demo-flux \"vitest run\"",
+    "deploy:rules": "firebase deploy --only firestore:rules"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "firebase": "^11.10.0",
+    "firebase-tools": "^14.27.0",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9"
+  }
+}

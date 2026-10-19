@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { AiUnavailableError, UpstreamError } from '../errors/AppError.js';
-import { ClassificationSchema, type Classification, type ClassifyRequest } from '../schemas/classification.js';
-import { buildUserContent, RESPONSE_SCHEMA, SYSTEM_INSTRUCTION } from './classificationPrompt.js';
+import { belongsToRequest, ClassificationSchema, type Classification, type ClassifyRequest } from '../schemas/classification.js';
+import { buildUserContent, responseSchema, SYSTEM_INSTRUCTION } from './classificationPrompt.js';
 
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
@@ -50,7 +50,7 @@ export class GeminiClient implements Classifier {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
           contents: [{ role: 'user', parts: [{ text: buildUserContent(request) }] }],
-          generationConfig: { responseMimeType: 'application/json', responseSchema: RESPONSE_SCHEMA, temperature: 0.2 },
+          generationConfig: { responseMimeType: 'application/json', responseSchema: responseSchema(request), temperature: 0.2 },
         }),
         signal: AbortSignal.timeout(this.options.timeoutMs),
       });
@@ -58,10 +58,10 @@ export class GeminiClient implements Classifier {
       throw new UpstreamError('Gemini request failed or timed out', { cause: error });
     }
     if (!response.ok) throw new UpstreamError(`Gemini answered HTTP ${response.status}`);
-    return this.parse(await response.json().catch(() => null));
+    return this.parse(await response.json().catch(() => null), request);
   }
 
-  private parse(body: unknown): Classification {
+  private parse(body: unknown, request: ClassifyRequest): Classification {
     const envelope = GeminiResponseSchema.safeParse(body);
     const text = envelope.success ? envelope.data.candidates[0]?.content.parts[0]?.text : undefined;
     if (!text) throw new UpstreamError('Gemini returned an empty answer');
@@ -72,7 +72,9 @@ export class GeminiClient implements Classifier {
       throw new UpstreamError('Gemini returned invalid JSON', { cause: error });
     }
     const classification = ClassificationSchema.safeParse(json);
-    if (!classification.success) throw new UpstreamError('Gemini answer does not match the schema', { cause: classification.error });
+    if (!classification.success || !belongsToRequest(classification.data, request)) {
+      throw new UpstreamError('Gemini answer does not match the schema');
+    }
     return classification.data;
   }
 }

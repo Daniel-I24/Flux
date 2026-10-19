@@ -17,6 +17,12 @@ export class ValidationError extends AppError {
   }
 }
 
+export class UnauthorizedError extends AppError {
+  constructor(message = 'Missing or invalid credentials') {
+    super(message, 401, 'UNAUTHORIZED');
+  }
+}
+
 export class NotFoundError extends AppError {
   constructor(message = 'Resource not found') {
     super(message, 404, 'NOT_FOUND');
@@ -26,6 +32,12 @@ export class NotFoundError extends AppError {
 export class AiUnavailableError extends AppError {
   constructor(message = 'Remote AI is not configured') {
     super(message, 503, 'AI_UNAVAILABLE');
+  }
+}
+
+export class AuthUnavailableError extends AppError {
+  constructor(message = 'Firebase Admin is not configured') {
+    super(message, 503, 'AUTH_UNAVAILABLE');
   }
 }
 
