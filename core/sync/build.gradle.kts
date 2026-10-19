@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.flux.android.library)
+    alias(libs.plugins.flux.hilt)
     alias(libs.plugins.kotlin.serialization)
 }
 
