@@ -7,6 +7,7 @@ import com.flux.core.sync.protocol.SyncEnvelope
 import com.flux.core.sync.protocol.SyncMessageFactory
 import com.flux.core.sync.protocol.SyncProtocol
 import com.flux.wear.data.WatchStateStore
+import com.flux.wear.surface.SurfaceRefresher
 import javax.inject.Inject
 
 /** Completar / Posponer on the watch: applied locally and mirrored to the phone. */
@@ -16,6 +17,7 @@ class ReminderActions @Inject constructor(
     private val stateStore: WatchStateStore,
     private val gateway: DataLayerGateway,
     private val factory: SyncMessageFactory,
+    private val surfaces: SurfaceRefresher,
 ) {
     suspend fun complete(noteId: String) {
         complete.invoke(noteId)
@@ -29,6 +31,7 @@ class ReminderActions @Inject constructor(
     }
 
     private suspend fun sendToPhone(envelope: SyncEnvelope) {
+        surfaces.refresh()
         gateway.nodesWithCapability(SyncProtocol.PHONE_CAPABILITY, reachableOnly = true).forEach { gateway.send(it.id, envelope) }
     }
 }

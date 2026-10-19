@@ -8,6 +8,7 @@ import com.flux.core.domain.repository.NoteRepository
 import com.flux.core.sync.protocol.WatchSnapshot
 import com.flux.wear.data.PhoneState
 import com.flux.wear.data.WatchStateStore
+import com.flux.wear.surface.SurfaceRefresher
 import javax.inject.Inject
 
 /**
@@ -21,6 +22,7 @@ class SnapshotApplier @Inject constructor(
     private val stateStore: WatchStateStore,
     private val outbox: OutboxRepository,
     private val clock: Clock,
+    private val surfaces: SurfaceRefresher,
 ) {
     suspend fun apply(snapshot: WatchSnapshot) {
         categories.replaceAll(snapshot.categories)
@@ -44,5 +46,6 @@ class SnapshotApplier @Inject constructor(
                 receivedAt = clock.now(),
             ),
         )
+        surfaces.refresh()
     }
 }

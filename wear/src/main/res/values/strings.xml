@@ -106,4 +106,6 @@
     <string name="tile_description">Dicta una nota y mira tu próximo recordatorio.</string>
     <string name="complication_label">Próximo recordatorio</string>
     <string name="complication_none">Sin pendientes</string>
+    <string name="complication_preview_title">Tomar agua</string>
+    <string name="complication_description">%1$s, %2$s</string>
 </resources>

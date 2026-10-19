@@ -20,7 +20,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
-        val startRoute = if (intent?.action == ACTION_DICTATE) WatchRoutes.DICTATE else WatchRoutes.HOME
+        val dictate = intent?.action == ACTION_DICTATE || intent?.getStringExtra(EXTRA_START) == START_DICTATE
+        val startRoute = if (dictate) WatchRoutes.DICTATE else WatchRoutes.HOME
         setContent {
             val settings by stateStore.observeSettings().collectAsStateWithLifecycle(WatchSettings())
             FluxWearTheme(highContrast = settings.theme == WatchTheme.HIGH_CONTRAST) {
@@ -30,7 +31,11 @@ class MainActivity : ComponentActivity() {
     }
 
     companion object {
-        /** Used by the tile and the complication to open dictation directly. */
+        /** Used by the complication to open dictation directly. */
         const val ACTION_DICTATE = "com.flux.wear.action.DICTATE"
+
+        /** Tiles can only pass extras, not an intent action. */
+        const val EXTRA_START = "start"
+        const val START_DICTATE = "dictate"
     }
 }
