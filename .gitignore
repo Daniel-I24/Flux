@@ -1,10 +1,42 @@
-node_modules/
-dist/
-dev-dist/
-coverage/
+# Gradle / Android
+.gradle/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+local.properties
+.kotlin/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Secrets (only *.example templates are committed)
+google-services.json
+*.jks
+*.keystore
+keystore.properties
 .env
 .env.local
 server/.env
+
+# Firebase emulator / tooling
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.firebase/
+
+# Node (server)
+node_modules/
+server/dist/
+coverage/
 npm-debug.log*
+
+# OS
 .DS_Store
 Thumbs.db
