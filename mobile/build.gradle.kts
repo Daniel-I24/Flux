@@ -37,6 +37,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.wear.remote.interactions)
     implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.okhttp)
 
     implementation(platform(libs.firebase.bom))

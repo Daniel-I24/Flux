@@ -24,7 +24,7 @@ data class ProfileUiState(
     val occupation: Occupation = Occupation.STUDENT,
     val invalid: Set<ProfileField> = emptySet(),
     val saving: Boolean = false,
-    @StringRes val error: Int? = null,
+    @param:StringRes val error: Int? = null,
 )
 
 @HiltViewModel

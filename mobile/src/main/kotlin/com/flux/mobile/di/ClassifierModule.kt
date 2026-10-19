@@ -5,6 +5,7 @@ import com.flux.core.ai.remote.RemoteClassifierConfig
 import com.flux.core.ai.remote.RemoteCredentials
 import com.flux.core.ai.remote.RemoteNoteClassifier
 import com.flux.core.domain.port.NoteClassifier
+import com.flux.core.domain.usecase.RemoteClassifier
 import com.flux.mobile.config.ServerConfig
 import com.flux.mobile.data.firebase.FirebaseRemoteCredentials
 import dagger.Binds
@@ -26,6 +27,11 @@ object ClassifierModule {
     @Singleton
     fun remoteClassifier(client: OkHttpClient, server: ServerConfig, credentials: RemoteCredentials): RemoteNoteClassifier =
         RemoteNoteClassifier(client, RemoteClassifierConfig(server.baseUrl, server.classifyTimeoutMs), credentials)
+
+    /** Used alone to reclassify notes that were classified offline. */
+    @Provides
+    @RemoteClassifier
+    fun remoteOnly(remote: RemoteNoteClassifier): NoteClassifier = remote
 
     /** Strategy order = priority: remote Gemini first, local NLP as the guaranteed fallback. */
     @Provides

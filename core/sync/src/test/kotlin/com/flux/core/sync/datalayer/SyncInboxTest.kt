@@ -1,6 +1,5 @@
 package com.flux.core.sync.datalayer
 
-import app.cash.turbine.test
 import com.flux.core.model.Classification
 import com.flux.core.model.ClassifierEngine
 import com.flux.core.sync.protocol.SyncCodec
@@ -11,7 +10,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -23,13 +21,10 @@ class SyncInboxTest {
     private fun bytes(id: String, message: SyncMessage) = codec.encode(SyncEnvelope(SyncProtocol.VERSION, id, 1L, message))
 
     @Test
-    fun `publishes new messages once`() = runTest {
-        inbox.messages.test {
-            assertTrue(inbox.receive(bytes("e1", SyncMessage.NoteAck("n1")), "node"))
-            assertFalse(inbox.receive(bytes("e1", SyncMessage.NoteAck("n1")), "node"))
-            assertEquals(SyncMessage.NoteAck("n1"), awaitItem().envelope.message)
-            expectNoEvents()
-        }
+    fun `returns new messages once`() {
+        assertEquals(SyncMessage.NoteAck("n1"), inbox.receive(bytes("e1", SyncMessage.NoteAck("n1")), "node")?.envelope?.message)
+        assertNull(inbox.receive(bytes("e1", SyncMessage.NoteAck("n1")), "node"))
+        assertNull(inbox.receive("garbage".toByteArray(), "node"))
     }
 
     @Test

@@ -31,7 +31,7 @@ data class AccountUiState(
     val password: String = "",
     val createAccount: Boolean = false,
     val loading: Boolean = false,
-    @StringRes val error: Int? = null,
+    @param:StringRes val error: Int? = null,
     val askTransfer: Boolean = false,
     /** Email accounts confirm the password to transfer; Google sign-in is already a fresh login. */
     val transferNeedsPassword: Boolean = false,

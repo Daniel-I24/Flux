@@ -102,6 +102,35 @@
     <string name="watch_step_title">Vincula tu reloj</string>
     <string name="watch_step_subtitle">Instala FLUX en tu reloj Wear OS emparejado con este celular para dictar notas.</string>
 
+    <!-- Watch link -->
+    <string name="link_searching">Buscando tu reloj…</string>
+    <string name="link_no_watch">No hay un reloj Wear OS emparejado con este celular. Emparéjalo con la app Wear OS / Pixel Watch y vuelve a intentar.</string>
+    <string name="link_app_missing">FLUX no está instalada en %1$s.</string>
+    <string name="link_install_on_watch">Instalar en el reloj</string>
+    <string name="link_available">%1$s está listo para vincularse.</string>
+    <string name="link_start">Vincular reloj</string>
+    <string name="link_code_title">Confirma en tu reloj</string>
+    <string name="link_code_message">Verifica que tu reloj muestre este código y toca Confirmar.</string>
+    <string name="link_code_description">Código de vinculación %1$s</string>
+    <string name="link_linked">Vinculado con %1$s</string>
+    <string name="link_status_connected">Conectado</string>
+    <string name="link_status_disconnected">Fuera de alcance</string>
+    <string name="link_unlink">Desvincular reloj</string>
+    <string name="link_other_account">Este reloj está vinculado a otra cuenta. Desvincúlalo desde esa cuenta (o desde los ajustes del reloj) para continuar.</string>
+    <string name="link_update_required">Las apps del reloj y del celular tienen versiones distintas. Actualiza FLUX en ambos.</string>
+    <string name="link_rejected">La vinculación se canceló en el reloj.</string>
+    <string name="link_timeout">El reloj no respondió. Verifica que esté cerca y desbloqueado.</string>
+    <string name="link_install_failed">No se pudo abrir la tienda en el reloj.</string>
+    <string name="link_retry">Buscar de nuevo</string>
+
+    <!-- Reminders -->
+    <string name="channel_reminders">Recordatorios</string>
+    <string name="channel_reminders_description">Alarmas de tus notas con fecha.</string>
+    <string name="channel_quiet">Recordatorios silenciosos</string>
+    <string name="channel_quiet_description">Recordatorios durante tus horas de sueño (No molestar de FLUX).</string>
+    <string name="reminder_complete">Completar</string>
+    <string name="reminder_snooze">Posponer %1$d min</string>
+
     <!-- Home (temporary greeting) -->
     <string name="home_greeting">Hola, %1$s</string>
     <string name="home_greeting_anonymous">Hola</string>

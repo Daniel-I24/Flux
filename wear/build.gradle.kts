@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.androidx.wear.protolayout.expression)
     implementation(libs.androidx.wear.complications.data.source)
     implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.kotlinx.coroutines.guava)
     debugImplementation(libs.androidx.wear.compose.ui.tooling)
 
     testImplementation(libs.androidx.test.core)

@@ -10,6 +10,11 @@
     <string name="category_info">Información</string>
     <string name="category_unnamed">Sin nombre</string>
 
+    <string name="sound_chime">Campanilla</string>
+    <string name="sound_pulse">Pulso</string>
+    <string name="sound_bell">Campana</string>
+    <string name="sound_soft">Suave</string>
+
     <string name="state_loading">Cargando…</string>
     <string name="state_error_title">Algo salió mal</string>
     <string name="action_retry">Reintentar</string>

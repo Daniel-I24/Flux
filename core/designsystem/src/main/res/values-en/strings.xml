@@ -10,6 +10,11 @@
     <string name="category_info">Info</string>
     <string name="category_unnamed">Untitled</string>
 
+    <string name="sound_chime">Chime</string>
+    <string name="sound_pulse">Pulse</string>
+    <string name="sound_bell">Bell</string>
+    <string name="sound_soft">Soft</string>
+
     <string name="state_loading">Loading…</string>
     <string name="state_error_title">Something went wrong</string>
     <string name="action_retry">Retry</string>
