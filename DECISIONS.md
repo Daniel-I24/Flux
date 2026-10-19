@@ -48,4 +48,7 @@ Cada decisión con una línea de justificación, en orden cronológico. Las deci
 | N-042 | Idioma | La app es solo en español; se eliminaron `languageTag` y `values-en` | Los requisitos piden textos en español; un idioma parcial mezclaría inglés y español. |
 | N-043 | Permisos | Se quitó `RECORD_AUDIO` del celular | El dictado ocurre en el reloj (reconocedor del sistema); el celular no graba audio. |
 | N-044 | Modo demostración | 5 notas ya clasificadas con ids `demo-N` (cargar dos veces reemplaza; "Quitar ejemplos" solo borra esas) y una alarma a los 10 s | Demostrable sin IA ni red, sin ensuciar las notas del usuario. |
+| N-045 | Revisión de seguridad | `allowBackup=false` + `dataExtractionRules` en ambas apps, HTTPS obligatorio, PendingIntents inmutables, receptores no exportados, sin logs en release | Las notas, el perfil y las llaves nunca salen del dispositivo por copias o transferencias. |
+| N-046 | Dependencias | Se eliminaron del catálogo `security-crypto`, `ui-graphics`, `hilt-android-testing`, `work-testing` y `test-ext-junit`; `firebase-admin` 14 (0 vulnerabilidades en `npm audit --omit=dev`) | Nada sin uso; el cifrado usa el Android Keystore directamente (`KeystoreDataCipher`). |
+| N-047 | Rendimiento | R8 + recursos reducidos en release (celular 4,3 MB, reloj 4,6 MB); sin Baseline Profile | Generarlo exige un dispositivo físico o emulador con el módulo `baselineprofile`; queda como mejora futura. |
 
