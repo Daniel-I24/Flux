@@ -20,4 +20,8 @@ Cada decisión con una línea de justificación, en orden cronológico. Las deci
 | N-014 | Fechas | El parser determinista en español tiene prioridad sobre la fecha del modelo | La aritmética de fechas relativas de un LLM no es confiable. |
 | N-015 | Desempate de categorías | Específicas antes que genéricas: Deberes, Compras, Salud, Comidas, Tareas, Recordatorios, Ideas, Información | "Comprar pan el viernes" es Compras con fecha, no un Recordatorio genérico. |
 | N-016 | Contexto de la IA | Al servidor solo viajan ocupación y horarios, no nombre ni edad | Minimización de datos personales. |
+| N-018 | KSP | `ksp.useKSP2=false` (KSP1) | KSP2 2.2.20-2.0.3 no resolvía clases de los módulos Kotlin/JVM al generar código de Hilt en `:mobile`; KSP1 sí. |
+| N-019 | Onboarding | Un solo destino con el paso persistido en DataStore (sin pila de navegación) | Si se cierra la app, el onboarding continúa donde quedó; "Atrás" y el botón del sistema vuelven al paso anterior. |
+| N-020 | Cuenta local | Sin Firebase configurado se ofrece "Continuar en modo local" | La app se puede usar y demostrar sin credenciales; con Firebase se exige cuenta real. |
+| N-021 | Transferencia | Correo: reautenticación con contraseña; Google: el inicio de sesión recién hecho cuenta como reciente | Evita que alguien con una sesión vieja robe la cuenta desde otro celular. |
 | N-017 | Vinculación | `PhoneOwnershipPolicy` y `WatchLinkPolicy` son funciones puras del dominio | La regla "un celular y un reloj por cuenta" se prueba sin Firebase ni dispositivos. |

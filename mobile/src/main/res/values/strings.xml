@@ -1,4 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FLUX</string>
+
+    <!-- Common -->
+    <string name="action_continue">Continuar</string>
+    <string name="action_back">Atrás</string>
+    <string name="action_skip">Omitir por ahora</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_accept">Aceptar</string>
+    <string name="action_open_settings">Abrir ajustes</string>
+    <string name="onboarding_progress">Paso %1$d de %2$d</string>
+
+    <!-- Errors -->
+    <string name="error_network">No hay conexión a internet.</string>
+    <string name="error_timeout">La operación tardó demasiado. Intenta de nuevo.</string>
+    <string name="error_unauthorized">Tu sesión expiró. Vuelve a iniciar sesión.</string>
+    <string name="error_not_found">No se encontró el elemento.</string>
+    <string name="error_invalid_input">Revisa los datos ingresados.</string>
+    <string name="error_server">El servidor no está disponible. FLUX usará la IA local.</string>
+    <string name="error_storage">No se pudo guardar en el dispositivo.</string>
+    <string name="error_not_configured">Firebase no está configurado en esta compilación.</string>
+    <string name="error_invalid_credentials">Correo o contraseña incorrectos.</string>
+    <string name="error_email_in_use">Ese correo ya tiene una cuenta. Inicia sesión.</string>
+    <string name="error_weak_password">La contraseña debe tener al menos 8 caracteres.</string>
+    <string name="error_reauth_required">Por seguridad, vuelve a escribir tu contraseña.</string>
+    <string name="error_cancelled">Operación cancelada.</string>
+    <string name="error_unexpected">Ocurrió un error inesperado.</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">Tus ideas, al instante</string>
+    <string name="welcome_subtitle">Dicta en tu reloj y FLUX organiza tus notas, detecta fechas y te recuerda lo importante.</string>
+    <string name="welcome_point_capture">Dicta una nota desde el reloj en segundos</string>
+    <string name="welcome_point_ai">La IA la clasifica y detecta fechas en español</string>
+    <string name="welcome_point_alarms">Recibe alarmas en el reloj y en el celular</string>
+    <string name="welcome_start">Comenzar</string>
+
+    <!-- Account -->
+    <string name="account_title_sign_in">Inicia sesión</string>
+    <string name="account_title_sign_up">Crea tu cuenta</string>
+    <string name="account_subtitle">Tu cuenta vincula un celular y un reloj. Tus notas se guardan en este celular.</string>
+    <string name="account_email">Correo electrónico</string>
+    <string name="account_password">Contraseña</string>
+    <string name="account_password_hint">Mínimo 8 caracteres</string>
+    <string name="account_sign_in">Iniciar sesión</string>
+    <string name="account_sign_up">Crear cuenta</string>
+    <string name="account_switch_to_sign_up">¿No tienes cuenta? Regístrate</string>
+    <string name="account_switch_to_sign_in">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="account_google">Continuar con Google</string>
+    <string name="account_local">Continuar en modo local</string>
+    <string name="account_local_explanation">Firebase no está configurado: puedes usar FLUX solo en este celular, sin sincronizar la cuenta.</string>
+    <string name="account_show_password">Mostrar contraseña</string>
+    <string name="account_hide_password">Ocultar contraseña</string>
+    <string name="account_other_phone_title">Cuenta vinculada a otro celular</string>
+    <string name="account_other_phone_message">Esta cuenta ya está vinculada a otro celular. Si la transfieres, el otro celular cerrará sesión.</string>
+    <string name="account_transfer">Transferir a este celular</string>
+    <string name="account_transfer_password">Confirma tu contraseña</string>
+    <string name="account_signed_out_elsewhere">Tu cuenta se transfirió a otro celular y se cerró la sesión aquí.</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Cuéntanos sobre ti</string>
+    <string name="profile_subtitle">Usamos estos datos para entender frases como \"después de clase\". Solo la ocupación y tus horarios viajan a la IA.</string>
+    <string name="profile_name">¿Cómo te llamas?</string>
+    <string name="profile_name_error">Escribe tu nombre (máximo 40 caracteres).</string>
+    <string name="profile_age">Edad (opcional)</string>
+    <string name="profile_age_error">Escribe una edad entre 5 y 120.</string>
+    <string name="profile_occupation">Ocupación</string>
+    <string name="occupation_student">Estudiante</string>
+    <string name="occupation_worker">Trabajo</string>
+    <string name="occupation_both">Estudio y trabajo</string>
+    <string name="occupation_other">Otra</string>
+
+    <!-- Routine -->
+    <string name="routine_title">Tus horarios habituales</string>
+    <string name="routine_subtitle">FLUX los usa para ubicar tus recordatorios y para no molestarte mientras duermes.</string>
+    <string name="routine_wake_up">Me despierto</string>
+    <string name="routine_sleep">Me duermo</string>
+    <string name="routine_breakfast">Desayuno</string>
+    <string name="routine_lunch">Almuerzo</string>
+    <string name="routine_dinner">Cena</string>
+    <string name="routine_activity">Jornada de estudio o trabajo</string>
+    <string name="routine_activity_days">Días</string>
+    <string name="routine_activity_start">Inicio</string>
+    <string name="routine_activity_end">Fin</string>
+    <string name="routine_invalid">La jornada debe terminar después de empezar.</string>
+    <string name="routine_pick_time">Elige la hora</string>
+
+    <!-- Permissions -->
+    <string name="permissions_title">Permisos</string>
+    <string name="permissions_subtitle">FLUX solo pide lo necesario. Puedes cambiarlos cuando quieras.</string>
+    <string name="permission_notifications">Notificaciones</string>
+    <string name="permission_notifications_why">Para mostrarte tus recordatorios con Posponer y Completar.</string>
+    <string name="permission_exact_alarms">Alarmas exactas</string>
+    <string name="permission_exact_alarms_why">Para que tus recordatorios suenen a la hora exacta, aunque el celular esté en reposo.</string>
+    <string name="permission_microphone">Micrófono</string>
+    <string name="permission_microphone_why">Para dictar notas desde el celular. En el reloj lo pide la app del reloj.</string>
+    <string name="permission_grant">Permitir</string>
+    <string name="permission_granted">Concedido</string>
+
+    <!-- Watch step (onboarding) -->
+    <string name="watch_step_title">Vincula tu reloj</string>
+    <string name="watch_step_subtitle">Instala FLUX en tu reloj Wear OS emparejado con este celular para dictar notas.</string>
+
+    <!-- Home (temporary greeting) -->
+    <string name="home_greeting">Hola, %1$s</string>
+    <string name="home_greeting_anonymous">Hola</string>
 </resources>
