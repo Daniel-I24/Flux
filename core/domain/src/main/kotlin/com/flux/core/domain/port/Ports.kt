@@ -47,3 +47,8 @@ fun interface InstallationIdProvider {
 fun interface ReclassificationQueue {
     fun enqueue(noteId: String)
 }
+
+/** Whether the remote AI (our server + Gemini) can be reached right now. */
+fun interface RemoteAiStatus {
+    suspend fun isAvailable(): Boolean
+}

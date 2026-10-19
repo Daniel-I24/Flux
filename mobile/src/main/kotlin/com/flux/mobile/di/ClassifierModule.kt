@@ -6,10 +6,12 @@ import com.flux.core.ai.remote.RemoteCredentials
 import com.flux.core.ai.remote.RemoteNoteClassifier
 import com.flux.core.domain.port.NoteClassifier
 import com.flux.core.domain.port.ReclassificationQueue
+import com.flux.core.domain.port.RemoteAiStatus
 import com.flux.core.domain.usecase.RemoteClassifier
 import com.flux.mobile.ai.ReclassificationScheduler
 import com.flux.mobile.config.ServerConfig
 import com.flux.mobile.data.firebase.FirebaseRemoteCredentials
+import com.flux.mobile.data.remote.ServerHealthChecker
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -47,4 +49,6 @@ abstract class CredentialsModule {
     @Binds abstract fun remoteCredentials(impl: FirebaseRemoteCredentials): RemoteCredentials
 
     @Binds abstract fun reclassificationQueue(impl: ReclassificationScheduler): ReclassificationQueue
+
+    @Binds abstract fun remoteAiStatus(impl: ServerHealthChecker): RemoteAiStatus
 }

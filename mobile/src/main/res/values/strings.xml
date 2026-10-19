@@ -93,8 +93,6 @@
     <string name="permission_notifications_why">Para mostrarte tus recordatorios con Posponer y Completar.</string>
     <string name="permission_exact_alarms">Alarmas exactas</string>
     <string name="permission_exact_alarms_why">Para que tus recordatorios suenen a la hora exacta, aunque el celular esté en reposo.</string>
-    <string name="permission_microphone">Micrófono</string>
-    <string name="permission_microphone_why">Para dictar notas desde el celular. En el reloj lo pide la app del reloj.</string>
     <string name="permission_grant">Permitir</string>
     <string name="permission_granted">Concedido</string>
 
@@ -217,4 +215,52 @@
 
     <!-- Settings -->
     <string name="settings_watch">Reloj vinculado</string>
+    <string name="settings_account">Cuenta</string>
+    <string name="settings_local_account">Cuenta local en este celular (sin Firebase).</string>
+    <string name="settings_google_account">Cuenta de Google</string>
+    <string name="settings_profile">Perfil</string>
+    <string name="settings_routine">Rutina</string>
+    <string name="settings_sign_out">Cerrar sesión</string>
+    <string name="settings_sign_out_message">Tus notas se quedan en este celular. El reloj dejará de recibir cambios hasta que vuelvas a iniciar sesión.</string>
+    <string name="settings_reminders">Recordatorios</string>
+    <string name="settings_default_sound">Sonido predeterminado</string>
+    <string name="settings_vibration">Vibración</string>
+    <string name="settings_snooze">Posponer</string>
+    <string name="settings_snooze_minutes">%1$d min</string>
+    <string name="settings_quiet_hours">No molestar de FLUX</string>
+    <string name="settings_quiet_hours_detail">Recordatorios en silencio de %1$s a %2$s (tus horas de sueño).</string>
+    <string name="settings_quiet_hours_no_routine">Configura tu rutina para usar las horas de sueño.</string>
+    <string name="settings_appearance">Tema</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Oscuro</string>
+    <string name="settings_ai">Inteligencia artificial</string>
+    <string name="settings_ai_checking">Comprobando el servidor…</string>
+    <string name="settings_ai_remote">IA remota disponible: las notas se clasifican con Gemini a través del servidor de FLUX.</string>
+    <string name="settings_ai_local">IA local: sin conexión con el servidor, FLUX clasifica en el dispositivo y reintenta con la IA remota cuando haya internet.</string>
+    <string name="settings_ai_refresh">Comprobar de nuevo</string>
+    <string name="settings_demo">Modo demostración</string>
+    <string name="settings_demo_description">Carga 5 notas de ejemplo. Una de ellas suena en 10 segundos en el celular y en el reloj.</string>
+    <string name="settings_demo_load">Cargar ejemplos</string>
+    <string name="settings_demo_clear">Quitar ejemplos</string>
+    <string name="settings_demo_loaded">Ejemplos cargados: la alarma suena en 10 segundos</string>
+    <string name="settings_demo_cleared">Ejemplos eliminados</string>
+    <string name="settings_version">FLUX %1$s</string>
+    <string name="vibration_short">Corta</string>
+    <string name="vibration_double">Doble</string>
+    <string name="vibration_long">Larga</string>
+    <string name="vibration_heartbeat">Latido</string>
+    <string name="vibration_off">Sin vibración</string>
+
+    <!-- Demo examples -->
+    <string name="demo_alarm_text">tomar la pastilla en 10 segundos</string>
+    <string name="demo_alarm_title">Tomar la pastilla</string>
+    <string name="demo_shopping_text">comprar leche, pan y huevos</string>
+    <string name="demo_shopping_title">Comprar leche, pan y huevos</string>
+    <string name="demo_homework_text">entregar el taller de cálculo pasado mañana</string>
+    <string name="demo_homework_title">Entregar taller de cálculo</string>
+    <string name="demo_reminder_text">llamar a mamá mañana</string>
+    <string name="demo_reminder_title">Llamar a mamá</string>
+    <string name="demo_idea_text">idea: una app para regar las plantas</string>
+    <string name="demo_idea_title">App para regar las plantas</string>
 </resources>

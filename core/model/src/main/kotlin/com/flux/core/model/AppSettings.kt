@@ -13,7 +13,6 @@ data class AppSettings(
     val vibration: VibrationPattern = VibrationPattern.DOUBLE,
     val defaultSound: SoundRef = SoundRef.Bundled(BundledSound.CHIME),
     val quietHoursEnabled: Boolean = true,
-    val languageTag: String? = null,
 ) {
     companion object {
         const val DEFAULT_SNOOZE_MINUTES = 5

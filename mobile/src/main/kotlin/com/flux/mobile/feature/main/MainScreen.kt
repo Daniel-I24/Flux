@@ -57,7 +57,7 @@ fun MainScreen() {
             )
             MainTab.NOTES -> NotesScreen(snackbar = snackbar, initialCategoryId = notesCategory, modifier = modifier)
             MainTab.CATEGORIES -> CategoriesScreen(snackbar = snackbar, modifier = modifier)
-            MainTab.SETTINGS -> SettingsScreen(modifier = modifier)
+            MainTab.SETTINGS -> SettingsScreen(snackbar = snackbar, modifier = modifier)
         }
     }
 }

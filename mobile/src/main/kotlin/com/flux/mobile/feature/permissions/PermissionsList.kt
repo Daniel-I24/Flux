@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilledTonalButton
@@ -39,7 +38,6 @@ private val COPY = mapOf(
         PermissionCopy(R.string.permission_notifications, R.string.permission_notifications_why, Icons.Rounded.Notifications),
     FluxPermission.EXACT_ALARMS to
         PermissionCopy(R.string.permission_exact_alarms, R.string.permission_exact_alarms_why, Icons.Rounded.Alarm),
-    FluxPermission.MICROPHONE to PermissionCopy(R.string.permission_microphone, R.string.permission_microphone_why, Icons.Rounded.Mic),
 )
 
 /** One card per permission: what it is for, and a button that asks for it in context. */

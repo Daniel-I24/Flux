@@ -1,5 +1,6 @@
 package com.flux.mobile.data.remote
 
+import com.flux.core.domain.port.RemoteAiStatus
 import com.flux.mobile.config.ServerConfig
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -12,9 +13,11 @@ import okhttp3.Request
 
 /** GET /api/health with a short timeout; cached so it never adds latency to every message. */
 @Singleton
-class ServerHealthChecker @Inject constructor(baseClient: OkHttpClient, private val config: ServerConfig) {
+class ServerHealthChecker @Inject constructor(baseClient: OkHttpClient, private val config: ServerConfig) : RemoteAiStatus {
     private val client = baseClient.newBuilder().callTimeout(HEALTH_TIMEOUT_MS, TimeUnit.MILLISECONDS).build()
     private var cached: Pair<Long, Boolean>? = null
+
+    override suspend fun isAvailable(): Boolean = isReachable()
 
     suspend fun isReachable(now: Long = System.currentTimeMillis()): Boolean {
         cached?.let { (checkedAt, value) -> if (now - checkedAt < CACHE_MS) return value }

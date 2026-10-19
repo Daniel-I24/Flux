@@ -42,3 +42,10 @@ Cada decisión con una línea de justificación, en orden cronológico. Las deci
 | N-036 | Migraciones | Room `version = 2` con `AutoMigration(1→2)` y esquemas exportados en `core/data/schemas` | Agregar una columna nula no borra las notas de quien ya instaló la app. |
 | N-037 | Vibración en el celular | El canal se identifica por (sonido, patrón de vibración) | Android congela la vibración del canal; cambiarla en Ajustes debe tener efecto. |
 | N-038 | Notificación sincronizada | Al reprogramar (posponer) una alarma se retira su notificación visible en ese dispositivo | Posponer en el reloj quita también la notificación del celular y viceversa. |
+| N-039 | Tile y complicación | ProtoLayout Material 3 + `SuspendingComplicationDataSourceService`; se refrescan al aplicar el snapshot o al completar/posponer | Siempre muestran el próximo recordatorio real sin polling (solo un respaldo de 15 min). |
+| N-040 | Navegación del celular | Cuatro pestañas (`NavigationBar`) con estado `rememberSaveable` y subpáginas internas en Ajustes | KISS: no hace falta un grafo de navegación para cuatro destinos y dos formularios. |
+| N-041 | Notas escritas en el celular | `CaptureNoteUseCase`: misma clasificación que el reloj y reclasificación remota en cola (`ReclassificationQueue`) | Un solo flujo de captura; el dominio no conoce WorkManager. |
+| N-042 | Idioma | La app es solo en español; se eliminaron `languageTag` y `values-en` | Los requisitos piden textos en español; un idioma parcial mezclaría inglés y español. |
+| N-043 | Permisos | Se quitó `RECORD_AUDIO` del celular | El dictado ocurre en el reloj (reconocedor del sistema); el celular no graba audio. |
+| N-044 | Modo demostración | 5 notas ya clasificadas con ids `demo-N` (cargar dos veces reemplaza; "Quitar ejemplos" solo borra esas) y una alarma a los 10 s | Demostrable sin IA ni red, sin ensuciar las notas del usuario. |
+
