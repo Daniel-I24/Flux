@@ -9,17 +9,17 @@ import com.flux.core.model.ClassifierEngine
 import com.flux.core.model.FluxResult
 import com.flux.core.model.Note
 import com.flux.core.model.Priority
+import java.io.IOException
+import java.io.InterruptedIOException
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.util.concurrent.TimeUnit
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.IOException
-import java.io.InterruptedIOException
-import java.time.Instant
-import java.time.OffsetDateTime
-import java.util.concurrent.TimeUnit
 
 /**
  * Remote strategy: our server calls Gemini (the API key never reaches the device).
@@ -31,7 +31,10 @@ class RemoteNoteClassifier(
     baseClient: OkHttpClient,
     private val config: RemoteClassifierConfig,
     private val credentials: RemoteCredentials,
-    private val json: Json = Json { ignoreUnknownKeys = true; explicitNulls = false },
+    private val json: Json = Json {
+        ignoreUnknownKeys = true
+        explicitNulls = false
+    },
 ) : NoteClassifier {
     override val engine = ClassifierEngine.REMOTE
 

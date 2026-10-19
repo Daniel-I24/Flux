@@ -45,5 +45,20 @@ enum class DefaultCategory(val id: String, val icon: CategoryIcon, val colorArgb
 
 @Serializable
 enum class CategoryIcon {
-    TASK, SCHOOL, IDEA, MEAL, HEALTH, SHOPPING, ALARM, INFO, WORK, HOME, SPORT, MONEY, TRAVEL, STAR, HEART, MUSIC
+    TASK,
+    SCHOOL,
+    IDEA,
+    MEAL,
+    HEALTH,
+    SHOPPING,
+    ALARM,
+    INFO,
+    WORK,
+    HOME,
+    SPORT,
+    MONEY,
+    TRAVEL,
+    STAR,
+    HEART,
+    MUSIC
 }

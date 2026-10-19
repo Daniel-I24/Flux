@@ -8,47 +8,55 @@ private fun rx(vararg patterns: String) = patterns.map { Regex("\\b(?:$it)\\b") 
 /** Accent-free Spanish keywords; each hit adds [KeywordRule.weight] to the category. */
 internal val KEYWORD_RULES = listOf(
     KeywordRule(
-        DefaultCategory.REMINDERS, 2,
+        DefaultCategory.REMINDERS,
+        2,
         rx("recuerd(?:a|ame|ale|anos)", "recordar(?:me)?", "recordatorio", "avis(?:a|ame)", "alarma", "no (?:te )?olvid(?:es|ar)"),
     ),
     KeywordRule(
-        DefaultCategory.HOMEWORK, 2,
+        DefaultCategory.HOMEWORK,
+        2,
         rx(
             "deberes?", "examen(?:es)?", "parcial(?:es)?", "quiz", "taller", "exposicion", "estudiar", "investigacion",
             "tarea de \\w+", "clase de", "profesor(?:a)?", "universidad", "colegio", "materia", "ensayo", "proyecto de \\w+",
         ),
     ),
     KeywordRule(
-        DefaultCategory.SHOPPING, 2,
+        DefaultCategory.SHOPPING,
+        2,
         rx("comprar", "compras", "supermercado", "mercado", "tienda", "lista de compras", "conseguir"),
     ),
     KeywordRule(
-        DefaultCategory.HEALTH, 2,
+        DefaultCategory.HEALTH,
+        2,
         rx(
             "medicamentos?", "pastillas?", "cita medica", "medic[oa]", "doctor(?:a)?", "odontologo", "dentista", "vitaminas?",
             "hospital", "dolor", "ejercicio", "gimnasio", "entrenar", "tomar agua", "presion", "terapia",
         ),
     ),
     KeywordRule(
-        DefaultCategory.MEALS, 2,
+        DefaultCategory.MEALS,
+        2,
         rx("comer", "almorzar", "almuerzo", "cena", "cenar", "desayuno", "desayunar", "receta", "cocinar", "merienda", "comida"),
     ),
     KeywordRule(
-        DefaultCategory.TASKS, 1,
+        DefaultCategory.TASKS,
+        1,
         rx(
             "(?:tengo|tenemos) que", "debo", "debemos", "hay que", "necesito", "llamar", "enviar", "pagar", "hacer", "terminar",
             "entregar", "revisar", "preparar", "llevar", "reservar", "agendar", "escribir", "imprimir", "limpiar", "pendiente",
         ),
     ),
     KeywordRule(
-        DefaultCategory.IDEAS, 2,
+        DefaultCategory.IDEAS,
+        2,
         rx(
             "idea", "se me ocurrio", "podriamos", "podria", "seria (?:bueno|genial|interesante)",
             "que tal si", "y si", "concepto", "propuesta", "imagina",
         ),
     ),
     KeywordRule(
-        DefaultCategory.INFO, 1,
+        DefaultCategory.INFO,
+        1,
         rx(
             "codigo", "clave", "contrasena", "numero", "direccion", "telefono", "correo", "dato", "placa", "cuenta",
             "queda en", "se llama", "\\d{3,}",
@@ -64,8 +72,14 @@ internal const val CUSTOM_NAME_WEIGHT = 4
 
 /** Tie-break: specific categories before generic ones ("comprar pan el viernes" is Shopping). */
 internal val CATEGORY_PRIORITY = listOf(
-    DefaultCategory.HOMEWORK, DefaultCategory.SHOPPING, DefaultCategory.HEALTH, DefaultCategory.MEALS,
-    DefaultCategory.TASKS, DefaultCategory.REMINDERS, DefaultCategory.IDEAS, DefaultCategory.INFO,
+    DefaultCategory.HOMEWORK,
+    DefaultCategory.SHOPPING,
+    DefaultCategory.HEALTH,
+    DefaultCategory.MEALS,
+    DefaultCategory.TASKS,
+    DefaultCategory.REMINDERS,
+    DefaultCategory.IDEAS,
+    DefaultCategory.INFO,
 )
 
 internal val HIGH_PRIORITY = Regex("\\b(?:urgente|importante|cuanto antes|ya mismo|sin falta|examen)\\b")

@@ -36,7 +36,8 @@ style:
   MaxLineLength:
     maxLineLength: 140
   ReturnCount:
-    max: 4
+    # Parsers read best as a sequence of early returns ("first matching rule wins").
+    max: 6
     excludeGuardClauses: true
     excludeReturnFromLambda: true
   UnusedPrivateMember:

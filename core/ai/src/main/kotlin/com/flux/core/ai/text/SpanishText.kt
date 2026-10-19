@@ -9,6 +9,11 @@ private val SPACES = Regex("\\s+")
 fun String.normalizeSpanish(): String =
     Normalizer.normalize(lowercase(), Normalizer.Form.NFD).replace(DIACRITICS, "").replace(SPACES, " ").trim()
 
+/** Lowercase and accent-free but same length as the input, so indexes map back to the original. */
+fun String.foldAccentsKeepingLength(): String =
+    map { char -> Normalizer.normalize(char.lowercaseChar().toString(), Normalizer.Form.NFD).replace(DIACRITICS, "").firstOrNull() ?: char }
+        .joinToString("")
+
 /** Spanish number words that appear in dictated times and offsets. */
 object SpanishNumbers {
     private val words = mapOf(

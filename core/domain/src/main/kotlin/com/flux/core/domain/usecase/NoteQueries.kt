@@ -2,10 +2,10 @@ package com.flux.core.domain.usecase
 
 import com.flux.core.domain.repository.NoteRepository
 import com.flux.core.model.Note
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import java.text.Normalizer
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 enum class NoteSort { NEWEST, DUE_DATE, CATEGORY }
 

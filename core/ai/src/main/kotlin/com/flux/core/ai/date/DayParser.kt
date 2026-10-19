@@ -12,8 +12,12 @@ import java.time.Month
  */
 internal class DayParser(private val partsOfDay: Map<String, LocalTime>) {
     private val weekdays = mapOf(
-        "lunes" to DayOfWeek.MONDAY, "martes" to DayOfWeek.TUESDAY, "miercoles" to DayOfWeek.WEDNESDAY,
-        "jueves" to DayOfWeek.THURSDAY, "viernes" to DayOfWeek.FRIDAY, "sabado" to DayOfWeek.SATURDAY,
+        "lunes" to DayOfWeek.MONDAY,
+        "martes" to DayOfWeek.TUESDAY,
+        "miercoles" to DayOfWeek.WEDNESDAY,
+        "jueves" to DayOfWeek.THURSDAY,
+        "viernes" to DayOfWeek.FRIDAY,
+        "sabado" to DayOfWeek.SATURDAY,
         "domingo" to DayOfWeek.SUNDAY,
     )
     private val months = listOf(

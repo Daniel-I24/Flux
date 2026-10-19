@@ -1,6 +1,6 @@
 package com.flux.core.ai.local
 
-import com.flux.core.ai.text.normalizeSpanish
+import com.flux.core.ai.text.foldAccentsKeepingLength
 import com.flux.core.model.Note
 
 /**
@@ -14,7 +14,7 @@ internal object TitleBuilder {
     fun build(text: String, dateFragments: List<String>): String {
         var title = stripFillers(text)
         dateFragments.forEach { fragment ->
-            val index = title.normalizeSpanish().indexOf(fragment)
+            val index = title.foldAccentsKeepingLength().indexOf(fragment)
             if (index >= 0) title = title.removeRange(index, index + fragment.length)
         }
         val cleaned = title
@@ -30,7 +30,7 @@ internal object TitleBuilder {
         var start = 0
         SPOKEN_FILLERS.forEach { filler ->
             val remaining = text.substring(start)
-            val match = filler.find(remaining.normalizeSpanish()) ?: return@forEach
+            val match = filler.find(remaining.foldAccentsKeepingLength()) ?: return@forEach
             start += match.value.length
         }
         return text.substring(start.coerceAtMost(text.length))

@@ -1,7 +1,7 @@
 package com.flux.core.model
 
-import kotlinx.serialization.Serializable
 import java.time.DayOfWeek
+import kotlinx.serialization.Serializable
 
 /** Minutes since midnight; avoids timezone surprises when stored or synced. */
 @JvmInline
