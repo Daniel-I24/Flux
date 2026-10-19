@@ -11,10 +11,9 @@ import com.flux.core.data.alarm.AlarmTarget
 import com.flux.core.designsystem.R as DesignR
 import com.flux.core.domain.policy.QuietHoursPolicy
 import com.flux.core.domain.port.Clock
-import com.flux.core.domain.repository.CategoryRepository
+import com.flux.core.domain.usecase.GetReminderUseCase
 import com.flux.core.domain.usecase.ObserveProfileUseCase
 import com.flux.core.domain.usecase.ObserveSettingsUseCase
-import com.flux.core.model.Note
 import com.flux.core.model.TimeOfDay
 import com.flux.mobile.MainActivity
 import com.flux.mobile.R
@@ -28,21 +27,22 @@ class ReminderNotifier @Inject constructor(
     @ApplicationContext private val context: Context,
     private val channels: ReminderChannels,
     private val target: AlarmTarget,
-    private val categories: CategoryRepository,
+    private val getReminder: GetReminderUseCase,
     private val observeSettings: ObserveSettingsUseCase,
     private val observeProfile: ObserveProfileUseCase,
     private val clock: Clock,
 ) {
     @SuppressLint("MissingPermission")
-    suspend fun show(note: Note) {
+    suspend fun show(noteId: String) {
         val notifications = NotificationManagerCompat.from(context)
         if (!notifications.areNotificationsEnabled()) return
         val settings = observeSettings().first()
+        val reminder = getReminder(noteId, settings.defaultSound)?.takeIf { it.note.hasPendingAlarm } ?: return
+        val (note, category, sound) = reminder
         val routine = observeProfile().first()?.routine
-        val category = categories.getCategories().firstOrNull { it.id == note.categoryId }
         val now = Instant.ofEpochMilli(clock.now()).atZone(clock.zone()).toLocalTime()
         val quiet = settings.quietHoursEnabled && routine != null && QuietHoursPolicy.isQuiet(TimeOfDay.of(now.hour, now.minute), routine)
-        val channel = channels.channelFor(category?.sound ?: settings.defaultSound, quiet)
+        val channel = channels.channelFor(sound, settings.vibration, quiet)
         val id = target.notificationId(note.id)
 
         val notification = NotificationCompat.Builder(context, channel)

@@ -20,6 +20,7 @@ Cada decisión con una línea de justificación, en orden cronológico. Las deci
 | N-014 | Fechas | El parser determinista en español tiene prioridad sobre la fecha del modelo | La aritmética de fechas relativas de un LLM no es confiable. |
 | N-015 | Desempate de categorías | Específicas antes que genéricas: Deberes, Compras, Salud, Comidas, Tareas, Recordatorios, Ideas, Información | "Comprar pan el viernes" es Compras con fecha, no un Recordatorio genérico. |
 | N-016 | Contexto de la IA | Al servidor solo viajan ocupación y horarios, no nombre ni edad | Minimización de datos personales. |
+| N-017 | Vinculación | `PhoneOwnershipPolicy` y `WatchLinkPolicy` son funciones puras del dominio | La regla "un celular y un reloj por cuenta" se prueba sin Firebase ni dispositivos. |
 | N-018 | KSP | `ksp.useKSP2=false` (KSP1) | KSP2 2.2.20-2.0.3 no resolvía clases de los módulos Kotlin/JVM al generar código de Hilt en `:mobile`; KSP1 sí. |
 | N-019 | Onboarding | Un solo destino con el paso persistido en DataStore (sin pila de navegación) | Si se cierra la app, el onboarding continúa donde quedó; "Atrás" y el botón del sistema vuelven al paso anterior. |
 | N-020 | Cuenta local | Sin Firebase configurado se ofrece "Continuar en modo local" | La app se puede usar y demostrar sin credenciales; con Firebase se exige cuenta real. |
@@ -37,4 +38,7 @@ Cada decisión con una línea de justificación, en orden cronológico. Las deci
 | N-032 | Credenciales del servidor | Cuenta de servicio en `FIREBASE_SERVICE_ACCOUNT_BASE64` (variable de Render) | Ningún archivo de credenciales en el repositorio ni en el disco del servidor. |
 | N-033 | Reglas de Firestore | Solo `users/{uid}` con campos y tamaños validados; todo lo demás cerrado; probadas con el emulador | Las notas nunca salen del celular; Firestore solo guarda la vinculación. |
 | N-034 | UI del reloj | `TransformingLazyColumn` para listas (scroll con corona) y `Column` con scroll en la vista previa | La vista previa es corta y debe verse completa en pantallas pequeñas y redondas. |
-| N-017 | Vinculación | `PhoneOwnershipPolicy` y `WatchLinkPolicy` son funciones puras del dominio | La regla "un celular y un reloj por cuenta" se prueba sin Firebase ni dispositivos. |
+| N-035 | Sonido por recordatorio | Prioridad: sonido de la nota → de la categoría → predeterminado (`ReminderSoundPolicy`) | Una regla pura y probada, usada igual en celular y reloj. |
+| N-036 | Migraciones | Room `version = 2` con `AutoMigration(1→2)` y esquemas exportados en `core/data/schemas` | Agregar una columna nula no borra las notas de quien ya instaló la app. |
+| N-037 | Vibración en el celular | El canal se identifica por (sonido, patrón de vibración) | Android congela la vibración del canal; cambiarla en Ajustes debe tener efecto. |
+| N-038 | Notificación sincronizada | Al reprogramar (posponer) una alarma se retira su notificación visible en ese dispositivo | Posponer en el reloj quita también la notificación del celular y viceversa. |

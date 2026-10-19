@@ -1,5 +1,6 @@
 package com.flux.core.data.local.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -17,6 +18,8 @@ data class NoteEntity(
     val source: String,
     val engine: String,
     val categoryCorrected: Boolean,
+    /** SoundRef serialized as JSON (null = category sound or app default). */
+    @ColumnInfo(defaultValue = "NULL") val soundJson: String?,
     val createdAt: Long,
     val updatedAt: Long,
     val deletedAt: Long?,

@@ -30,6 +30,8 @@ class AndroidAlarmScheduler @Inject constructor(
 
     override fun schedule(note: Note) {
         val at = note.dueAt ?: return
+        // A rescheduled (snoozed) reminder must not stay on screen on this device.
+        NotificationManagerCompat.from(context).cancel(target.notificationId(note.id))
         val intent = target.pendingIntent(context, note.id)
         if (canScheduleExact()) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, intent)

@@ -11,6 +11,7 @@ import com.flux.core.model.ClassifierEngine
 import com.flux.core.model.DefaultCategory
 import com.flux.core.model.DeviceSource
 import com.flux.core.model.Note
+import com.flux.core.model.SoundRef
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -52,6 +53,13 @@ class RoomRepositoriesTest {
         assertFalse(notes.upsertIfNewer(note("a", updatedAt = 5)))
         assertTrue(notes.upsertIfNewer(note("a", updatedAt = 20).copy(title = "Nueva")))
         assertEquals("Nueva", notes.getNote("a")?.title)
+    }
+
+    @Test
+    fun `a reminder's own sound survives the round trip`() = runTest {
+        val tone = SoundRef.System(uri = "content://media/internal/audio/media/7", title = "Aurora")
+        notes.upsert(note("s", updatedAt = 1).copy(sound = tone))
+        assertEquals(tone, notes.getNote("s")?.sound)
     }
 
     @Test

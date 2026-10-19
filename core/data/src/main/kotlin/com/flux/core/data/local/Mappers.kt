@@ -18,6 +18,10 @@ private val json = Json { ignoreUnknownKeys = true }
 private inline fun <reified T : Enum<T>> enumOr(value: String?, fallback: T): T =
     enumValues<T>().firstOrNull { it.name == value } ?: fallback
 
+private fun decodeSound(value: String): SoundRef? = runCatching { json.decodeFromString(SoundRef.serializer(), value) }.getOrNull()
+
+private fun encodeSound(sound: SoundRef): String = json.encodeToString(SoundRef.serializer(), sound)
+
 fun NoteEntity.toModel() = Note(
     id = id,
     text = text,
@@ -30,6 +34,7 @@ fun NoteEntity.toModel() = Note(
     source = enumOr(source, DeviceSource.PHONE),
     engine = enumOr(engine, ClassifierEngine.LOCAL),
     categoryCorrected = categoryCorrected,
+    sound = soundJson?.let(::decodeSound),
     createdAt = createdAt,
     updatedAt = updatedAt,
     deletedAt = deletedAt,
@@ -47,6 +52,7 @@ fun Note.toEntity() = NoteEntity(
     source = source.name,
     engine = engine.name,
     categoryCorrected = categoryCorrected,
+    soundJson = sound?.let(::encodeSound),
     createdAt = createdAt,
     updatedAt = updatedAt,
     deletedAt = deletedAt,
@@ -58,7 +64,7 @@ fun CategoryEntity.toModel() = Category(
     customName = customName,
     colorArgb = colorArgb,
     icon = enumOr(icon, CategoryIcon.STAR),
-    sound = soundJson?.let { runCatching { json.decodeFromString(SoundRef.serializer(), it) }.getOrNull() },
+    sound = soundJson?.let(::decodeSound),
     position = position,
 )
 
@@ -68,6 +74,6 @@ fun Category.toEntity() = CategoryEntity(
     customName = customName,
     colorArgb = colorArgb,
     icon = icon.name,
-    soundJson = sound?.let { json.encodeToString(SoundRef.serializer(), it) },
+    soundJson = sound?.let(::encodeSound),
     position = position,
 )

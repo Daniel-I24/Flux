@@ -6,21 +6,23 @@ import android.content.Context
 import android.media.AudioAttributes
 import com.flux.core.designsystem.sound.SoundCatalog
 import com.flux.core.model.SoundRef
+import com.flux.core.model.VibrationPattern
 import com.flux.mobile.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 /**
- * Android fixes the sound per notification channel, so FLUX creates one channel per
- * selected sound (category sounds included) plus a silent one for quiet hours.
+ * Android fixes sound and vibration per notification channel, so FLUX creates one
+ * channel per (sound, vibration) pair in use plus a silent one for quiet hours.
  */
 class ReminderChannels @Inject constructor(@ApplicationContext private val context: Context) {
     private val manager = context.getSystemService(NotificationManager::class.java)
 
-    fun channelFor(sound: SoundRef, quiet: Boolean): String = if (quiet) ensureQuiet() else ensureSound(sound)
+    fun channelFor(sound: SoundRef, vibration: VibrationPattern, quiet: Boolean): String =
+        if (quiet) ensureQuiet() else ensureSound(sound, vibration)
 
-    private fun ensureSound(sound: SoundRef): String {
-        val id = "$PREFIX${SoundCatalog.key(sound)}"
+    private fun ensureSound(sound: SoundRef, vibration: VibrationPattern): String {
+        val id = "$PREFIX${SoundCatalog.key(sound)}_${vibration.name.lowercase()}"
         if (manager.getNotificationChannel(id) == null) {
             val attributes = AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_ALARM)
@@ -33,7 +35,8 @@ class ReminderChannels @Inject constructor(@ApplicationContext private val conte
             ).apply {
                 description = context.getString(R.string.channel_reminders_description)
                 setSound(SoundCatalog.uri(context, sound), attributes)
-                enableVibration(true)
+                enableVibration(vibration != VibrationPattern.OFF)
+                if (vibration != VibrationPattern.OFF) vibrationPattern = vibration.timingsMs
             }
             manager.createNotificationChannel(channel)
         }

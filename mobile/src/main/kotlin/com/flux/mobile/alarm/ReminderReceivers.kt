@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.flux.core.domain.usecase.CompleteNoteUseCase
-import com.flux.core.domain.usecase.GetNoteUseCase
 import com.flux.core.domain.usecase.ObserveSettingsUseCase
 import com.flux.core.domain.usecase.RescheduleAlarmsUseCase
 import com.flux.core.domain.usecase.SnoozeNoteUseCase
@@ -34,15 +33,11 @@ private fun BroadcastReceiver.runAsync(block: suspend () -> Unit) {
 /** Alarm fired: show the reminder notification. */
 @AndroidEntryPoint
 class ReminderReceiver : BroadcastReceiver() {
-    @Inject lateinit var getNote: GetNoteUseCase
-
     @Inject lateinit var notifier: ReminderNotifier
 
     override fun onReceive(context: Context, intent: Intent) {
         val noteId = intent.getStringExtra(PhoneAlarmTarget.EXTRA_NOTE_ID) ?: return
-        runAsync {
-            getNote(noteId)?.takeIf { it.hasPendingAlarm }?.let { notifier.show(it) }
-        }
+        runAsync { notifier.show(noteId) }
     }
 
     companion object {

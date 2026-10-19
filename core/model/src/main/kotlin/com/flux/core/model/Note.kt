@@ -19,6 +19,8 @@ data class Note(
     val source: DeviceSource,
     val engine: ClassifierEngine,
     val categoryCorrected: Boolean = false,
+    /** Per-reminder sound; null = category sound or app default. */
+    val sound: SoundRef? = null,
     val createdAt: Long,
     val updatedAt: Long,
     val deletedAt: Long? = null,

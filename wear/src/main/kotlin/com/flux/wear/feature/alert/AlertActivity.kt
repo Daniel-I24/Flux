@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flux.core.designsystem.sound.SoundCatalog
+import com.flux.core.model.SoundRef
 import com.flux.core.model.VibrationPattern
 import com.flux.wear.data.WatchSettings
 import com.flux.wear.data.WatchTheme
@@ -34,7 +35,7 @@ class AlertActivity : ComponentActivity() {
         val silent = intent.getBooleanExtra(EXTRA_SILENT, false)
         setContent {
             val state by viewModel.uiState.collectAsStateWithLifecycle()
-            LaunchedEffect(state.note, state.settings) { if (state.note != null && !silent) startRinging(state.settings) }
+            LaunchedEffect(state.note, state.settings) { if (state.note != null && !silent) startRinging(state.settings, state.sound) }
             LaunchedEffect(state.handled) { if (state.handled) finish() }
             FluxWearTheme(highContrast = state.settings.theme == WatchTheme.HIGH_CONTRAST) {
                 AlertScreen(note = state.note, onComplete = viewModel::complete, onSnooze = viewModel::snooze)
@@ -47,13 +48,13 @@ class AlertActivity : ComponentActivity() {
         super.onDestroy()
     }
 
-    private fun startRinging(settings: WatchSettings) {
+    private fun startRinging(settings: WatchSettings, sound: SoundRef) {
         stopRinging()
         if (settings.vibration != VibrationPattern.OFF) {
             getSystemService(Vibrator::class.java)?.vibrate(VibrationEffect.createWaveform(settings.vibration.timingsMs, REPEAT_FROM_START))
         }
         if (settings.soundEnabled) {
-            ringtone = RingtoneManager.getRingtone(this, SoundCatalog.uri(this, settings.sound))?.apply {
+            ringtone = RingtoneManager.getRingtone(this, SoundCatalog.uri(this, sound))?.apply {
                 audioAttributes = AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build()
                 isLooping = true
                 play()

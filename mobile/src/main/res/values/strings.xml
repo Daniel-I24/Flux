@@ -134,4 +134,11 @@
     <!-- Home (temporary greeting) -->
     <string name="home_greeting">Hola, %1$s</string>
     <string name="home_greeting_anonymous">Hola</string>
+
+    <!-- Sounds -->
+    <string name="sound_pick_system">Elegir tono del teléfono</string>
+    <string name="sound_system">Tono del teléfono</string>
+    <string name="sound_preview">Escuchar %1$s</string>
+    <string name="sound_use_category">Sonido de la categoría</string>
+    <string name="sound_use_default">Sonido predeterminado</string>
 </resources>
