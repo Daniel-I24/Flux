@@ -1,0 +1,21 @@
+# Copy to local.properties (git-ignored). Android Studio adds sdk.dir automatically.
+sdk.dir=C\:\\Users\\YOUR_USER\\AppData\\Local\\Android\\Sdk
+
+# --- FLUX server (Render) ---
+flux.apiBaseUrl=https://YOUR-SERVICE.onrender.com
+flux.classifyTimeoutMs=6000
+flux.phoneReplyTimeoutMs=4000
+
+# --- Firebase (Project settings > Your apps > Android app com.flux.notes) ---
+# Leave empty to run in local mode (no account sync, everything on the phone).
+firebase.apiKey=
+firebase.appId=
+firebase.projectId=
+# OAuth "Web client" ID, needed for "Sign in with Google".
+firebase.webClientId=
+
+# --- Release signing (keystore never committed) ---
+flux.keystore.path=keystore/flux-release.jks
+flux.keystore.password=
+flux.keystore.alias=flux
+flux.keystore.keyPassword=

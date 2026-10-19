@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Window colors used before Compose draws (splash, system bars). Mirrors FluxColorTokens. -->
+    <color name="flux_window_background_light">#FFF4F6FB</color>
+    <color name="flux_window_background_dark">#FF090B11</color>
+    <color name="flux_brand">#FF6366F1</color>
+</resources>

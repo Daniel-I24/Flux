@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_tasks">Tareas</string>
+    <string name="category_homework">Deberes</string>
+    <string name="category_ideas">Ideas</string>
+    <string name="category_meals">Comidas</string>
+    <string name="category_health">Salud</string>
+    <string name="category_shopping">Compras</string>
+    <string name="category_reminders">Recordatorios</string>
+    <string name="category_info">Información</string>
+    <string name="category_unnamed">Sin nombre</string>
+
+    <string name="state_loading">Cargando…</string>
+    <string name="state_error_title">Algo salió mal</string>
+    <string name="action_retry">Reintentar</string>
+</resources>

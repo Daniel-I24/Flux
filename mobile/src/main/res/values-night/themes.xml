@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Flux" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/flux_window_background_dark</item>
+    </style>
+
+    <style name="Theme.Flux.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/flux_window_background_dark</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.Flux</item>
+    </style>
+</resources>
