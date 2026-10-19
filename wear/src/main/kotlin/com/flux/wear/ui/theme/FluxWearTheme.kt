@@ -23,7 +23,18 @@ private val FluxWearColorScheme = ColorScheme(
     onError = T.Slate950,
 )
 
+/** "Alto contraste" setting: brighter accents and pure white text. */
+private val FluxWearHighContrastScheme = FluxWearColorScheme.copy(
+    primary = T.White,
+    onPrimary = T.Black,
+    primaryContainer = T.White,
+    onPrimaryContainer = T.Black,
+    secondary = T.Cyan300,
+    onSurfaceVariant = T.Slate50,
+    surfaceContainer = T.Slate800,
+)
+
 @Composable
-fun FluxWearTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = FluxWearColorScheme, content = content)
+fun FluxWearTheme(highContrast: Boolean = false, content: @Composable () -> Unit) {
+    MaterialTheme(colorScheme = if (highContrast) FluxWearHighContrastScheme else FluxWearColorScheme, content = content)
 }

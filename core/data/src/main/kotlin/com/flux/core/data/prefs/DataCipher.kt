@@ -19,7 +19,8 @@ interface DataCipher {
 
 /** AES-256-GCM with a non-exportable key stored in the Android Keystore. */
 class KeystoreDataCipher @Inject constructor() : DataCipher {
-    private val keyStore = KeyStore.getInstance(KEYSTORE).apply { load(null) }
+    /** Loaded on first use so creating the cipher never touches the Keystore. */
+    private val keyStore by lazy { KeyStore.getInstance(KEYSTORE).apply { load(null) } }
 
     override fun encrypt(plain: String): String {
         val cipher = Cipher.getInstance(TRANSFORMATION).apply { init(Cipher.ENCRYPT_MODE, key()) }

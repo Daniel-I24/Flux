@@ -1,4 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FLUX</string>
+
+    <!-- Home -->
+    <string name="home_dictate">Dictar nota</string>
+    <string name="home_type">Escribir</string>
+    <string name="home_agenda">Agenda</string>
+    <string name="home_categories">Categorías</string>
+    <string name="home_settings">Ajustes</string>
+    <string name="home_next_reminder">Próximo recordatorio</string>
+    <string name="home_no_reminders">Sin recordatorios pendientes</string>
+    <string name="home_pending_queue">%1$d nota(s) por enviar</string>
+
+    <!-- Connection -->
+    <string name="connection_checking">Conectando…</string>
+    <string name="connection_ready">Conectado</string>
+    <string name="connection_ready_local_ai">Conectado · IA local</string>
+    <string name="connection_offline">Sin celular</string>
+    <string name="problem_no_phone_title">Sin celular emparejado</string>
+    <string name="problem_no_phone">Empareja el reloj con tu celular desde la app Wear OS o Pixel Watch.</string>
+    <string name="problem_app_missing_title">Instala FLUX en el celular</string>
+    <string name="problem_app_missing">Tu celular está emparejado pero no tiene FLUX.</string>
+    <string name="problem_open_on_phone">Abrir en el celular</string>
+    <string name="problem_unreachable_title">Celular fuera de alcance</string>
+    <string name="problem_unreachable">Puedes dictar igual: tus notas se guardan aquí y se envían al reconectar.</string>
+    <string name="problem_setup_title">Completa la configuración</string>
+    <string name="problem_setup">Termina el inicio de sesión y el onboarding en tu celular.</string>
+    <string name="problem_not_linked_title">Reloj sin vincular</string>
+    <string name="problem_not_linked">En el celular, ve a Ajustes &gt; Dispositivo y toca Vincular reloj.</string>
+    <string name="problem_other_account_title">Vinculado a otra cuenta</string>
+    <string name="problem_other_account">Desvincula este reloj desde Ajustes antes de usarlo con otra cuenta.</string>
+    <string name="problem_update_title">Actualiza FLUX</string>
+    <string name="problem_update">Las versiones del reloj y del celular no coinciden.</string>
+    <string name="problem_retry">Reintentar</string>
+    <string name="problem_opened_on_phone">Revisa tu celular</string>
+
+    <!-- Capture -->
+    <string name="capture_listening">Escuchando…</string>
+    <string name="capture_processing">Entendiendo tu nota…</string>
+    <string name="capture_prompt">¿Qué quieres anotar?</string>
+    <string name="capture_quick_buy">Comprar…</string>
+    <string name="capture_quick_call">Llamar a…</string>
+    <string name="capture_quick_remind">Recuérdame…</string>
+    <string name="capture_no_date">Sin fecha</string>
+    <string name="capture_saving_in">Se guarda en %1$d s</string>
+    <string name="capture_paused">Revisa y confirma</string>
+    <string name="capture_save">Guardar</string>
+    <string name="capture_cancel">Cancelar</string>
+    <string name="capture_edit">Editar</string>
+    <string name="capture_change_category">Cambiar categoría</string>
+    <string name="capture_saved">Guardada</string>
+    <string name="capture_saved_sent">Enviada al celular</string>
+    <string name="capture_saved_queued">Se enviará al reconectar</string>
+    <string name="capture_error_no_speech">No te escuché. Intenta de nuevo o escribe la nota.</string>
+    <string name="capture_error_not_saved">No se pudo guardar la nota.</string>
+    <string name="capture_try_again">Intentar de nuevo</string>
+    <string name="capture_alarm">Con alarma</string>
+
+    <!-- Agenda -->
+    <string name="agenda_title">Agenda</string>
+    <string name="agenda_today">Hoy</string>
+    <string name="date_tomorrow">Mañana</string>
+    <string name="agenda_upcoming">Próximos</string>
+    <string name="agenda_empty">Nada pendiente. ¡Dicta una nota!</string>
+    <string name="agenda_complete">Completar</string>
+    <string name="agenda_completed">Completada</string>
+
+    <!-- Categories -->
+    <string name="categories_title">Categorías</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_vibration">Vibración</string>
+    <string name="settings_sound">Sonido de alarma</string>
+    <string name="settings_theme_contrast">Alto contraste</string>
+    <string name="settings_link">Vinculación</string>
+    <string name="settings_linked_to">Vinculado a %1$s</string>
+    <string name="settings_linked_unknown">Vinculado</string>
+    <string name="settings_not_linked">Sin vincular</string>
+    <string name="settings_unlink">Desvincular</string>
+    <string name="vibration_short">Corta</string>
+    <string name="vibration_double">Doble</string>
+    <string name="vibration_long">Larga</string>
+    <string name="vibration_heartbeat">Latido</string>
+    <string name="vibration_off">Sin vibración</string>
+
+    <!-- Link confirmation -->
+    <string name="link_confirm_title">Vincular con el celular</string>
+    <string name="link_confirm_message">¿El celular de %1$s muestra este código?</string>
+    <string name="link_confirm_message_anonymous">¿Tu celular muestra este código?</string>
+    <string name="link_confirm_notification">Confirma el código %1$s en FLUX</string>
+    <string name="link_confirm_accept">Confirmar</string>
+    <string name="link_confirm_reject">Rechazar</string>
+
+    <!-- Alerts -->
+    <string name="alert_subtitle">Recordatorio de FLUX</string>
+    <string name="alert_complete">Completar</string>
+    <string name="alert_snooze">Posponer</string>
+    <string name="channel_alerts">Alarmas</string>
+    <string name="channel_quiet">Alarmas silenciosas</string>
+    <string name="channel_link">Vinculación</string>
+
+    <!-- Tile and complication -->
+    <string name="tile_label">Dictar nota</string>
+    <string name="tile_description">Dicta una nota y mira tu próximo recordatorio.</string>
+    <string name="complication_label">Próximo recordatorio</string>
+    <string name="complication_none">Sin pendientes</string>
 </resources>

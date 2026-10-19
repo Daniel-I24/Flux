@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.flux.android.application)
     alias(libs.plugins.flux.android.compose)
     alias(libs.plugins.flux.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {

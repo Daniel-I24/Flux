@@ -47,8 +47,11 @@ class DataLayerGateway @Inject constructor(
         capabilities.getCapability(capability, filter).await().nodes.map { NodeInfo(it.id, it.displayName, it.isNearby) }
     }.getOrDefault(emptyList())
 
-    suspend fun send(nodeId: String, envelope: SyncEnvelope): FluxResult<Unit> = try {
-        messages.sendMessage(nodeId, SyncProtocol.MESSAGE_PATH, codec.encode(envelope)).await()
+    suspend fun send(nodeId: String, envelope: SyncEnvelope): FluxResult<Unit> = sendRaw(nodeId, codec.encode(envelope))
+
+    /** Sends an already encoded envelope (offline queue items are stored encoded). */
+    suspend fun sendRaw(nodeId: String, payload: ByteArray): FluxResult<Unit> = try {
+        messages.sendMessage(nodeId, SyncProtocol.MESSAGE_PATH, payload).await()
         FluxResult.Success(Unit)
     } catch (_: ApiException) {
         FluxResult.Failure(AppError.Network)
