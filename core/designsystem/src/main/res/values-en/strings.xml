@@ -18,4 +18,22 @@
     <string name="state_loading">Loading…</string>
     <string name="state_error_title">Something went wrong</string>
     <string name="action_retry">Retry</string>
+
+    <!-- Category icons (TalkBack) -->
+    <string name="icon_task">Checklist</string>
+    <string name="icon_school">School</string>
+    <string name="icon_idea">Idea</string>
+    <string name="icon_meal">Meal</string>
+    <string name="icon_health">Health</string>
+    <string name="icon_shopping">Cart</string>
+    <string name="icon_alarm">Bell</string>
+    <string name="icon_info">Info</string>
+    <string name="icon_work">Work</string>
+    <string name="icon_home">Home</string>
+    <string name="icon_sport">Sport</string>
+    <string name="icon_money">Money</string>
+    <string name="icon_travel">Travel</string>
+    <string name="icon_star">Star</string>
+    <string name="icon_heart">Heart</string>
+    <string name="icon_music">Music</string>
 </resources>

@@ -42,3 +42,8 @@ interface AlarmScheduler {
 fun interface InstallationIdProvider {
     suspend fun installationId(): String
 }
+
+/** Notes classified offline are queued to be reclassified by the remote AI when there is internet. */
+fun interface ReclassificationQueue {
+    fun enqueue(noteId: String)
+}

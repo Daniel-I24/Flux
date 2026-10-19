@@ -131,7 +131,7 @@
     <string name="reminder_complete">Completar</string>
     <string name="reminder_snooze">Posponer %1$d min</string>
 
-    <!-- Home (temporary greeting) -->
+    <!-- Home -->
     <string name="home_greeting">Hola, %1$s</string>
     <string name="home_greeting_anonymous">Hola</string>
 
@@ -141,4 +141,80 @@
     <string name="sound_preview">Escuchar %1$s</string>
     <string name="sound_use_category">Sonido de la categoría</string>
     <string name="sound_use_default">Sonido predeterminado</string>
+
+    <!-- Tabs -->
+    <string name="tab_home">Inicio</string>
+    <string name="tab_notes">Notas</string>
+    <string name="tab_categories">Categorías</string>
+    <string name="tab_settings">Ajustes</string>
+
+    <!-- Home -->
+    <string name="home_upcoming">Próximos recordatorios</string>
+    <string name="home_no_upcoming">Nada pendiente por ahora</string>
+    <string name="home_no_upcoming_hint">Dicta una nota en tu reloj con una fecha, por ejemplo «llamar a mamá mañana a las 6».</string>
+    <string name="home_see_all">Ver todas las notas</string>
+    <string name="home_by_category">Pendientes por categoría</string>
+    <string name="home_category_count">%1$s · %2$d</string>
+    <string name="home_watch_not_linked">Sin reloj vinculado</string>
+    <string name="home_watch_not_linked_hint">Vincula tu reloj Wear OS para dictar notas.</string>
+    <string name="home_watch_offline_hint">Fuera de alcance: las notas se enviarán al reconectar.</string>
+    <string name="date_today_at">Hoy · %1$s</string>
+    <string name="date_tomorrow_at">Mañana · %1$s</string>
+
+    <!-- Notes -->
+    <string name="notes_search">Buscar notas</string>
+    <string name="notes_search_clear">Borrar búsqueda</string>
+    <string name="notes_all">Todas</string>
+    <string name="notes_only_pending">Solo pendientes</string>
+    <string name="notes_sort">Ordenar: %1$s</string>
+    <string name="notes_sort_newest">Más recientes</string>
+    <string name="notes_sort_due">Por fecha</string>
+    <string name="notes_sort_category">Por categoría</string>
+    <string name="notes_empty">No hay notas aquí</string>
+    <string name="notes_empty_hint">Cambia los filtros o crea una nota nueva.</string>
+    <string name="notes_new">Nueva nota</string>
+    <string name="notes_new_hint">Escríbela como la dirías: FLUX detecta la categoría y la fecha.</string>
+    <string name="notes_new_placeholder">Comprar pan el viernes</string>
+    <string name="notes_classifying">Clasificando…</string>
+    <string name="notes_deleted">Nota eliminada</string>
+    <string name="notes_undo">Deshacer</string>
+    <string name="notes_delete">Eliminar nota</string>
+    <string name="notes_has_alarm">Con alarma</string>
+
+    <!-- Note editor -->
+    <string name="editor_title">Editar nota</string>
+    <string name="editor_note_title">Título</string>
+    <string name="editor_title_required">El título es obligatorio</string>
+    <string name="editor_note_text">Texto</string>
+    <string name="editor_category">Categoría</string>
+    <string name="editor_date">Fecha</string>
+    <string name="editor_no_date">Sin fecha</string>
+    <string name="editor_clear_date">Quitar</string>
+    <string name="editor_time">Hora</string>
+    <string name="editor_alarm">Alarma</string>
+    <string name="editor_sound">Sonido de este recordatorio</string>
+
+    <!-- Categories -->
+    <string name="categories_new">Nueva categoría</string>
+    <string name="categories_edit">Editar categoría</string>
+    <string name="categories_name">Nombre</string>
+    <string name="categories_color">Color</string>
+    <string name="categories_color_option">Color %1$d</string>
+    <string name="categories_icon">Ícono</string>
+    <string name="categories_sound">Sonido de sus recordatorios</string>
+    <string name="categories_name_invalid">Usa un nombre de 1 a 30 caracteres que no exista ya.</string>
+    <string name="categories_delete">Eliminar «%1$s»</string>
+    <string name="categories_delete_confirm">Eliminar</string>
+    <string name="categories_deleted">Categoría eliminada</string>
+    <plurals name="categories_pending">
+        <item quantity="one">%1$d pendiente</item>
+        <item quantity="other">%1$d pendientes</item>
+    </plurals>
+    <plurals name="categories_delete_message">
+        <item quantity="one">Su nota pendiente pasará a Información.</item>
+        <item quantity="other">Sus %1$d notas pendientes pasarán a Información.</item>
+    </plurals>
+
+    <!-- Settings -->
+    <string name="settings_watch">Reloj vinculado</string>
 </resources>

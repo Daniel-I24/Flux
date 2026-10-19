@@ -9,6 +9,7 @@ import com.flux.core.model.Classification
 import com.flux.core.model.DeviceSource
 import com.flux.core.model.FluxResult
 import com.flux.core.model.Note
+import com.flux.core.model.SoundRef
 import javax.inject.Inject
 
 /** Persists a classified note and schedules its alarm when needed. */
@@ -89,10 +90,30 @@ class CorrectCategoryUseCase @Inject constructor(private val update: UpdateNoteU
         update(id) { it.copy(categoryId = categoryId, categoryCorrected = true) }
 }
 
+/** Everything the phone's note editor can change. */
+data class NoteEdit(
+    val title: String,
+    val text: String,
+    val categoryId: String,
+    val dueAt: Long?,
+    val requiresAlarm: Boolean,
+    val sound: SoundRef?,
+)
+
 class EditNoteUseCase @Inject constructor(private val update: UpdateNoteUseCase) {
-    suspend operator fun invoke(id: String, title: String, text: String, dueAt: Long?): FluxResult<Note> {
-        val cleanTitle = title.trim()
+    suspend operator fun invoke(id: String, edit: NoteEdit): FluxResult<Note> {
+        val cleanTitle = edit.title.trim()
         if (cleanTitle.isEmpty() || cleanTitle.length > Note.MAX_TITLE_LENGTH) return FluxResult.Failure(AppError.InvalidInput)
-        return update(id) { it.copy(title = cleanTitle, text = text.trim().take(Note.MAX_TEXT_LENGTH), dueAt = dueAt) }
+        return update(id) { current ->
+            current.copy(
+                title = cleanTitle,
+                text = edit.text.trim().take(Note.MAX_TEXT_LENGTH),
+                categoryId = edit.categoryId,
+                categoryCorrected = current.categoryCorrected || edit.categoryId != current.categoryId,
+                dueAt = edit.dueAt,
+                requiresAlarm = edit.requiresAlarm && edit.dueAt != null,
+                sound = edit.sound,
+            )
+        }
     }
 }

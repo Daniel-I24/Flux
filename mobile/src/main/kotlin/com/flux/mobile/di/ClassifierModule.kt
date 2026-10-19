@@ -5,7 +5,9 @@ import com.flux.core.ai.remote.RemoteClassifierConfig
 import com.flux.core.ai.remote.RemoteCredentials
 import com.flux.core.ai.remote.RemoteNoteClassifier
 import com.flux.core.domain.port.NoteClassifier
+import com.flux.core.domain.port.ReclassificationQueue
 import com.flux.core.domain.usecase.RemoteClassifier
+import com.flux.mobile.ai.ReclassificationScheduler
 import com.flux.mobile.config.ServerConfig
 import com.flux.mobile.data.firebase.FirebaseRemoteCredentials
 import dagger.Binds
@@ -43,4 +45,6 @@ object ClassifierModule {
 @InstallIn(SingletonComponent::class)
 abstract class CredentialsModule {
     @Binds abstract fun remoteCredentials(impl: FirebaseRemoteCredentials): RemoteCredentials
+
+    @Binds abstract fun reclassificationQueue(impl: ReclassificationScheduler): ReclassificationQueue
 }

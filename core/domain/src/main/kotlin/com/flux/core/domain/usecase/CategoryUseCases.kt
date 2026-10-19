@@ -11,6 +11,12 @@ import com.flux.core.model.DefaultCategory
 import com.flux.core.model.FluxResult
 import com.flux.core.model.SoundRef
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+
+class ObserveCategoriesUseCase @Inject constructor(private val categories: CategoryRepository) {
+    operator fun invoke(): Flow<List<Category>> = categories.observeCategories().map { list -> list.sortedBy { it.position } }
+}
 
 data class CategoryDraft(
     val id: String? = null,

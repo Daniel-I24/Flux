@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flux.core.designsystem.component.FluxLoadingState
-import com.flux.mobile.feature.home.MainScreen
+import com.flux.mobile.feature.main.MainScreen
 import com.flux.mobile.feature.onboarding.OnboardingHost
 import com.flux.mobile.navigation.AppDestination
 import com.flux.mobile.navigation.GateViewModel

@@ -11,6 +11,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.flux.core.domain.port.ReclassificationQueue
 import com.flux.core.domain.usecase.ReclassifyNoteUseCase
 import com.flux.core.domain.usecase.ReclassifyOutcome
 import dagger.assisted.Assisted
@@ -20,8 +21,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /** Queues a remote reclassification that only runs with internet (no polling). */
-class ReclassificationScheduler @Inject constructor(@ApplicationContext private val context: Context) {
-    fun schedule(noteId: String) {
+class ReclassificationScheduler @Inject constructor(@ApplicationContext private val context: Context) : ReclassificationQueue {
+    override fun enqueue(noteId: String) {
         val request = OneTimeWorkRequestBuilder<ReclassifyWorker>()
             .setInputData(workDataOf(ReclassifyWorker.KEY_NOTE_ID to noteId))
             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())

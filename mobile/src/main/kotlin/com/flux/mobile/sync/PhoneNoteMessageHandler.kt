@@ -1,5 +1,6 @@
 package com.flux.mobile.sync
 
+import com.flux.core.domain.port.ReclassificationQueue
 import com.flux.core.domain.usecase.ApplyRemoteNoteUseCase
 import com.flux.core.domain.usecase.CompleteNoteUseCase
 import com.flux.core.domain.usecase.SnoozeNoteUseCase
@@ -9,7 +10,6 @@ import com.flux.core.sync.datalayer.DataLayerGateway
 import com.flux.core.sync.protocol.NoteActionType
 import com.flux.core.sync.protocol.SyncMessage
 import com.flux.core.sync.protocol.SyncMessageFactory
-import com.flux.mobile.ai.ReclassificationScheduler
 import javax.inject.Inject
 
 /** Notes captured on the watch and reminder actions taken on it. Idempotent by note id. */
@@ -19,7 +19,7 @@ class PhoneNoteMessageHandler @Inject constructor(
     private val applyRemote: ApplyRemoteNoteUseCase,
     private val complete: CompleteNoteUseCase,
     private val snooze: SnoozeNoteUseCase,
-    private val reclassification: ReclassificationScheduler,
+    private val reclassification: ReclassificationQueue,
 ) {
     suspend fun handle(nodeId: String, message: SyncMessage) {
         when (message) {
@@ -27,7 +27,7 @@ class PhoneNoteMessageHandler @Inject constructor(
                 val note = message.note.copy(source = DeviceSource.WATCH)
                 val isNew = applyRemote(note)
                 gateway.send(nodeId, factory.noteAck(note.id))
-                if (isNew && note.engine == ClassifierEngine.LOCAL && !note.categoryCorrected) reclassification.schedule(note.id)
+                if (isNew && note.engine == ClassifierEngine.LOCAL && !note.categoryCorrected) reclassification.enqueue(note.id)
             }
             is SyncMessage.NoteAction -> when (message.action) {
                 NoteActionType.COMPLETE -> complete(message.noteId)

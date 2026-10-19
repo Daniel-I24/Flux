@@ -6,10 +6,12 @@ import com.flux.core.domain.FixedClock
 import com.flux.core.domain.SequentialIds
 import com.flux.core.domain.note
 import com.flux.core.model.AppError
+import com.flux.core.model.BundledSound
 import com.flux.core.model.Classification
 import com.flux.core.model.ClassifierEngine
 import com.flux.core.model.DeviceSource
 import com.flux.core.model.FluxResult
+import com.flux.core.model.SoundRef
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -88,8 +90,29 @@ class NoteCommandsTest {
     @Test
     fun `editing validates the title`() = runTest {
         notes.upsert(note("a"))
-        assertEquals(FluxResult.Failure(AppError.InvalidInput), EditNoteUseCase(update)("a", "  ", "x", null))
-        assertEquals(FluxResult.Failure(AppError.NotFound), EditNoteUseCase(update)("zzz", "ok", "x", null))
+        val blank = NoteEdit("  ", "x", "tasks", null, requiresAlarm = false, sound = null)
+        assertEquals(FluxResult.Failure(AppError.InvalidInput), EditNoteUseCase(update)("a", blank))
+        assertEquals(FluxResult.Failure(AppError.NotFound), EditNoteUseCase(update)("zzz", blank.copy(title = "ok")))
+    }
+
+    @Test
+    fun `editing changes category, alarm and sound and remembers the correction`() = runTest {
+        notes.upsert(note("a"))
+        val tone = SoundRef.Bundled(BundledSound.BELL)
+        EditNoteUseCase(update)("a", NoteEdit("Cita", "Médico", "health", dueAt = 2_000_000, requiresAlarm = true, sound = tone))
+        val edited = notes.getNote("a")!!
+        assertEquals("health", edited.categoryId)
+        assertTrue(edited.categoryCorrected)
+        assertTrue(edited.hasPendingAlarm)
+        assertEquals(tone, edited.sound)
+        assertTrue(alarms.scheduled.containsKey("a"))
+    }
+
+    @Test
+    fun `an alarm without a date is not kept`() = runTest {
+        notes.upsert(note("a"))
+        EditNoteUseCase(update)("a", NoteEdit("Idea", "", "ideas", dueAt = null, requiresAlarm = true, sound = null))
+        assertFalse(notes.getNote("a")!!.requiresAlarm)
     }
 
     @Test
