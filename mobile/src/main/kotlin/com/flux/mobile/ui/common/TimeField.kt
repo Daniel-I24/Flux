@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.flux.core.designsystem.text.FluxLocale
 import com.flux.core.designsystem.theme.FluxSizes
 import com.flux.core.model.TimeOfDay
 import com.flux.mobile.R
@@ -25,7 +26,10 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-fun TimeOfDay.formatted(): String = LocalTime.of(hour, minute).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+fun TimeOfDay.formatted(): String = LocalTime.of(
+    hour,
+    minute
+).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(FluxLocale.SPANISH))
 
 /** Label + current time; tapping opens the Material 3 time picker. */
 @OptIn(ExperimentalMaterial3Api::class)

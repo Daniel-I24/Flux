@@ -5,8 +5,10 @@ import android.os.Vibrator
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import com.flux.core.designsystem.theme.FluxSizes
+import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.core.model.AppSettings
 import com.flux.core.model.DailyRoutine
 import com.flux.core.model.VibrationPattern
@@ -84,6 +87,7 @@ private fun VibrationChoice(selected: VibrationPattern, onSelect: (VibrationPatt
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 RadioButton(selected = pattern == selected, onClick = null)
+                Spacer(Modifier.width(FluxSpacing.sm))
                 Text(stringResource(pattern.label), style = MaterialTheme.typography.bodyLarge)
             }
         }

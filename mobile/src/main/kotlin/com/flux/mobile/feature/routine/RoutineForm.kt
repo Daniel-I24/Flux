@@ -12,12 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.flux.core.designsystem.text.FluxLocale
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.mobile.R
 import com.flux.mobile.ui.common.TimeField
 import java.time.DayOfWeek
 import java.time.format.TextStyle
-import java.util.Locale
 
 private val MEALS_AND_SLEEP = listOf(
     RoutineTime.WAKE_UP to R.string.routine_wake_up,
@@ -43,7 +43,7 @@ fun RoutineForm(state: RoutineUiState, viewModel: RoutineViewModel, modifier: Mo
                 FilterChip(
                     selected = day in state.activityDays,
                     onClick = { viewModel.toggleDay(day) },
-                    label = { Text(day.getDisplayName(TextStyle.SHORT, Locale.getDefault())) },
+                    label = { Text(day.getDisplayName(TextStyle.SHORT, FluxLocale.SPANISH)) },
                 )
             }
         }

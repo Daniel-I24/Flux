@@ -3,7 +3,6 @@ package com.flux.wear.ui
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.Button
@@ -38,7 +37,6 @@ fun CategoryIconDot(category: Category) {
 
 @Composable
 fun rememberDueDateLabel(dueAt: Long): String {
-    val locale = LocalConfiguration.current.locales[0]
     val zone = ZoneId.systemDefault()
     return DueDateText.format(
         dueAt = dueAt,
@@ -46,6 +44,5 @@ fun rememberDueDateLabel(dueAt: Long): String {
         zone = zone,
         todayLabel = stringResource(R.string.agenda_today),
         tomorrowLabel = stringResource(R.string.date_tomorrow),
-        locale = locale,
     )
 }

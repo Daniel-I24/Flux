@@ -2,8 +2,10 @@ package com.flux.mobile.ui.sound
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
@@ -26,6 +28,7 @@ import androidx.compose.ui.semantics.Role
 import com.flux.core.designsystem.sound.SoundCatalog
 import com.flux.core.designsystem.sound.SoundPreviewPlayer
 import com.flux.core.designsystem.theme.FluxSizes
+import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.core.model.BundledSound
 import com.flux.core.model.SoundRef
 import com.flux.mobile.R
@@ -70,6 +73,7 @@ private fun SoundRow(label: String, checked: Boolean, onSelect: () -> Unit, onPl
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioButton(selected = checked, onClick = null)
+        Spacer(Modifier.width(FluxSpacing.sm))
         Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
         if (onPlay != null) {
             IconButton(onClick = onPlay) {

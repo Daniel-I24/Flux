@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -58,26 +59,7 @@ fun NotesScreen(
                 onSort = viewModel::setSort,
                 onIncludeCompleted = viewModel::setIncludeCompleted,
             )
-            when {
-                state.loading -> FluxLoadingState()
-                state.notes.isEmpty() -> FluxEmptyState(
-                    icon = Icons.Rounded.SearchOff,
-                    title = stringResource(R.string.notes_empty),
-                    description = stringResource(R.string.notes_empty_hint),
-                )
-                else -> LazyColumn(contentPadding = PaddingValues(bottom = FluxSizes.fab + FluxSpacing.xxl)) {
-                    items(state.notes, key = { it.id }) { note ->
-                        NoteRow(
-                            note = note,
-                            category = state.categories.firstOrNull { it.id == note.categoryId },
-                            onToggle = { viewModel.toggleCompleted(note) },
-                            onOpen = { editingId = note.id },
-                            onDelete = { viewModel.delete(note) },
-                            modifier = Modifier.animateItem(),
-                        )
-                    }
-                }
-            }
+            NotesList(state, viewModel, onOpen = { editingId = it })
         }
         ExtendedFloatingActionButton(
             onClick = { creating = true },
@@ -95,7 +77,37 @@ fun NotesScreen(
             onDismiss = { editingId = null },
         )
     }
-    if (creating) NewNoteDialog(onCreate = { text -> viewModel.create(text) { creating = false } }, onDismiss = { creating = false })
+    // Without this the search field takes the focus back and opens the keyboard.
+    val focus = LocalFocusManager.current
+    val closeDialog = {
+        creating = false
+        focus.clearFocus()
+    }
+    if (creating) NewNoteDialog(onCreate = { text -> viewModel.create(text, closeDialog) }, onDismiss = closeDialog)
+}
+
+@Composable
+private fun NotesList(state: NotesUiState, viewModel: NotesViewModel, onOpen: (String) -> Unit) {
+    when {
+        state.loading -> FluxLoadingState()
+        state.notes.isEmpty() -> FluxEmptyState(
+            icon = Icons.Rounded.SearchOff,
+            title = stringResource(R.string.notes_empty),
+            description = stringResource(R.string.notes_empty_hint),
+        )
+        else -> LazyColumn(contentPadding = PaddingValues(bottom = FluxSizes.fab + FluxSpacing.xxl)) {
+            items(state.notes, key = { it.id }) { note ->
+                NoteRow(
+                    note = note,
+                    category = state.categories.firstOrNull { it.id == note.categoryId },
+                    onToggle = { viewModel.toggleCompleted(note) },
+                    onOpen = { onOpen(note.id) },
+                    onDelete = { viewModel.delete(note) },
+                    modifier = Modifier.animateItem(),
+                )
+            }
+        }
+    }
 }
 
 /** Shows "Nota eliminada · Deshacer" and errors in the shared snackbar. */

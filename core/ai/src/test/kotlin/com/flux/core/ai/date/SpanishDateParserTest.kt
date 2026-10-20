@@ -63,6 +63,14 @@ class SpanishDateParserTest {
     }
 
     @Test
+    fun `an hour from 1 to 5 without a period is in the afternoon`() {
+        assertEquals(at(18, 15), parse("cita con el dentista hoy a las 3"))
+        assertEquals(at(19, 3), parse("mañana a las 3 de la madrugada"))
+        assertEquals(at(19, 3), parse("mañana a las 3 am"))
+        assertEquals(at(19, 6), parse("despertarme mañana a las 6"))
+    }
+
+    @Test
     fun `parses weekdays and dates`() {
         assertEquals(at(23, 9), parse("el viernes"))
         assertEquals(at(19, 10), parse("el lunes a las 10"))

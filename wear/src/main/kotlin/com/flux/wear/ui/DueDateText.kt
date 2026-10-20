@@ -1,5 +1,6 @@
 package com.flux.wear.ui
 
+import com.flux.core.designsystem.text.FluxLocale
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -15,7 +16,7 @@ object DueDateText {
         zone: ZoneId,
         todayLabel: String,
         tomorrowLabel: String,
-        locale: Locale = Locale.getDefault()
+        locale: Locale = FluxLocale.SPANISH
     ): String {
         val dateTime = Instant.ofEpochMilli(dueAt).atZone(zone)
         val time = dateTime.toLocalTime().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale))

@@ -52,6 +52,8 @@ internal object TimeParser {
         var hour = when {
             afternoon.containsMatchIn(period) && rawHour < NOON_HOUR -> rawHour + NOON_HOUR
             morning.containsMatchIn(period) && rawHour == NOON_HOUR -> 0
+            // "a las 3" without a period means 15:00: nobody schedules things at 3 a. m. by default.
+            period.isBlank() && rawHour in AFTERNOON_BY_DEFAULT -> rawHour + NOON_HOUR
             else -> rawHour
         }
         var minutes = (match.groupValues[GROUP_MINUTES].toIntOrNull() ?: 0) + when (match.groupValues[GROUP_FRACTION].trim()) {
@@ -74,6 +76,7 @@ internal object TimeParser {
     private const val GROUP_PERIOD = 4
     private const val MAX_HOUR = 23
     private const val NOON_HOUR = 12
+    private val AFTERNOON_BY_DEFAULT = 1..5
     private const val HALF = 30
     private const val QUARTER = 15
     private const val MINUTES_PER_HOUR = 60
