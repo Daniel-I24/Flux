@@ -51,4 +51,6 @@ Cada decisión con una línea de justificación, en orden cronológico. Las deci
 | N-045 | Revisión de seguridad | `allowBackup=false` + `dataExtractionRules` en ambas apps, HTTPS obligatorio, PendingIntents inmutables, receptores no exportados, sin logs en release | Las notas, el perfil y las llaves nunca salen del dispositivo por copias o transferencias. |
 | N-046 | Dependencias | Se eliminaron del catálogo `security-crypto`, `ui-graphics`, `hilt-android-testing`, `work-testing` y `test-ext-junit`; `firebase-admin` 14 (0 vulnerabilidades en `npm audit --omit=dev`) | Nada sin uso; el cifrado usa el Android Keystore directamente (`KeystoreDataCipher`). |
 | N-047 | Rendimiento | R8 + recursos reducidos en release (celular 4,3 MB, reloj 4,6 MB); sin Baseline Profile | Generarlo exige un dispositivo físico o emulador con el módulo `baselineprofile`; queda como mejora futura. |
+| N-048 | Formato de fechas | `FluxLocale.SPANISH` para días y horas (24 h) en ambas apps | En un dispositivo en inglés aparecían "Mon/Tue" y "AM/PM" junto a textos en español (hallado en el emulador). |
+| N-049 | Horas ambiguas | "a las 1–5" sin "am/pm/de la mañana/madrugada" se interpreta como de la tarde | "Cita con el dentista a las 3" debe sonar a las 15:00, no a las 3:00 (hallado en el emulador). |
 
