@@ -40,3 +40,7 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Release signing and artifacts
+keystore/
+/dist/

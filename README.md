@@ -80,14 +80,25 @@ cp local.properties.example local.properties   # y completa los valores
 ./gradlew :mobile:assembleDebug :wear:assembleDebug
 ```
 
-Para APK firmados, crea un keystore y completa `flux.keystore.*` en `local.properties`:
+Para APK firmados (las dos apps con la **misma llave**):
 
-```bash
-keytool -genkeypair -v -keystore keystore/flux-release.jks -alias flux -keyalg RSA -keysize 2048 -validity 10000
-./gradlew :mobile:assembleRelease :wear:assembleRelease
+```powershell
+scripts/create-keystore.ps1   # crea keystore/flux-release.jks (ignorado por git) y muestra qué agregar a local.properties
+scripts/build-release.ps1     # análisis + pruebas + dist/flux-mobile.apk y dist/flux-wear.apk firmados con R8
 ```
 
 Sin Firebase (`firebase.*` vacíos) la app funciona en modo local: todo queda en el celular y la clasificación es local.
+
+## Firebase (opcional, recomendado)
+
+1. Crea un proyecto en <https://console.firebase.google.com> y agrega una app Android con el paquete `com.flux.notes`. Registra las huellas SHA-256 de tu keystore de release y de debug.
+2. **Authentication:** activa *Correo/contraseña* y *Google*. Copia el *Web client ID* de Google a `firebase.webClientId`.
+3. Copia `apiKey`, `appId` y `projectId` de *Configuración del proyecto* a `local.properties`. **No** se usa `google-services.json`.
+4. **Firestore:** crea la base y publica las reglas, que primero se prueban en el emulador:
+   ```powershell
+   cd firebase; npm ci; npm test; npx firebase deploy --only firestore:rules --project <tu-proyecto>
+   ```
+5. **App Check:** registra Play Integrity. En debug se usa el proveedor de depuración: registra en la consola el token que aparece en Logcat.
 
 ## Servidor
 
@@ -99,9 +110,38 @@ npm run dev            # http://localhost:3001/api/health
 npm test
 ```
 
+Para la cuenta de servicio, descarga el JSON en *Firebase → Configuración → Cuentas de servicio → Generar clave* y conviértelo a base64 (nunca lo subas al repositorio):
+
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("service-account.json")) | Set-Clipboard
+```
+
 **Despliegue en Render:** *Dashboard → New → Blueprint* y selecciona este repositorio. `render.yaml` crea el servicio `flux-server` y pide los secretos (`GEMINI_API_KEY`, `FIREBASE_PROJECT_ID`, `FIREBASE_SERVICE_ACCOUNT_BASE64`) sin guardarlos en el repositorio. Luego pon la URL del servicio en `flux.apiBaseUrl` y vuelve a compilar.
 
 Sin `GEMINI_API_KEY` el servidor responde 503 en `/api/classify` y las apps clasifican localmente.
+
+## Instalar en emuladores
+
+Sigue [`scripts/emulators.md`](scripts/emulators.md): crear un celular con Google Play y un reloj Wear OS, emparejarlos, instalar con `scripts/install.ps1 -Phone emulator-5554 -Watch emulator-5556 -Debug` y repasar la lista de verificación.
+
+## Instalar en dispositivos reales
+
+1. Activa la depuración USB en el celular y la **depuración por Wi-Fi** en el reloj (*Ajustes → Opciones de desarrollador*). Conecta el reloj con `adb connect <ip>:<puerto>`.
+2. Mira los seriales con `adb devices` e instala:
+   ```powershell
+   scripts/install.ps1 -Phone <serial-celular> -Watch <serial-reloj>          # APK firmados de dist/
+   scripts/install.ps1 -Phone <serial-celular> -Watch <serial-reloj> -Debug   # APK de debug
+   ```
+
+## Guion de demostración (5 minutos)
+
+1. **Celular:** *Comenzar* → inicia sesión (o *Continuar en modo local*) → nombre, ocupación y rutina → permisos → **vincula el reloj** y confirma en el reloj el código de 6 dígitos.
+2. **Reloj:** *Dictar nota* → «**recuérdame llamar a mamá mañana a las 6 de la tarde**». La vista previa muestra *Recordatorios · Mañana 18:00*. Puedes corregir la categoría; se guarda sola en 5 s.
+3. **Celular → Notas:** aparece la nota. Busca «mamá», filtra por categoría y ábrela para cambiar la fecha o el sonido (con vista previa).
+4. **Celular → Ajustes → Modo demostración → Cargar ejemplos:** a los **10 s** suena «Tomar la pastilla» en el celular y en el reloj. *Posponer* en uno quita la notificación del otro.
+5. **Sin conexión:** apaga el Bluetooth del reloj y dicta «comprar pan el viernes». Queda *1 nota por enviar* y llega sola al reconectar.
+6. **Reloj:** agrega el tile *Dictar nota* y la complicación *Próximo recordatorio* a la esfera.
+7. **Ajustes → Inteligencia artificial:** muestra si se usa Gemini (remota) o el clasificador local.
 
 ## Calidad
 
