@@ -14,7 +14,7 @@ const EnvSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3001),
   CORS_ORIGINS: csv.default(''),
   GEMINI_API_KEY: z.string().trim().default(''),
-  GEMINI_MODEL: z.string().trim().min(1).default('gemini-2.5-flash'),
+  GEMINI_MODEL: z.string().trim().min(1).default('gemini-3.8-flash'),
   GEMINI_TIMEOUT_MS: z.coerce.number().int().positive().default(6000),
   FIREBASE_PROJECT_ID: z.string().trim().default(''),
   FIREBASE_SERVICE_ACCOUNT_BASE64: z.string().trim().default(''),

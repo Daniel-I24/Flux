@@ -17,7 +17,7 @@ services:
       - key: NODE_VERSION
         value: "22"
       - key: GEMINI_MODEL
-        value: gemini-2.5-flash
+        value: gemini-3.8-flash
       - key: GEMINI_TIMEOUT_MS
         value: "6000"
       # The APKs are installed outside Play Store, so Play Integrity cannot attest them.
