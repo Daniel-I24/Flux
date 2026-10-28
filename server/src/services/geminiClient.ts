@@ -57,7 +57,14 @@ export class GeminiClient implements Classifier {
     } catch (error) {
       throw new UpstreamError('Gemini request failed or timed out', { cause: error });
     }
-    if (!response.ok) throw new UpstreamError(`Gemini answered HTTP ${response.status}`);
+    if (!response.ok) {
+      // Google's error status (e.g. UNAUTHENTICATED, PERMISSION_DENIED) tells a bad key from a disabled API.
+      const reason = await response
+        .json()
+        .then((body) => (body as { error?: { status?: string } } | null)?.error?.status)
+        .catch(() => undefined);
+      throw new UpstreamError(`Gemini answered HTTP ${response.status}${reason ? ` (${reason})` : ''}`);
+    }
     return this.parse(await response.json().catch(() => null), request);
   }
 

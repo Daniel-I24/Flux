@@ -53,4 +53,6 @@ Cada decisión con una línea de justificación, en orden cronológico. Las deci
 | N-047 | Rendimiento | R8 + recursos reducidos en release (celular 4,3 MB, reloj 4,6 MB); sin Baseline Profile | Generarlo exige un dispositivo físico o emulador con el módulo `baselineprofile`; queda como mejora futura. |
 | N-048 | Formato de fechas | `FluxLocale.SPANISH` para días y horas (24 h) en ambas apps | En un dispositivo en inglés aparecían "Mon/Tue" y "AM/PM" junto a textos en español (hallado en el emulador). |
 | N-049 | Horas ambiguas | "a las 1–5" sin "am/pm/de la mañana/madrugada" se interpreta como de la tarde | "Cita con el dentista a las 3" debe sonar a las 15:00, no a las 3:00 (hallado en el emulador). |
+| N-050 | App Check en el servidor | `APP_CHECK_REQUIRED=false` en Render y en `render.yaml` | Los APK se instalan fuera de Play Store y Play Integrity no puede certificarlos. Cada llamada sigue exigiendo el ID token de Firebase y tiene límites por usuario e IP. Pasar a `true` al publicar en Play Store. |
+| N-051 | Configuración de Firebase | Los valores de `google-services.json` (apiKey, appId, projectId, web client) se copian a `local.properties`; no se usa el plugin `google-services` | Un solo origen de configuración, ignorado por git. El reloj no usa Firebase, así que comparte la misma app Android del proyecto sin configuración propia. |
 

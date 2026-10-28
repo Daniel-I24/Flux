@@ -14,7 +14,7 @@ $keytool = if ($env:JAVA_HOME) { Join-Path $env:JAVA_HOME "bin\keytool.exe" } el
 & $keytool -genkeypair -v -keystore $target -alias $Alias -keyalg RSA -keysize 4096 -validity 10000
 Write-Host ""
 Write-Host "Agrega a local.properties (no se sube a git):"
-Write-Host "flux.keystore.path=$($Path -replace '\','/')"
+Write-Host "flux.keystore.path=$($Path -replace '\\','/')"
 Write-Host "flux.keystore.alias=$Alias"
 Write-Host "flux.keystore.password=<la contraseña del almacén>"
 Write-Host "flux.keystore.keyPassword=<la contraseña de la llave>"

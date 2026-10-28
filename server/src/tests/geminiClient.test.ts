@@ -42,4 +42,9 @@ describe('GeminiClient', () => {
     await expect(clientWith(new Response('{}', { status: 429 })).client.classify(validBody)).rejects.toBeInstanceOf(UpstreamError);
     await expect(clientWith(new Error('ECONNRESET')).client.classify(validBody)).rejects.toBeInstanceOf(UpstreamError);
   });
+
+  it("reports Google's error status so a bad key is easy to diagnose", async () => {
+    const denied = new Response(JSON.stringify({ error: { code: 401, status: 'UNAUTHENTICATED' } }), { status: 401 });
+    await expect(clientWith(denied).client.classify(validBody)).rejects.toThrow('Gemini answered HTTP 401 (UNAUTHENTICATED)');
+  });
 });
