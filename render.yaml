@@ -17,9 +17,9 @@ services:
       - key: NODE_VERSION
         value: "22"
       - key: GEMINI_MODEL
-        value: gemini-3.8-flash
+        value: gemini-3.5-flash-lite
       - key: GEMINI_TIMEOUT_MS
-        value: "6000"
+        value: "7500"
       # The APKs are installed outside Play Store, so Play Integrity cannot attest them.
       # Requests still need a valid Firebase ID token. Set to "true" once FLUX ships on Play Store.
       - key: APP_CHECK_REQUIRED
