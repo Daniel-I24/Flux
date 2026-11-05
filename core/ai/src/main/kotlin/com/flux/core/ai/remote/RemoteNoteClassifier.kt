@@ -1,8 +1,11 @@
 package com.flux.core.ai.remote
 
 import com.flux.core.ai.date.SpanishDateParser
+import com.flux.core.ai.local.TitleBuilder
+import com.flux.core.ai.local.TitleRules
 import com.flux.core.domain.port.ClassificationRequest
 import com.flux.core.domain.port.NoteClassifier
+import com.flux.core.model.Ambiguity
 import com.flux.core.model.AppError
 import com.flux.core.model.Classification
 import com.flux.core.model.ClassifierEngine
@@ -73,25 +76,39 @@ class RemoteNoteClassifier(
         } catch (_: IllegalArgumentException) {
             return FluxResult.Failure(AppError.InvalidInput)
         }
-        val validCategory = request.categories.any { it.id == answer.categoryId }
-        val title = answer.title.trim().take(Note.MAX_TITLE_LENGTH)
-        if (!validCategory || title.isEmpty()) return FluxResult.Failure(AppError.InvalidInput)
+        val categoryId = request.categoryIdOf(answer.categoryId) ?: return FluxResult.Failure(AppError.InvalidInput)
+        if (answer.title.isBlank()) return FluxResult.Failure(AppError.InvalidInput)
 
         val now = Instant.ofEpochMilli(request.nowMillis).atZone(request.zone)
+        // The text wins: a time the user said is never replaced by the model's (or the profile's) guess.
         val deterministic = SpanishDateParser(request.profile?.routine).parse(request.text, now)
         val modelDue = answer.dueAt?.let { runCatching { OffsetDateTime.parse(it).toInstant().toEpochMilli() }.getOrNull() }
+        val title = answer.title.trim().take(Note.MAX_TITLE_LENGTH).takeIf(TitleRules::isMeaningful)
+            ?: TitleBuilder.build(request.text, deterministic?.fragments.orEmpty())
+        val alternatives = answer.alternativeCategoryIds.mapNotNull { request.categoryIdOf(it) }.filter { it != categoryId }.distinct()
+        val ambiguities = buildList {
+            deterministic?.alternatives?.takeIf { it.size > 1 }?.let { options ->
+                add(Ambiguity.DueTime(options.map { it.toInstant().toEpochMilli() }))
+            }
+            alternatives.firstOrNull()?.let { add(Ambiguity.CategoryChoice(listOf(categoryId, it))) }
+        }
         return FluxResult.Success(
             Classification(
-                categoryId = answer.categoryId,
+                categoryId = categoryId,
                 title = title,
                 dueAt = deterministic?.dateTime?.toInstant()?.toEpochMilli() ?: modelDue,
                 priority = Priority.entries.firstOrNull { it.name == answer.priority.uppercase() } ?: Priority.NORMAL,
-                requiresAlarm = answer.requiresAlarm,
+                requiresAlarm = answer.requiresAlarm || deterministic?.hasExplicitTime == true,
                 confidence = answer.confidence.coerceIn(0.0, 1.0),
                 engine = engine,
+                ambiguities = ambiguities,
             ),
         )
     }
+
+    /** Ids are compared case-insensitively ("Health" from the model is "health"). */
+    private fun ClassificationRequest.categoryIdOf(raw: String): String? =
+        categories.firstOrNull { it.id == raw.trim() }?.id ?: categories.firstOrNull { it.id.equals(raw.trim(), ignoreCase = true) }?.id
 
     private companion object {
         const val CLASSIFY_PATH = "/api/classify"

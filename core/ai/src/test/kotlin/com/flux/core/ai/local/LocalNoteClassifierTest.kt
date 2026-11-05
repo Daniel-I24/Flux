@@ -1,6 +1,7 @@
 package com.flux.core.ai.local
 
 import com.flux.core.domain.port.ClassificationRequest
+import com.flux.core.model.Ambiguity
 import com.flux.core.model.Category
 import com.flux.core.model.CategoryIcon
 import com.flux.core.model.Classification
@@ -28,9 +29,9 @@ class LocalNoteClassifierTest {
     }
 
     @Test
-    fun `reminder with time gets an alarm and a clean title`() = runTest {
+    fun `an action with a date and time gets an alarm and a clean title`() = runTest {
         val result = classify("Recuérdame entregar el proyecto de bases de datos mañana a las 8 am")
-        assertEquals(DefaultCategory.REMINDERS.id, result.categoryId)
+        assertEquals(DefaultCategory.HOMEWORK.id, result.categoryId)
         assertEquals("Entregar el proyecto de bases de datos", result.title)
         assertEquals(now.plusDays(1).withHour(8).toInstant().toEpochMilli(), result.dueAt)
         assertTrue(result.requiresAlarm)
@@ -62,6 +63,27 @@ class LocalNoteClassifierTest {
         assertEquals("Comprar café para la reunión", result.title)
         assertNotNull(result.dueAt)
         assertFalse(result.requiresAlarm)
+    }
+
+    @Test
+    fun `an action with a date is a task and a notice without action is a reminder`() = runTest {
+        val call = classify("Recuérdame llamar a mamá mañana a las 6 de la tarde")
+        assertEquals(DefaultCategory.TASKS.id, call.categoryId)
+        assertEquals("Llamar a mamá", call.title)
+        assertTrue(call.requiresAlarm)
+        assertEquals(DefaultCategory.REMINDERS.id, classify("Recuérdame que mañana es el cumpleaños de Ana").categoryId)
+    }
+
+    @Test
+    fun `a tie between two specific categories becomes a question`() = runTest {
+        val result = classify("Comprar las pastillas")
+        assertEquals(listOf(Ambiguity.CategoryChoice(listOf(DefaultCategory.SHOPPING.id, DefaultCategory.HEALTH.id))), result.ambiguities)
+        assertTrue(classify("Comprar pan").ambiguities.isEmpty())
+    }
+
+    @Test
+    fun `a title is never only a time`() = runTest {
+        assertEquals("A las 4:20 p.m", classify("a las 4:20 p.m.").title)
     }
 
     @Test

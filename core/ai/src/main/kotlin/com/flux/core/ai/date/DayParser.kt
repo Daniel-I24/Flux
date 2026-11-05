@@ -23,9 +23,10 @@ internal class DayParser(private val partsOfDay: Map<String, LocalTime>) {
     private val months = listOf(
         "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
     )
-    private val amPhrase = Regex("\\b(de|por) la manana\\b")
-    private val dayAfterTomorrow = Regex("\\bpasado manana(?:\\s+(?:en|por) la\\s+(tarde|noche|manana))?\\b")
-    private val tomorrow = Regex("\\bmanana(?:\\s+(?:en|por) la\\s+(tarde|noche|manana))?\\b")
+    private val amPhrase = Regex("\\b(de|por|en) la manana\\b")
+    private val dayAfterTomorrow = Regex("\\bpasado manana(?:\\s+(?:en|por|de) la\\s+(tarde|noche|manana))?\\b")
+    private val tomorrowWithPart = Regex("\\bmanana\\s+(?:en|por|de) la\\s+(tarde|noche|manana)\\b")
+    private val tomorrow = Regex("\\bmanana\\b")
     private val today = Regex("\\b(?:esta|en la|por la)\\s+(tarde|noche|manana)\\b|\\bhoy\\b")
     private val weekday = Regex(
         "\\b(?:el\\s+|este\\s+|el proximo\\s+|el siguiente\\s+)?(${weekdays.keys.joinToString("|")})(\\s+(?:proximo|que viene))?\\b",
@@ -34,8 +35,10 @@ internal class DayParser(private val partsOfDay: Map<String, LocalTime>) {
 
     fun parse(normalized: String, today: LocalDate): DayMatch? {
         dayAfterTomorrow.find(normalized)?.let { return DayMatch(today.plusDays(2), part(it.groupValues[1]), it.value) }
+        tomorrowWithPart.find(normalized)?.let { return DayMatch(today.plusDays(1), part(it.groupValues[1]), it.value) }
+        // "a las 7 de la mañana" is a.m., never tomorrow: blank those phrases before looking for "mañana".
         val withoutAm = normalized.replace(amPhrase) { " ".repeat(it.value.length) }
-        tomorrow.find(withoutAm)?.let { return DayMatch(today.plusDays(1), part(it.groupValues[1]), it.value) }
+        tomorrow.find(withoutAm)?.let { return DayMatch(today.plusDays(1), null, it.value) }
         this.today.find(withoutAm)?.let { return DayMatch(today, part(it.groupValues[1]), it.value) }
         dayOfMonth.find(normalized)?.let { return parseDayOfMonth(it, today) }
         return weekday.find(normalized)?.let { parseWeekday(it, today) }
@@ -48,7 +51,7 @@ internal class DayParser(private val partsOfDay: Map<String, LocalTime>) {
         val explicitNext = match.value.contains("proximo") || match.value.contains("siguiente") || match.value.contains("que viene")
         var delta = (target.value - today.dayOfWeek.value + DAYS_PER_WEEK) % DAYS_PER_WEEK
         if (delta == 0 && explicitNext) delta = DAYS_PER_WEEK
-        return DayMatch(today.plusDays(delta.toLong()), null, match.value.trim())
+        return DayMatch(today.plusDays(delta.toLong()), null, match.value.trim(), weekly = !explicitNext)
     }
 
     private fun parseDayOfMonth(match: MatchResult, today: LocalDate): DayMatch? {

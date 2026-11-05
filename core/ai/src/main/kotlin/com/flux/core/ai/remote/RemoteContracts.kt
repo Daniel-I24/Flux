@@ -34,6 +34,8 @@ internal data class RemoteClassifyResponse(
     val priority: String = "NORMAL",
     val requiresAlarm: Boolean = false,
     val confidence: Double = 0.5,
+    /** Server v1.1+: other categories that fit as well (asked to the user as an ambiguity). */
+    val alternativeCategoryIds: List<String> = emptyList(),
 )
 
 /** Server configuration injected from BuildConfig (never hard-coded). */

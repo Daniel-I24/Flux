@@ -17,7 +17,7 @@ internal val KEYWORD_RULES = listOf(
         2,
         rx(
             "deberes?", "examen(?:es)?", "parcial(?:es)?", "quiz", "taller", "exposicion", "estudiar", "investigacion",
-            "tarea de \\w+", "clase de", "profesor(?:a)?", "universidad", "colegio", "materia", "ensayo", "proyecto de \\w+",
+            "tarea de \\w+", "clases?", "profesor(?:a)?", "universidad", "colegio", "materia", "ensayo", "proyecto de \\w+",
         ),
     ),
     KeywordRule(
@@ -29,7 +29,7 @@ internal val KEYWORD_RULES = listOf(
         DefaultCategory.HEALTH,
         2,
         rx(
-            "medicamentos?", "pastillas?", "cita medica", "medic[oa]", "doctor(?:a)?", "odontologo", "dentista", "vitaminas?",
+            "medicamentos?", "pastillas?", "cita medica", "medic[oa]", "doctor(?:a)?", "odontolog(?:o|a|ica|ico)", "dentista", "vitaminas?",
             "hospital", "dolor", "ejercicio", "gimnasio", "entrenar", "tomar agua", "presion", "terapia",
         ),
     ),

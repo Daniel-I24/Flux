@@ -1,6 +1,7 @@
 package com.flux.core.ai.remote
 
 import com.flux.core.domain.port.ClassificationRequest
+import com.flux.core.model.Ambiguity
 import com.flux.core.model.AppError
 import com.flux.core.model.ClassifierEngine
 import com.flux.core.model.DefaultCategory
@@ -58,6 +59,20 @@ class RemoteNoteClassifierTest {
         assertEquals(ClassifierEngine.REMOTE, result.value.engine)
         assertEquals(now.plusSeconds(10).toInstant().toEpochMilli(), result.value.dueAt)
         assertTrue(result.value.requiresAlarm)
+    }
+
+    @Test
+    fun `when the model and the text disagree on the hour the text wins`() = runTest {
+        val cita = request.copy(text = "Cita odontológica hoy a las 4:20 p.m")
+        val answer = """{"categoryId":"Health","title":":20","dueAt":"2026-10-18T09:00:00-05:00",""" +
+            """"priority":"NORMAL","requiresAlarm":false,"confidence":0.8,"alternativeCategoryIds":["tasks","nope"]}"""
+        server.enqueue(MockResponse().setBody(answer))
+        val result = (classifier().classify(cita) as FluxResult.Success).value
+        assertEquals(now.withHour(16).withMinute(20).toInstant().toEpochMilli(), result.dueAt)
+        assertEquals("health", result.categoryId)
+        assertEquals("Cita odontológica", result.title)
+        assertTrue(result.requiresAlarm)
+        assertEquals(listOf(Ambiguity.CategoryChoice(listOf("health", "tasks"))), result.ambiguities)
     }
 
     @Test
