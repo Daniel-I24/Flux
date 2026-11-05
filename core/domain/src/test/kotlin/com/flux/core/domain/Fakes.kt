@@ -64,6 +64,9 @@ class FakeNoteRepository : NoteRepository {
             if (moves) stored.copy(categoryId = toCategoryId, updatedAt = updatedAt) else stored
         }
     }
+    override suspend fun replaceAll(notes: List<Note>) {
+        store.value = notes.associateBy { it.id }
+    }
     override suspend fun clear() {
         store.value = emptyMap()
     }

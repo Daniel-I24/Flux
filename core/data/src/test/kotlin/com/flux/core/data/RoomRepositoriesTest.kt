@@ -12,6 +12,7 @@ import com.flux.core.model.DefaultCategory
 import com.flux.core.model.DeviceSource
 import com.flux.core.model.Note
 import com.flux.core.model.SoundRef
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -45,6 +46,18 @@ class RoomRepositoriesTest {
     )
 
     @After fun close() = database.close()
+
+    @Test
+    fun `replacing the agenda never shows a ringing note as gone`() = runTest {
+        notes.upsert(note("a", updatedAt = 1))
+        notes.observeNote("a").test {
+            assertEquals(1L, awaitItem()?.updatedAt)
+            notes.replaceAll(listOf(note("a", updatedAt = 2), note("b", updatedAt = 2)))
+            assertEquals(2L, awaitItem()?.updatedAt)
+            cancelAndIgnoreRemainingEvents()
+        }
+        assertEquals(setOf("a", "b"), notes.observeNotes().first().map { it.id }.toSet())
+    }
 
     @Test
     fun `upsertIfNewer keeps the latest revision`() = runTest {

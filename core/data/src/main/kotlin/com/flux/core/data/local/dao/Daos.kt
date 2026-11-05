@@ -31,6 +31,9 @@ interface NoteDao {
     @Upsert
     suspend fun upsert(note: NoteEntity)
 
+    @Upsert
+    suspend fun upsertAll(notes: List<NoteEntity>)
+
     @Query("UPDATE notes SET categoryId = :to, updatedAt = :updatedAt WHERE categoryId = :from")
     suspend fun reassign(from: String, to: String, updatedAt: Long)
 

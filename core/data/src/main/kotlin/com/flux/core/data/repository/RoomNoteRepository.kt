@@ -41,5 +41,10 @@ class RoomNoteRepository @Inject constructor(private val database: FluxDatabase)
     override suspend fun reassignCategory(fromCategoryId: String, toCategoryId: String, updatedAt: Long) =
         dao.reassign(fromCategoryId, toCategoryId, updatedAt)
 
+    override suspend fun replaceAll(notes: List<Note>) = database.withTransaction {
+        dao.clear()
+        dao.upsertAll(notes.map { it.toEntity() })
+    }
+
     override suspend fun clear() = dao.clear()
 }

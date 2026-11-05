@@ -23,5 +23,8 @@ interface NoteRepository {
 
     suspend fun reassignCategory(fromCategoryId: String, toCategoryId: String, updatedAt: Long)
 
+    /** Replaces every note at once: observers never see the list empty in between. */
+    suspend fun replaceAll(notes: List<Note>)
+
     suspend fun clear()
 }

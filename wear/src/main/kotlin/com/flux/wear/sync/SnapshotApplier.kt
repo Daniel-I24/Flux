@@ -5,6 +5,7 @@ import com.flux.core.data.repository.RoomCategoryRepository
 import com.flux.core.domain.port.AlarmScheduler
 import com.flux.core.domain.port.Clock
 import com.flux.core.domain.repository.NoteRepository
+import com.flux.core.model.Note
 import com.flux.core.sync.protocol.WatchSnapshot
 import com.flux.wear.data.PhoneState
 import com.flux.wear.data.WatchStateStore
@@ -26,15 +27,14 @@ class SnapshotApplier @Inject constructor(
 ) {
     suspend fun apply(snapshot: WatchSnapshot) {
         categories.replaceAll(snapshot.categories)
-        val incoming = snapshot.agenda.associateBy { it.id }
-        // Captures still waiting in the offline queue are not in the phone's agenda yet: keep them.
-        val stillQueued = outbox.pending().mapNotNull { notes.getNote(it.noteId) }.filterNot { it.id in incoming }
-        val previous = notes.getPendingAlarms().map { it.id }.toSet()
-        (previous - incoming.keys - stillQueued.map { it.id }.toSet()).forEach(alarms::cancel)
-        notes.clear()
+        val queued = outbox.pending().mapNotNull { notes.getNote(it.noteId) }
+        val agenda = mergeAgenda(snapshot.agenda, queued)
+        val kept = agenda.map { it.id }.toSet()
+        notes.getPendingAlarms().map { it.id }.filterNot { it in kept }.forEach(alarms::cancel)
+        // Atomic: an alert that is ringing must not see its note vanish for an instant and close itself.
+        notes.replaceAll(agenda)
         val now = clock.now()
-        (snapshot.agenda + stillQueued).forEach { note ->
-            notes.upsert(note)
+        agenda.forEach { note ->
             when {
                 !note.hasPendingAlarm -> alarms.cancel(note.id)
                 // Overdue notes are listed in Vencidos but never ring again (and a ringing one keeps ringing).
@@ -55,4 +55,14 @@ class SnapshotApplier @Inject constructor(
         )
         surfaces.refresh()
     }
+}
+
+/**
+ * The phone's agenda plus what the offline queue still holds: captures it does not know yet, and
+ * changes made here (completed, snoozed…) newer than the revision the phone just sent.
+ */
+internal fun mergeAgenda(phone: List<Note>, queued: List<Note>): List<Note> {
+    val local = queued.associateBy { it.id }
+    val known = phone.map { it.id }.toSet()
+    return phone.map { note -> local[note.id]?.takeIf { it.updatedAt > note.updatedAt } ?: note } + queued.filterNot { it.id in known }
 }
