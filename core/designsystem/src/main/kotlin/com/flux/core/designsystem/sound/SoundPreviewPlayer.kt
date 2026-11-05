@@ -12,7 +12,7 @@ class SoundPreviewPlayer(private val context: Context) {
 
     fun play(sound: SoundRef) {
         stop()
-        current = RingtoneManager.getRingtone(context, SoundCatalog.uri(context, sound))?.apply {
+        current = RingtoneManager.getRingtone(context, SoundCatalog.uri(context, SoundCatalog.playable(context, sound)))?.apply {
             audioAttributes = AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)

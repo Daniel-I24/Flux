@@ -19,18 +19,37 @@ import java.io.IOException
  * back to [SoundCatalog.FALLBACK]. Call [stop] to release the player and the vibrator.
  */
 class AlarmRinger(private val context: Context) {
+    private val lock = Any()
     private var player: MediaPlayer? = null
+
+    /** Changes on every start and stop, so a start still preparing knows it was cancelled meanwhile. */
+    private var generation = 0L
     private val vibrator: Vibrator? = context.getSystemService(Vibrator::class.java)
 
     /** Blocking (prepares the player): call it off the main thread. [sound] null = vibrate only. */
     fun start(sound: SoundRef?, vibration: VibrationPattern) {
-        stop()
-        sound?.let { player = prepare(SoundCatalog.uri(context, SoundCatalog.playable(context, it))) ?: prepareFallback() }
-        player?.start()
-        vibrate(vibration)
+        val ticket = synchronized(lock) {
+            release()
+            ++generation
+        }
+        val media = sound?.let { prepare(SoundCatalog.uri(context, SoundCatalog.playable(context, it))) ?: prepareFallback() }
+        synchronized(lock) {
+            if (ticket != generation) {
+                media?.release()
+                return
+            }
+            player = media
+            media?.start()
+            vibrate(vibration)
+        }
     }
 
-    fun stop() {
+    fun stop() = synchronized(lock) {
+        generation++
+        release()
+    }
+
+    private fun release() {
         player?.runCatching {
             if (isPlaying) stop()
             release()
