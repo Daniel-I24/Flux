@@ -8,9 +8,13 @@ import androidx.annotation.StringRes
 import com.flux.core.designsystem.R
 import com.flux.core.model.BundledSound
 import com.flux.core.model.SoundRef
+import java.io.File
 
 /** Maps the model's sound references to playable URIs (bundled tones live in res/raw). */
 object SoundCatalog {
+    /** Played when the chosen tone was deleted, moved or cannot be decoded. */
+    val FALLBACK: SoundRef = SoundRef.Bundled(BundledSound.CHIME)
+
     @RawRes
     fun rawRes(sound: BundledSound): Int = when (sound) {
         BundledSound.CHIME -> R.raw.flux_chime
@@ -35,11 +39,22 @@ object SoundCatalog {
             .appendPath(context.resources.getResourceEntryName(rawRes(sound.sound)))
             .build()
         is SoundRef.System -> Uri.parse(sound.uri)
+        is SoundRef.Custom -> Uri.fromFile(ToneFiles.file(context, sound.fileName))
     }
 
-    /** Short stable key used to build one notification channel per sound. */
-    fun key(sound: SoundRef): String = when (sound) {
-        is SoundRef.Bundled -> sound.sound.name.lowercase()
-        is SoundRef.System -> "sys_" + Integer.toHexString(sound.uri.hashCode())
-    }
+    /** A custom tone whose file vanished is replaced by [FALLBACK] before anything tries to play it. */
+    fun playable(context: Context, sound: SoundRef): SoundRef =
+        if (sound is SoundRef.Custom && !ToneFiles.exists(context, sound.fileName)) FALLBACK else sound
+}
+
+/** Custom tones are copied into the app's private storage, so they keep working if the original is moved. */
+object ToneFiles {
+    private const val DIRECTORY = "tones"
+
+    fun directory(context: Context): File = File(context.filesDir, DIRECTORY).apply { mkdirs() }
+
+    /** Only plain file names are accepted: a stored name can never point outside [directory]. */
+    fun file(context: Context, name: String): File = File(directory(context), File(name).name)
+
+    fun exists(context: Context, name: String): Boolean = file(context, name).let { it.isFile && it.length() > 0 }
 }

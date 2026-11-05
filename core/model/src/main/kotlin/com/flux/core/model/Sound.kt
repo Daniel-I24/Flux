@@ -2,7 +2,7 @@ package com.flux.core.model
 
 import kotlinx.serialization.Serializable
 
-/** Alarm sound: one bundled in the app (res/raw) or a system ringtone URI. */
+/** Alarm sound: bundled in the app (res/raw), a system ringtone URI or a file the user chose. */
 @Serializable
 sealed interface SoundRef {
     @Serializable
@@ -10,6 +10,10 @@ sealed interface SoundRef {
 
     @Serializable
     data class System(val uri: String, val title: String) : SoundRef
+
+    /** A tone the user picked with the system file picker, copied into the app's private storage. */
+    @Serializable
+    data class Custom(val fileName: String, val title: String) : SoundRef
 }
 
 @Serializable

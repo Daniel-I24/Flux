@@ -62,7 +62,11 @@ sealed interface SyncMessage {
 
     @Serializable
     @SerialName("note_ack")
-    data class NoteAck(val noteId: String) : SyncMessage
+    data class NoteAck(
+        val noteId: String,
+        /** v1.1: revision received, so a newer edit still waiting in the watch queue is not dropped. */
+        val updatedAt: Long? = null,
+    ) : SyncMessage
 
     /** Either direction: user completed or snoozed a reminder on one device. */
     @Serializable

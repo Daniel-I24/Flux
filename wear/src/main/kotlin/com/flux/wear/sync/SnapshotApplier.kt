@@ -32,9 +32,14 @@ class SnapshotApplier @Inject constructor(
         val previous = notes.getPendingAlarms().map { it.id }.toSet()
         (previous - incoming.keys - stillQueued.map { it.id }.toSet()).forEach(alarms::cancel)
         notes.clear()
+        val now = clock.now()
         (snapshot.agenda + stillQueued).forEach { note ->
             notes.upsert(note)
-            if (note.hasPendingAlarm) alarms.schedule(note) else alarms.cancel(note.id)
+            when {
+                !note.hasPendingAlarm -> alarms.cancel(note.id)
+                // Overdue notes are listed in Vencidos but never ring again (and a ringing one keeps ringing).
+                note.dueAt!! > now -> alarms.schedule(note)
+            }
         }
         stateStore.savePhoneState(
             PhoneState(
@@ -43,7 +48,9 @@ class SnapshotApplier @Inject constructor(
                 userName = snapshot.userName,
                 snoozeMinutes = snapshot.snoozeMinutes,
                 quietHours = snapshot.quietHours,
-                receivedAt = clock.now(),
+                receivedAt = now,
+                alarmDurationSeconds = snapshot.alarmDurationSeconds,
+                phoneAppVersion = snapshot.phoneAppVersion,
             ),
         )
         surfaces.refresh()

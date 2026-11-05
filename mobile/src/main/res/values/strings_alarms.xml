@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_alarm">Alarmas de recordatorios</string>
+    <string name="channel_alarm_description">Suenan en bucle hasta que pospones o completas el recordatorio.</string>
+    <string name="channel_missed">Recordatorios sin atender</string>
+    <string name="channel_missed_description">Recordatorios que sonaron sin que respondieras.</string>
+    <string name="channel_alarm_fallback">Alarmas (respaldo)</string>
+    <string name="channel_alarm_fallback_description">Se usa solo si Android no permite iniciar la alarma.</string>
+    <string name="alarm_starting">Preparando la alarma…</string>
+    <string name="alarm_title_fallback">Recordatorio</string>
+    <string name="settings_alarm_duration">Duración de la alarma</string>
+    <string name="settings_alarm_duration_value">%1$s</string>
+    <plurals name="duration_seconds">
+        <item quantity="one">%1$d segundo</item>
+        <item quantity="other">%1$d segundos</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="one">%1$d minuto</item>
+        <item quantity="other">%1$d minutos</item>
+    </plurals>
+    <string name="permission_full_screen">Pantalla completa</string>
+    <string name="permission_full_screen_why">Para que la alarma aparezca sobre la pantalla de bloqueo con Posponer y Completar.</string>
+    <string name="permission_microphone">Micrófono</string>
+    <string name="permission_microphone_why">Solo se pide cuando dictas una nota en el celular.</string>
+    <string name="permissions_missing_banner">Faltan permisos para que las alarmas suenen a tiempo.</string>
+    <string name="permissions_review">Revisar</string>
+    <string name="sound_pick_file">Elegir un archivo de audio</string>
+    <string name="sound_custom">Tono propio</string>
+    <string name="sound_import_failed">No se pudo usar ese archivo. Elige un audio válido (máx. 10 MB).</string>
+    <string name="sound_missing">El tono propio ya no existe: sonará el tono predeterminado.</string>
+</resources>

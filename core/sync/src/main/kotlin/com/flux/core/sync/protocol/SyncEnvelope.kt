@@ -1,5 +1,6 @@
 package com.flux.core.sync.protocol
 
+import com.flux.core.model.AppSettings
 import com.flux.core.model.Category
 import com.flux.core.model.Note
 import com.flux.core.model.VibrationPattern
@@ -30,6 +31,10 @@ data class WatchSnapshot(
     val snoozeMinutes: Int,
     val vibration: VibrationPattern,
     val quietHours: QuietWindow?,
+    /** v1.1 (additive, older phones omit it): how long the watch vibrates for a reminder. */
+    val alarmDurationSeconds: Int = AppSettings.DEFAULT_ALARM_SECONDS,
+    /** v1.1: versionCode of the phone app, to warn when the two apps differ. */
+    val phoneAppVersion: Int = 0,
 )
 
 @Serializable

@@ -1,6 +1,7 @@
 package com.flux.core.domain.usecase
 
 import com.flux.core.domain.port.AlarmScheduler
+import com.flux.core.domain.port.Clock
 import com.flux.core.domain.repository.NoteRepository
 import com.flux.core.model.Note
 import javax.inject.Inject
@@ -12,11 +13,15 @@ import javax.inject.Inject
 class ApplyRemoteNoteUseCase @Inject constructor(
     private val notes: NoteRepository,
     private val alarms: AlarmScheduler,
+    private val clock: Clock,
 ) {
     suspend operator fun invoke(note: Note): Boolean {
         val applied = notes.upsertIfNewer(note)
-        if (applied) {
-            if (note.hasPendingAlarm) alarms.schedule(note) else alarms.cancel(note.id)
+        when {
+            !applied -> Unit
+            !note.hasPendingAlarm -> alarms.cancel(note.id)
+            // Already overdue: it rang (or was missed) on the other device; it stays in Vencidos silently.
+            note.dueAt!! > clock.now() -> alarms.schedule(note)
         }
         return applied
     }

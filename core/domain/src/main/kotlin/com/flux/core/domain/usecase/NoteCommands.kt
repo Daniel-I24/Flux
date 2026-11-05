@@ -57,7 +57,8 @@ class UpdateNoteUseCase @Inject constructor(
         val current = notes.getNote(id) ?: return FluxResult.Failure(AppError.NotFound)
         val updated = change(current).copy(updatedAt = maxOf(clock.now(), current.updatedAt + 1))
         notes.upsert(updated)
-        if (updated.hasPendingAlarm) alarms.schedule(updated) else alarms.cancel(id)
+        // An overdue note keeps no alarm: editing it must not make it ring again right away.
+        if (updated.hasPendingAlarm && updated.dueAt!! > clock.now()) alarms.schedule(updated) else alarms.cancel(id)
         return FluxResult.Success(updated)
     }
 }
@@ -82,6 +83,11 @@ class DeleteNoteUseCase @Inject constructor(private val update: UpdateNoteUseCas
 
 class RestoreNoteUseCase @Inject constructor(private val update: UpdateNoteUseCase) {
     suspend operator fun invoke(id: String) = update(id) { it.copy(deletedAt = null) }
+}
+
+/** "Reprogramar" from Vencidos: a new date keeps (or turns on) the alarm. */
+class RescheduleNoteUseCase @Inject constructor(private val update: UpdateNoteUseCase) {
+    suspend operator fun invoke(id: String, dueAt: Long) = update(id) { it.copy(dueAt = dueAt, completed = false, requiresAlarm = true) }
 }
 
 /** The user fixed the AI's category in the preview: remembered so it is never reclassified. */

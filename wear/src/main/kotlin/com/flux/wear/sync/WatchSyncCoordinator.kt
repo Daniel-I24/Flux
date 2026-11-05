@@ -24,7 +24,7 @@ class WatchSyncCoordinator @Inject constructor(
         when (val message = incoming.envelope.message) {
             is SyncMessage.LinkRequest -> linkRequests.onRequest(message, incoming.sourceNodeId)
             is SyncMessage.Unlink -> if (message.accountId == stateStore.linkedAccount()) linkRequests.unlink(notifyPhone = false)
-            is SyncMessage.NoteAck -> outbox.markSent(message.noteId)
+            is SyncMessage.NoteAck -> outbox.markSent(message.noteId, message.updatedAt)
             is SyncMessage.NoteAction -> when (message.action) {
                 NoteActionType.COMPLETE -> complete(message.noteId)
                 NoteActionType.SNOOZE -> snooze(message.noteId, message.snoozeMinutes ?: stateStore.phoneState().snoozeMinutes)

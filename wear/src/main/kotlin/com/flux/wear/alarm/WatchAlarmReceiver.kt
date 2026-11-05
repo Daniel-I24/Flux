@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.flux.core.domain.usecase.GetNoteUseCase
 import com.flux.core.domain.usecase.RescheduleAlarmsUseCase
+import com.flux.wear.surface.SurfaceRefresher
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -32,9 +33,15 @@ class WatchAlarmReceiver : BroadcastReceiver() {
 
     @Inject lateinit var alertNotifier: WatchAlertNotifier
 
+    @Inject lateinit var surfaces: SurfaceRefresher
+
     override fun onReceive(context: Context, intent: Intent) {
         val noteId = intent.getStringExtra(WatchAlarmTarget.EXTRA_NOTE_ID) ?: return
-        runAsync { getNote(noteId)?.takeIf { it.hasPendingAlarm }?.let { alertNotifier.show(it) } }
+        runAsync {
+            getNote(noteId)?.takeIf { it.hasPendingAlarm }?.let { alertNotifier.show(it) }
+            // The reminder is now overdue: the tile and the complication move to the next one.
+            surfaces.refresh()
+        }
     }
 }
 

@@ -4,7 +4,9 @@ import com.flux.core.data.local.FluxDatabase
 import com.flux.core.data.local.entity.OutboxEntity
 import com.flux.core.domain.port.Clock
 import com.flux.core.model.Note
+import com.flux.core.sync.protocol.DecodeResult
 import com.flux.core.sync.protocol.SyncCodec
+import com.flux.core.sync.protocol.SyncMessage
 import com.flux.core.sync.protocol.SyncMessageFactory
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +31,16 @@ class OutboxRepository @Inject constructor(
 
     suspend fun pending(): List<OutboxEntity> = dao.pending()
 
-    suspend fun markSent(noteId: String) = dao.remove(noteId)
+    /**
+     * Removes the queued capture once the phone has it. With [updatedAt] (phones v1.1+) a newer
+     * revision queued after the one acknowledged stays in the queue.
+     */
+    suspend fun markSent(noteId: String, updatedAt: Long? = null) {
+        val queued = dao.pending().firstOrNull { it.noteId == noteId } ?: return
+        val queuedRevision = (codec.decodeEnvelope(queued.payload) as? DecodeResult.Valid)
+            ?.value?.message?.let { it as? SyncMessage.NoteCapture }?.note?.updatedAt
+        if (updatedAt == null || queuedRevision == null || queuedRevision <= updatedAt) dao.remove(noteId)
+    }
 
     suspend fun markFailed(item: OutboxEntity) = dao.upsert(item.copy(attempts = item.attempts + 1))
 }

@@ -24,6 +24,9 @@ data class PhoneState(
     val snoozeMinutes: Int = AppSettings.DEFAULT_SNOOZE_MINUTES,
     val quietHours: QuietWindow? = null,
     val receivedAt: Long = 0,
+    val alarmDurationSeconds: Int = AppSettings.DEFAULT_ALARM_SECONDS,
+    /** versionCode of the phone app (0 = v1.0 phone, which does not send it). */
+    val phoneAppVersion: Int = 0,
 )
 
 @Serializable
@@ -36,6 +39,8 @@ data class WatchSettings(
     val soundEnabled: Boolean = true,
     val sound: SoundRef = SoundRef.Bundled(BundledSound.CHIME),
     val theme: WatchTheme = WatchTheme.DEFAULT,
+    /** The 2–3 screen welcome was seen (repeatable from Ajustes). */
+    val tutorialDone: Boolean = false,
 )
 
 @Singleton

@@ -117,12 +117,36 @@ class NoteCommandsTest {
 
     @Test
     fun `remote notes merge with last write wins and are idempotent`() = runTest {
-        val apply = ApplyRemoteNoteUseCase(notes, alarms)
-        assertTrue(apply(note("a", updatedAt = 10, dueAt = 50, alarm = true)))
-        assertFalse(apply(note("a", updatedAt = 10, dueAt = 50, alarm = true)))
+        val apply = ApplyRemoteNoteUseCase(notes, alarms, clock)
+        assertTrue(apply(note("a", updatedAt = 10, dueAt = 2_000_000, alarm = true)))
+        assertFalse(apply(note("a", updatedAt = 10, dueAt = 2_000_000, alarm = true)))
         assertFalse(apply(note("a", updatedAt = 5)))
-        assertEquals(50L, alarms.scheduled["a"])
+        assertEquals(2_000_000L, alarms.scheduled["a"])
         assertTrue(apply(note("a", updatedAt = 20).copy(completed = true)))
         assertTrue("a" in alarms.cancelled)
+    }
+
+    @Test
+    fun `an overdue note never rings again when it is synced or edited`() = runTest {
+        val apply = ApplyRemoteNoteUseCase(notes, alarms, clock)
+        assertTrue(apply(note("late", updatedAt = 10, dueAt = 500, alarm = true)))
+        assertTrue("late" !in alarms.scheduled)
+        EditNoteUseCase(update)("late", NoteEdit("Otra", "", "tasks", dueAt = 500, requiresAlarm = true, sound = null))
+        assertTrue("late" !in alarms.scheduled)
+        RescheduleNoteUseCase(update)("late", 3_000_000)
+        assertEquals(3_000_000L, alarms.scheduled["late"])
+        assertTrue(notes.getNote("late")!!.requiresAlarm)
+    }
+
+    @Test
+    fun `after a reboot only recently missed alarms ring again`() = runTest {
+        val hour = 60L * 60 * 1_000
+        val now = FixedClock(nowMillis = 100 * hour)
+        notes.upsert(note("recent", dueAt = now.nowMillis - 60_000, alarm = true))
+        notes.upsert(note("old", dueAt = now.nowMillis - 7 * hour, alarm = true))
+        notes.upsert(note("future", dueAt = now.nowMillis + hour, alarm = true))
+        assertEquals(2, RescheduleAlarmsUseCase(notes, alarms, now)())
+        assertEquals(setOf("recent", "future"), alarms.scheduled.keys)
+        assertTrue(alarms.scheduled.getValue("recent")!! > now.nowMillis)
     }
 }

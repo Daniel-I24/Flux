@@ -20,7 +20,7 @@ class SyncMessageFactory @Inject constructor(
 
     fun noteCapture(note: Note) = envelope(SyncMessage.NoteCapture(note))
 
-    fun noteAck(noteId: String) = envelope(SyncMessage.NoteAck(noteId))
+    fun noteAck(noteId: String, updatedAt: Long? = null) = envelope(SyncMessage.NoteAck(noteId, updatedAt))
 
     fun complete(noteId: String) = envelope(SyncMessage.NoteAction(noteId, NoteActionType.COMPLETE))
 
