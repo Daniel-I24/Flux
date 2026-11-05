@@ -2,14 +2,10 @@ package com.flux.mobile.feature.notes
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.SearchOff
+import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
@@ -28,25 +24,24 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.flux.core.designsystem.component.FluxEmptyState
-import com.flux.core.designsystem.component.FluxLoadingState
-import com.flux.core.designsystem.theme.FluxSizes
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.mobile.R
+import com.flux.mobile.feature.capture.CaptureSheet
 
-/** Notas: search, filter, sort, complete, swipe to delete (with "Deshacer"), edit and create. */
+/** Notas: sections, search, filters, complete and delete with "Deshacer", edit and create (voice or text). */
 @Composable
 fun NotesScreen(
     snackbar: SnackbarHostState,
-    initialCategoryId: String?,
+    request: NotesRequest?,
     modifier: Modifier = Modifier,
-    viewModel: NotesViewModel = hiltViewModel(),
+    viewModel: NotesViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val event by viewModel.event.collectAsStateWithLifecycle()
     var editingId by rememberSaveable { mutableStateOf<String?>(null) }
     var creating by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(initialCategoryId) { viewModel.setCategory(initialCategoryId) }
+    // Applied only when Inicio asks for a category: coming back to the tab keeps the user's filters.
+    LaunchedEffect(request?.token) { request?.let { viewModel.setCategory(it.categoryId) } }
     NotesEventEffect(event, snackbar, viewModel)
 
     Box(modifier.fillMaxSize()) {
@@ -59,17 +54,17 @@ fun NotesScreen(
                 onSort = viewModel::setSort,
                 onIncludeCompleted = viewModel::setIncludeCompleted,
             )
-            NotesList(state, viewModel, onOpen = { editingId = it })
+            NotesSectionsList(state, viewModel, onOpen = { editingId = it })
         }
         ExtendedFloatingActionButton(
             onClick = { creating = true },
-            icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
+            icon = { Icon(Icons.Rounded.Mic, contentDescription = null) },
             text = { Text(stringResource(R.string.notes_new)) },
             modifier = Modifier.align(Alignment.BottomEnd).padding(FluxSpacing.lg),
         )
     }
 
-    state.notes.firstOrNull { it.id == editingId }?.let { note ->
+    state.find(editingId)?.let { note ->
         NoteEditorSheet(
             note = note,
             categories = state.categories,
@@ -79,38 +74,15 @@ fun NotesScreen(
     }
     // Without this the search field takes the focus back and opens the keyboard.
     val focus = LocalFocusManager.current
-    val closeDialog = {
-        creating = false
-        focus.clearFocus()
-    }
-    if (creating) NewNoteDialog(onCreate = { text -> viewModel.create(text, closeDialog) }, onDismiss = closeDialog)
-}
-
-@Composable
-private fun NotesList(state: NotesUiState, viewModel: NotesViewModel, onOpen: (String) -> Unit) {
-    when {
-        state.loading -> FluxLoadingState()
-        state.notes.isEmpty() -> FluxEmptyState(
-            icon = Icons.Rounded.SearchOff,
-            title = stringResource(R.string.notes_empty),
-            description = stringResource(R.string.notes_empty_hint),
-        )
-        else -> LazyColumn(contentPadding = PaddingValues(bottom = FluxSizes.fab + FluxSpacing.xxl)) {
-            items(state.notes, key = { it.id }) { note ->
-                NoteRow(
-                    note = note,
-                    category = state.categories.firstOrNull { it.id == note.categoryId },
-                    onToggle = { viewModel.toggleCompleted(note) },
-                    onOpen = { onOpen(note.id) },
-                    onDelete = { viewModel.delete(note) },
-                    modifier = Modifier.animateItem(),
-                )
-            }
-        }
+    if (creating) {
+        CaptureSheet(onDismiss = {
+            creating = false
+            focus.clearFocus()
+        })
     }
 }
 
-/** Shows "Nota eliminada · Deshacer" and errors in the shared snackbar. */
+/** "Nota eliminada · Deshacer", "Completada · Deshacer" and errors in the shared snackbar. */
 @Composable
 private fun NotesEventEffect(event: NotesEvent?, snackbar: SnackbarHostState, viewModel: NotesViewModel) {
     val context = LocalContext.current
@@ -120,6 +92,11 @@ private fun NotesEventEffect(event: NotesEvent?, snackbar: SnackbarHostState, vi
                 viewModel.consumeEvent()
                 val result = snackbar.showSnackbar(context.getString(R.string.notes_deleted), context.getString(R.string.notes_undo))
                 if (result == SnackbarResult.ActionPerformed) viewModel.undoDelete(event.noteId)
+            }
+            is NotesEvent.Completed -> {
+                viewModel.consumeEvent()
+                val result = snackbar.showSnackbar(context.getString(R.string.notes_completed), context.getString(R.string.notes_undo))
+                if (result == SnackbarResult.ActionPerformed) viewModel.undoComplete(event.noteId)
             }
             is NotesEvent.Failed -> {
                 viewModel.consumeEvent()

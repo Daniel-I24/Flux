@@ -1,5 +1,7 @@
 package com.flux.mobile.feature.main
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -16,8 +18,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.flux.core.designsystem.motion.FluxMotion
+import com.flux.core.designsystem.motion.rememberReducedMotion
 import com.flux.mobile.feature.categories.CategoriesScreen
 import com.flux.mobile.feature.home.HomeScreen
+import com.flux.mobile.feature.notes.NotesRequest
 import com.flux.mobile.feature.notes.NotesScreen
 import com.flux.mobile.feature.settings.SettingsScreen
 
@@ -25,7 +30,7 @@ import com.flux.mobile.feature.settings.SettingsScreen
 @Composable
 fun MainScreen() {
     var tab by rememberSaveable { mutableStateOf(MainTab.HOME) }
-    var notesCategory by rememberSaveable { mutableStateOf<String?>(null) }
+    var notesRequest by remember { mutableStateOf<NotesRequest?>(null) }
     val snackbar = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
@@ -34,10 +39,7 @@ fun MainScreen() {
                 MainTab.entries.forEach { item ->
                     NavigationBarItem(
                         selected = tab == item,
-                        onClick = {
-                            notesCategory = null
-                            tab = item
-                        },
+                        onClick = { tab = item },
                         icon = { Icon(item.icon, contentDescription = null) },
                         label = { Text(stringResource(item.label)) },
                     )
@@ -46,18 +48,21 @@ fun MainScreen() {
         },
     ) { padding ->
         val modifier = Modifier.padding(padding)
-        when (tab) {
-            MainTab.HOME -> HomeScreen(
-                onOpenNotes = { categoryId ->
-                    notesCategory = categoryId
-                    tab = MainTab.NOTES
-                },
-                onOpenSettings = { tab = MainTab.SETTINGS },
-                modifier = modifier,
-            )
-            MainTab.NOTES -> NotesScreen(snackbar = snackbar, initialCategoryId = notesCategory, modifier = modifier)
-            MainTab.CATEGORIES -> CategoriesScreen(snackbar = snackbar, modifier = modifier)
-            MainTab.SETTINGS -> SettingsScreen(snackbar = snackbar, modifier = modifier)
+        val reduced = rememberReducedMotion()
+        Crossfade(targetState = tab, animationSpec = tween(if (reduced) 0 else FluxMotion.MEDIUM_MS), label = "tab") { current ->
+            when (current) {
+                MainTab.HOME -> HomeScreen(
+                    onOpenNotes = { categoryId ->
+                        notesRequest = NotesRequest(categoryId, System.nanoTime())
+                        tab = MainTab.NOTES
+                    },
+                    onOpenSettings = { tab = MainTab.SETTINGS },
+                    modifier = modifier,
+                )
+                MainTab.NOTES -> NotesScreen(snackbar = snackbar, request = notesRequest, modifier = modifier)
+                MainTab.CATEGORIES -> CategoriesScreen(snackbar = snackbar, modifier = modifier)
+                MainTab.SETTINGS -> SettingsScreen(snackbar = snackbar, modifier = modifier)
+            }
         }
     }
 }

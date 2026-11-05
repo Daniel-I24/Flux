@@ -20,6 +20,7 @@ import com.flux.core.model.DefaultCategory
 import com.flux.core.model.DeviceSource
 import com.flux.core.model.Note
 import com.flux.mobile.feature.notes.NoteRow
+import com.flux.mobile.feature.notes.NoteRowActions
 import com.flux.mobile.feature.notes.NotesFilterBar
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -51,9 +52,11 @@ class NotesUiTest {
         var opened = false
         compose.setContent {
             FluxTheme {
-                NoteRow(note, DefaultCategory.SHOPPING.toCategory(), onToggle = {
-                    toggled = true
-                }, onOpen = { opened = true }, onDelete = {})
+                NoteRow(
+                    note,
+                    DefaultCategory.SHOPPING.toCategory(),
+                    NoteRowActions(onToggle = { toggled = true }, onOpen = { opened = true }, onDelete = {}),
+                )
             }
         }
         compose.onNodeWithText("Comprar pan").assertIsDisplayed().performClick()
