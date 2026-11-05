@@ -24,7 +24,7 @@ class ObserveNotesUseCase @Inject constructor(private val notes: NoteRepository)
         fun apply(list: List<Note>, query: NoteQuery): List<Note> {
             val needle = query.text.normalizedForSearch()
             val filtered = list.filter { note ->
-                (query.categoryId == null || note.categoryId == query.categoryId) &&
+                (query.categoryId == null || note.categoryId.isSameCategory(query.categoryId)) &&
                     (query.includeCompleted || !note.completed) &&
                     (needle.isEmpty() || "${note.title} ${note.text}".normalizedForSearch().contains(needle))
             }
@@ -51,6 +51,9 @@ class ObserveCategorySummaryUseCase @Inject constructor(private val notes: NoteR
     operator fun invoke(): Flow<Map<String, Int>> =
         notes.observeNotes().map { list -> list.filter { !it.completed }.groupingBy { it.categoryId }.eachCount() }
 }
+
+/** Notes saved by v1.0 may carry the id exactly as the model wrote it ("Health"), so case and spaces are ignored. */
+private fun String.isSameCategory(id: String): Boolean = trim().equals(id.trim(), ignoreCase = true)
 
 private val DIACRITICS = Regex("\\p{Mn}+")
 
