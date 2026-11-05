@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_overdue">Vencidos</string>
+    <string name="home_overdue_count">Vencidos · %1$d</string>
+    <string name="overdue_title">Vencidos</string>
+    <string name="overdue_empty">No tienes recordatorios vencidos.</string>
+    <string name="overdue_in_one_hour">En 1 hora</string>
+    <string name="overdue_tomorrow">Mañana 9:00</string>
+    <string name="overdue_delete">Eliminar</string>
+    <string name="problem_version_title">Versiones distintas</string>
+    <string name="problem_version">El celular tiene otra versión de FLUX. Actualiza ambas apps para usar todas las funciones.</string>
+    <string name="settings_tutorial">Ver tutorial</string>
+    <string name="settings_version">Versión %1$s</string>
+    <string name="tutorial_next">Siguiente</string>
+    <string name="tutorial_start">Empezar</string>
+    <string name="tutorial_skip">Omitir</string>
+    <string name="tutorial_watch_1_title">Dicta con tu voz</string>
+    <string name="tutorial_watch_1_body">Toca el micrófono y di, por ejemplo: «cita con el dentista mañana a las 4 p. m.»</string>
+    <string name="tutorial_watch_2_title">Revisa y listo</string>
+    <string name="tutorial_watch_2_body">FLUX elige la categoría y la hora. Si algo es ambiguo te pregunta; si no, se guarda solo en 5 segundos.</string>
+    <string name="tutorial_watch_3_title">Alarmas en ambos</string>
+    <string name="tutorial_watch_3_body">Suena en el reloj y en el celular. Posponer o Completar en uno la detiene en los dos.</string>
+</resources>

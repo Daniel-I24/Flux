@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.NotificationsActive
@@ -24,12 +26,13 @@ import androidx.wear.compose.material3.Text
 import com.flux.core.model.Note
 import com.flux.wear.R
 import com.flux.wear.ui.rememberHaptics
+import com.flux.wear.ui.rememberWatchInsets
 
 @Composable
 fun AlertScreen(note: Note?, onComplete: () -> Unit, onSnooze: () -> Unit) {
     val haptics = rememberHaptics()
     Column(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(rememberWatchInsets()),
         verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

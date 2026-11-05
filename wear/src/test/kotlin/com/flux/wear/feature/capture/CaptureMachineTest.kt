@@ -1,5 +1,6 @@
 package com.flux.wear.feature.capture
 
+import com.flux.core.model.Ambiguity
 import com.flux.core.model.Classification
 import com.flux.core.model.ClassifierEngine
 import com.flux.core.model.DeviceSource
@@ -9,6 +10,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -42,13 +44,39 @@ class CaptureMachineTest {
     fun `pure transitions follow the capture flow`() {
         val listening = CaptureState.Idle.on(CaptureEvent.StartDictation)
         assertEquals(CaptureState.Listening, listening)
-        assertEquals(CaptureState.Error(CaptureFailure.NO_SPEECH), listening.on(CaptureEvent.SpeechResult("  ")))
+        assertEquals(CaptureState.Error(CaptureFailure.NOT_UNDERSTOOD), listening.on(CaptureEvent.SpeechResult("  ")))
         val processing = listening.on(CaptureEvent.SpeechResult("tomar agua"))
         assertEquals(CaptureState.Processing("tomar agua"), processing)
         val preview = processing.on(CaptureEvent.Classified(classification)) as CaptureState.Preview
         assertEquals(CaptureState.AUTO_SAVE_SECONDS, preview.secondsLeft)
         assertEquals(CaptureState.Idle, preview.on(CaptureEvent.Cancel))
         assertTrue(preview.on(CaptureEvent.Confirm) is CaptureState.Saving)
+    }
+
+    @Test
+    fun `speech errors become a clear error with retry`() {
+        val listening = CaptureState.Idle.on(CaptureEvent.StartDictation)
+        assertEquals(
+            CaptureState.Error(CaptureFailure.NO_PERMISSION),
+            listening.on(CaptureEvent.SpeechFailed(CaptureFailure.NO_PERMISSION))
+        )
+        assertEquals(CaptureState.Error(CaptureFailure.NO_NETWORK), listening.on(CaptureEvent.SpeechFailed(CaptureFailure.NO_NETWORK)))
+        assertEquals(CaptureState.Listening, CaptureState.Error(CaptureFailure.NO_NETWORK).on(CaptureEvent.StartDictation))
+    }
+
+    @Test
+    fun `an ambiguity waits for the answer and then counts down`() {
+        val ambiguous = classification.copy(dueAt = 20, ambiguities = listOf(Ambiguity.DueTime(listOf(20L, 8L))))
+        val preview = CaptureState.Processing("a las 8").on(CaptureEvent.Classified(ambiguous)) as CaptureState.Preview
+        assertTrue(preview.paused)
+        assertEquals(preview, preview.on(CaptureEvent.Tick))
+        val answered = preview.on(CaptureEvent.AnswerTime(8)) as CaptureState.Preview
+        assertEquals(8L, answered.classification.dueAt)
+        assertFalse(answered.paused)
+        assertTrue(answered.classification.ambiguities.isEmpty())
+        val saving = preview.on(CaptureEvent.Confirm) as CaptureState.Saving
+        assertTrue(saving.preview.classification.ambiguities.isEmpty())
+        assertEquals(20L, saving.preview.classification.dueAt)
     }
 
     @Test

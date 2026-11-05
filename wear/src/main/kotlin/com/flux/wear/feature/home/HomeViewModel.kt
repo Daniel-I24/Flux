@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.wear.remote.interactions.RemoteActivityHelper
 import com.flux.core.data.repository.OutboxRepository
-import com.flux.core.domain.port.Clock
-import com.flux.core.domain.usecase.ObserveUpcomingRemindersUseCase
+import com.flux.core.domain.usecase.ObserveNoteSectionsUseCase
 import com.flux.core.model.Note
 import com.flux.core.model.PhoneConnection
 import com.flux.wear.BuildConfig
+import com.flux.wear.data.WatchStateStore
 import com.flux.wear.sync.LinkRequests
 import com.flux.wear.sync.PendingLink
 import com.flux.wear.sync.PhoneConnectionMonitor
@@ -22,7 +22,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
@@ -30,8 +29,12 @@ import kotlinx.coroutines.launch
 data class HomeUiState(
     val connection: PhoneConnection = PhoneConnection.Checking,
     val nextReminder: Note? = null,
+    val overdueCount: Int = 0,
     val pendingCount: Int = 0,
     val pendingLink: PendingLink? = null,
+    /** The phone runs another FLUX version: features may not match until both are updated. */
+    val versionMismatch: Boolean = false,
+    val tutorialDone: Boolean = true,
 )
 
 @HiltViewModel
@@ -39,17 +42,30 @@ class HomeViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val monitor: PhoneConnectionMonitor,
     private val linkRequests: LinkRequests,
-    observeUpcoming: ObserveUpcomingRemindersUseCase,
+    observeSections: ObserveNoteSectionsUseCase,
     outbox: OutboxRepository,
-    clock: Clock,
+    store: WatchStateStore,
 ) : ViewModel() {
+    private val local = combine(observeSections(), outbox.observePendingCount(), store.observeSettings()) { sections, pending, settings ->
+        Triple(sections, pending, settings.tutorialDone)
+    }
+
     val uiState: StateFlow<HomeUiState> = combine(
         monitor.connection,
-        observeUpcoming(clock.now(), limit = 1).map { it.firstOrNull() },
-        outbox.observePendingCount(),
+        local,
         linkRequests.pendingLink,
-    ) { connection, next, pending, link -> HomeUiState(connection, next, pending, link) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), HomeUiState())
+        store.observePhoneState(),
+    ) { connection, (sections, pending, tutorialDone), link, phone ->
+        HomeUiState(
+            connection = connection,
+            nextReminder = sections.next,
+            overdueCount = sections.overdue.size,
+            pendingCount = pending,
+            pendingLink = link,
+            versionMismatch = phone.phoneAppVersion != 0 && phone.phoneAppVersion != BuildConfig.VERSION_CODE,
+            tutorialDone = tutorialDone,
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), HomeUiState())
 
     init {
         refresh()
@@ -67,8 +83,9 @@ class HomeViewModel @Inject constructor(
     fun openOnPhone(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             val intent = Intent(Intent.ACTION_VIEW).addCategory(Intent.CATEGORY_BROWSABLE).setData(Uri.parse(BuildConfig.PLAY_STORE_URL))
-            val opened =
-                runCatching { RemoteActivityHelper(context, Executors.newSingleThreadExecutor()).startRemoteActivity(intent).await() }
+            val executor = Executors.newSingleThreadExecutor()
+            val opened = runCatching { RemoteActivityHelper(context, executor).startRemoteActivity(intent).await() }
+            executor.shutdown()
             onResult(opened.isSuccess)
         }
     }

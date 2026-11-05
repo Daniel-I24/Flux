@@ -37,6 +37,8 @@ class WatchSettingsViewModel @Inject constructor(
 
     fun setHighContrast(enabled: Boolean) = update { it.copy(theme = if (enabled) WatchTheme.HIGH_CONTRAST else WatchTheme.DEFAULT) }
 
+    fun setTutorialDone() = update { it.copy(tutorialDone = true) }
+
     fun unlink() {
         viewModelScope.launch { linkRequests.unlink(notifyPhone = true) }
     }
