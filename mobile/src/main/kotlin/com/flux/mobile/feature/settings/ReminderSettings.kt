@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import com.flux.core.designsystem.theme.FluxSizes
@@ -54,6 +55,8 @@ fun ReminderSettings(settings: AppSettings, routine: DailyRoutine?, viewModel: S
         VibrationChoice(settings.vibration, viewModel::setVibration)
         Text(stringResource(R.string.settings_snooze), style = MaterialTheme.typography.titleSmall)
         SnoozeChoice(settings.snoozeMinutes, viewModel::setSnooze)
+        Text(stringResource(R.string.settings_alarm_duration), style = MaterialTheme.typography.titleSmall)
+        AlarmDurationChoice(settings.alarmDurationSeconds, viewModel::setAlarmDuration)
         Row(Modifier.fillMaxWidth().heightIn(min = FluxSizes.minTouchTarget), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(stringResource(R.string.settings_quiet_hours), style = MaterialTheme.typography.bodyLarge)
@@ -108,4 +111,26 @@ private fun SnoozeChoice(minutes: Int, onSelect: (Int) -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AlarmDurationChoice(seconds: Int, onSelect: (Int) -> Unit) {
+    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+        AppSettings.ALARM_DURATION_OPTIONS.forEachIndexed { index, option ->
+            SegmentedButton(
+                selected = option == seconds,
+                onClick = { onSelect(option) },
+                shape = SegmentedButtonDefaults.itemShape(index, AppSettings.ALARM_DURATION_OPTIONS.size),
+            ) { Text(durationLabel(option)) }
+        }
+    }
+}
+
+@Composable
+private fun durationLabel(seconds: Int): String = if (seconds < SECONDS_PER_MINUTE) {
+    pluralStringResource(R.plurals.duration_seconds, seconds, seconds)
+} else {
+    pluralStringResource(R.plurals.duration_minutes, seconds / SECONDS_PER_MINUTE, seconds / SECONDS_PER_MINUTE)
+}
+
 private const val NO_REPEAT = -1
+private const val SECONDS_PER_MINUTE = 60

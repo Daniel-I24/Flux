@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tutorial_progress">Paso %1$d de %2$d</string>
+    <string name="tutorial_skip">Omitir</string>
+    <string name="tutorial_next">Siguiente</string>
+    <string name="tutorial_start">Empezar a usar FLUX</string>
+    <string name="tutorial_1_title">Dicta o escribe</string>
+    <string name="tutorial_1_body">En el reloj toca el micrófono; en el celular usa «Nueva nota». Dilo como se lo dirías a alguien.</string>
+    <string name="tutorial_1_example">«Clase de Diseño mañana a las 7 a. m.»</string>
+    <string name="tutorial_2_title">FLUX lo ordena por ti</string>
+    <string name="tutorial_2_body">Elige la categoría y la hora. Si algo es ambiguo te pregunta; si no, guarda solo en 5 segundos.</string>
+    <string name="tutorial_2_example">«Reunión a las 8» → ¿20:00 de hoy o 08:00 de mañana?</string>
+    <string name="tutorial_3_title">Alarmas que no se pierden</string>
+    <string name="tutorial_3_body">Suenan en el celular y vibran en el reloj. Posponer o Completar en uno la detiene en los dos.</string>
+    <string name="tutorial_4_title">Todo en su lugar</string>
+    <string name="tutorial_4_body">En Notas verás Próximos, Pendientes, Vencidos y Completados. Desde Vencidos puedes completar, reprogramar o eliminar.</string>
+    <string name="settings_tutorial">Tutorial</string>
+    <string name="settings_tutorial_description">Vuelve a ver cómo dictar, revisar y atender tus recordatorios.</string>
+    <string name="settings_tutorial_repeat">Ver tutorial</string>
+    <string name="settings_permissions">Permisos</string>
+</resources>

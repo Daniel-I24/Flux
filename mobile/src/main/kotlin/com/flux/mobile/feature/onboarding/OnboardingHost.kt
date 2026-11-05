@@ -5,6 +5,8 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.flux.core.designsystem.motion.fluxPageTransition
+import com.flux.core.designsystem.motion.rememberReducedMotion
 import com.flux.core.domain.repository.OnboardingStep
 import com.flux.mobile.R
 import com.flux.mobile.feature.account.AccountScreen
@@ -18,7 +20,8 @@ import com.flux.mobile.ui.common.OnboardingScaffold
 @Composable
 fun OnboardingHost(step: OnboardingStep, viewModel: OnboardingViewModel = hiltViewModel()) {
     BackHandler(enabled = step > OnboardingStep.WELCOME) { viewModel.back(step) }
-    AnimatedContent(targetState = step, label = "onboarding") { current ->
+    val reduced = rememberReducedMotion()
+    AnimatedContent(targetState = step, label = "onboarding", transitionSpec = { fluxPageTransition(reduced) }) { current ->
         when (current) {
             OnboardingStep.WELCOME -> WelcomeScreen(onStart = { viewModel.next(current) })
             OnboardingStep.ACCOUNT -> AccountScreen(onBack = { viewModel.back(current) })

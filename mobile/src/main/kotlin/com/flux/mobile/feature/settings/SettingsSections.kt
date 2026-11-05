@@ -109,6 +109,18 @@ fun AiSettings(status: AiStatus, onRefresh: () -> Unit) {
 }
 
 @Composable
+fun TutorialSettings(onRepeat: () -> Unit) {
+    SettingsSection(stringResource(R.string.settings_tutorial)) {
+        Text(
+            stringResource(R.string.settings_tutorial_description),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        OutlinedButton(onClick = onRepeat) { Text(stringResource(R.string.settings_tutorial_repeat)) }
+    }
+}
+
+@Composable
 fun DemoSettings(onLoad: () -> Unit, onClear: () -> Unit) {
     SettingsSection(stringResource(R.string.settings_demo)) {
         Text(

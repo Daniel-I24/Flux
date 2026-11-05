@@ -26,6 +26,7 @@ import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.mobile.BuildConfig
 import com.flux.mobile.R
 import com.flux.mobile.feature.link.WatchLinkPanel
+import com.flux.mobile.feature.permissions.PermissionsList
 
 private enum class SettingsPage { MAIN, PROFILE, ROUTINE }
 
@@ -60,10 +61,12 @@ fun SettingsScreen(snackbar: SnackbarHostState, modifier: Modifier = Modifier, v
                 onSignOut = viewModel::signOut,
             )
             SettingsSection(stringResource(R.string.settings_watch)) { WatchLinkPanel() }
+            SettingsSection(stringResource(R.string.settings_permissions)) { PermissionsList() }
             ReminderSettings(state.settings, state.profile?.routine, viewModel)
             AppearanceSettings(state.settings.themeMode, viewModel::setTheme)
             AiSettings(state.ai, viewModel::refreshAi)
             DemoSettings(onLoad = viewModel::loadDemo, onClear = viewModel::clearDemo)
+            TutorialSettings(onRepeat = viewModel::repeatTutorial)
             Text(
                 stringResource(R.string.settings_version, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodySmall,

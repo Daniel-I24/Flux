@@ -79,6 +79,11 @@ class SettingsViewModel @Inject constructor(
 
     fun setQuietHours(enabled: Boolean) = update { it.copy(quietHoursEnabled = enabled) }
 
+    fun setAlarmDuration(seconds: Int) = update { it.copy(alarmDurationSeconds = seconds) }
+
+    /** "Ver tutorial": the gate shows it again on top of the app. */
+    fun repeatTutorial() = update { it.copy(tutorialDone = false) }
+
     fun signOut() {
         viewModelScope.launch { signOut.invoke() }
     }
