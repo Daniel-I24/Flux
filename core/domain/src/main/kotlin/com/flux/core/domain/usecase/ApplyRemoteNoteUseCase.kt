@@ -15,7 +15,9 @@ class ApplyRemoteNoteUseCase @Inject constructor(
     private val alarms: AlarmScheduler,
     private val clock: Clock,
 ) {
-    suspend operator fun invoke(note: Note): Boolean {
+    suspend operator fun invoke(incoming: Note): Boolean {
+        // The watch never receives custom tones (their files live on the phone), so its revisions carry no sound.
+        val note = if (incoming.sound == null) incoming.copy(sound = notes.getNote(incoming.id)?.sound) else incoming
         val applied = notes.upsertIfNewer(note)
         when {
             !applied -> Unit
