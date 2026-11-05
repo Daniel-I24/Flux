@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Fullscreen
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilledTonalButton
@@ -38,6 +39,8 @@ private val COPY = mapOf(
         PermissionCopy(R.string.permission_notifications, R.string.permission_notifications_why, Icons.Rounded.Notifications),
     FluxPermission.EXACT_ALARMS to
         PermissionCopy(R.string.permission_exact_alarms, R.string.permission_exact_alarms_why, Icons.Rounded.Alarm),
+    FluxPermission.FULL_SCREEN to
+        PermissionCopy(R.string.permission_full_screen, R.string.permission_full_screen_why, Icons.Rounded.Fullscreen),
 )
 
 /** One card per permission: what it is for, and a button that asks for it in context. */
@@ -62,7 +65,7 @@ fun PermissionsList(modifier: Modifier = Modifier) {
                 ) {
                     launcher.launch(runtime)
                 } else {
-                    context.startActivity(PermissionChecker.exactAlarmSettingsIntent(context))
+                    context.startActivity(PermissionChecker.settingsIntent(context, permission))
                 }
             }
         }

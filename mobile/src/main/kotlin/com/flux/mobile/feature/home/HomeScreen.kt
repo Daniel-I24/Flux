@@ -52,6 +52,8 @@ fun HomeScreen(
             modifier = Modifier.semantics { heading() },
         )
         WatchStatusCard(state.watch, onOpenSettings)
+        PermissionsBanner(onOpenSettings)
+        if (state.overdueCount > 0) OverdueCard(state.overdueCount, onOpen = { onOpenNotes(null) })
         SectionTitle(stringResource(R.string.home_upcoming))
         if (state.upcoming.isEmpty()) {
             FluxEmptyState(

@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Alarm
+import androidx.compose.material.icons.rounded.EventBusy
 import androidx.compose.material.icons.rounded.Watch
 import androidx.compose.material.icons.rounded.WatchOff
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,6 +23,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.flux.core.designsystem.category.color
 import com.flux.core.designsystem.component.CategoryBadge
@@ -77,6 +80,27 @@ fun UpcomingReminderRow(note: Note, category: Category?) {
             }
         }
         category?.let { CategoryBadge(it) }
+    }
+}
+
+/** Overdue reminders stand out on Inicio; the button opens the Notas sections. */
+@Composable
+fun OverdueCard(count: Int, onOpen: () -> Unit) {
+    Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)) {
+        Row(
+            modifier = Modifier.padding(FluxSpacing.lg),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(FluxSpacing.md),
+        ) {
+            Icon(Icons.Rounded.EventBusy, contentDescription = null, tint = MaterialTheme.colorScheme.onTertiaryContainer)
+            Text(
+                pluralStringResource(R.plurals.home_overdue_count, count, count),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                modifier = Modifier.weight(1f),
+            )
+            TextButton(onClick = onOpen) { Text(stringResource(R.string.home_overdue_open)) }
+        }
     }
 }
 

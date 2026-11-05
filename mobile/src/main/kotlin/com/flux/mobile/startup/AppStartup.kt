@@ -1,6 +1,7 @@
 package com.flux.mobile.startup
 
 import com.flux.core.domain.repository.CategoryRepository
+import com.flux.mobile.alarm.AlarmChannels
 import com.flux.mobile.link.AccountGuard
 import com.flux.mobile.sync.SnapshotPublisher
 import javax.inject.Inject
@@ -16,11 +17,13 @@ class AppStartup @Inject constructor(
     private val categories: CategoryRepository,
     private val accountGuard: AccountGuard,
     private val snapshotPublisher: SnapshotPublisher,
+    private val alarmChannels: AlarmChannels,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     fun start() {
         scope.launch { categories.ensureDefaults() }
+        scope.launch { alarmChannels.ensure() }
         accountGuard.start(scope)
         snapshotPublisher.start(scope)
     }

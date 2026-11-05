@@ -2,11 +2,10 @@ package com.flux.mobile.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flux.core.domain.port.Clock
 import com.flux.core.domain.usecase.ObserveCategoriesUseCase
 import com.flux.core.domain.usecase.ObserveCategorySummaryUseCase
+import com.flux.core.domain.usecase.ObserveNoteSectionsUseCase
 import com.flux.core.domain.usecase.ObserveProfileUseCase
-import com.flux.core.domain.usecase.ObserveUpcomingRemindersUseCase
 import com.flux.core.model.Category
 import com.flux.core.model.Note
 import com.flux.core.model.WatchLink
@@ -25,6 +24,7 @@ data class HomeUiState(
     val userName: String? = null,
     val watch: WatchLink = WatchLink.Searching,
     val upcoming: List<Note> = emptyList(),
+    val overdueCount: Int = 0,
     val categories: Map<String, Category> = emptyMap(),
     val summary: List<CategoryCount> = emptyList(),
     val loading: Boolean = true,
@@ -33,23 +33,24 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     observeProfile: ObserveProfileUseCase,
-    observeUpcoming: ObserveUpcomingRemindersUseCase,
+    observeSections: ObserveNoteSectionsUseCase,
     observeSummary: ObserveCategorySummaryUseCase,
     observeCategories: ObserveCategoriesUseCase,
     private val linkCoordinator: WatchLinkCoordinator,
-    clock: Clock,
 ) : ViewModel() {
     val uiState: StateFlow<HomeUiState> = combine(
         observeProfile(),
         linkCoordinator.watchLink,
-        observeUpcoming(clock.now(), UPCOMING_LIMIT),
+        observeSections(),
         observeCategories(),
         observeSummary(),
-    ) { profile, watch, upcoming, categories, summary ->
+    ) { profile, watch, sections, categories, summary ->
         HomeUiState(
             userName = profile?.displayName,
             watch = watch,
-            upcoming = upcoming,
+            // Live: a reminder that becomes overdue leaves "Próximos" without reopening the app.
+            upcoming = sections.upcoming.take(UPCOMING_LIMIT),
+            overdueCount = sections.overdue.size,
             categories = categories.associateBy { it.id },
             summary = categories.mapNotNull { category -> summary[category.id]?.let { CategoryCount(category, it) } },
             loading = false,
