@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +27,7 @@ sealed interface VoiceState {
  * level (0–1, from onRmsChanged) is a separate flow so the lava can react without recomposing.
  * Must be used from the main thread; call [release] when the screen goes away.
  */
-class VoiceRecognizer(private val context: Context) {
+class VoiceRecognizer @Inject constructor(@param:ApplicationContext private val context: Context) {
     private var recognizer: SpeechRecognizer? = null
     private var languages = LANGUAGES
     private val mutableState = MutableStateFlow<VoiceState>(VoiceState.Idle)
@@ -121,14 +123,16 @@ class VoiceRecognizer(private val context: Context) {
         else -> VoiceError.UNAVAILABLE
     }
 
-    private companion object {
-        val LANGUAGES = listOf("es-CO", "es-ES")
-        const val RMS_MIN = -2f
-        const val RMS_MAX = 10f
+    companion object {
+        const val PRIMARY_LANGUAGE = "es-CO"
+        private const val FALLBACK_LANGUAGE = "es-ES"
+        private val LANGUAGES = listOf(PRIMARY_LANGUAGE, FALLBACK_LANGUAGE)
+        private const val RMS_MIN = -2f
+        private const val RMS_MAX = 10f
 
         // Constants added in API 31 (kept as literals so the watch, minSdk 30, can use them).
-        const val ERROR_TOO_MANY_REQUESTS = 10
-        const val ERROR_SERVER_DISCONNECTED = 11
-        val LANGUAGE_ERRORS = setOf(12, 13)
+        private const val ERROR_TOO_MANY_REQUESTS = 10
+        private const val ERROR_SERVER_DISCONNECTED = 11
+        private val LANGUAGE_ERRORS = setOf(12, 13)
     }
 }

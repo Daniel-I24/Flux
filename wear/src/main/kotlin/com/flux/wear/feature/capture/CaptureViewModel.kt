@@ -1,6 +1,5 @@
 package com.flux.wear.feature.capture
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flux.core.data.speech.VoiceError
@@ -10,7 +9,6 @@ import com.flux.core.domain.repository.CategoryRepository
 import com.flux.core.model.Category
 import com.flux.core.model.DefaultCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,12 +18,11 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class CaptureViewModel @Inject constructor(
-    @param:ApplicationContext context: Context,
+    private val recognizer: VoiceRecognizer,
     repository: WatchCaptureRepository,
     categoryRepository: CategoryRepository,
 ) : ViewModel() {
     private val machine = CaptureMachine(viewModelScope, repository)
-    private val recognizer = VoiceRecognizer(context)
 
     val state: StateFlow<CaptureState> = machine.state
 

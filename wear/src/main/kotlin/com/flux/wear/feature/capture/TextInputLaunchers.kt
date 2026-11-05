@@ -17,10 +17,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.wear.input.RemoteInputIntentHelper
+import com.flux.core.data.speech.VoiceRecognizer
 import com.flux.wear.BuildConfig
 import com.flux.wear.R
 
-private const val SPEECH_LANGUAGE = "es-CO"
 private const val TEXT_KEY = "flux_note_text"
 
 /** [type] is null in release builds: notes are created only by voice there. */
@@ -97,7 +97,7 @@ private fun Context.hasMicrophonePermission() =
 private fun launchSystemDictation(prompt: String, launch: (Intent) -> Unit): Boolean {
     val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        .putExtra(RecognizerIntent.EXTRA_LANGUAGE, SPEECH_LANGUAGE)
+        .putExtra(RecognizerIntent.EXTRA_LANGUAGE, VoiceRecognizer.PRIMARY_LANGUAGE)
         .putExtra(RecognizerIntent.EXTRA_PROMPT, prompt)
     return try {
         launch(intent)
