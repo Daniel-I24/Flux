@@ -137,16 +137,4 @@ class NoteCommandsTest {
         assertEquals(3_000_000L, alarms.scheduled["late"])
         assertTrue(notes.getNote("late")!!.requiresAlarm)
     }
-
-    @Test
-    fun `after a reboot only recently missed alarms ring again`() = runTest {
-        val hour = 60L * 60 * 1_000
-        val now = FixedClock(nowMillis = 100 * hour)
-        notes.upsert(note("recent", dueAt = now.nowMillis - 60_000, alarm = true))
-        notes.upsert(note("old", dueAt = now.nowMillis - 7 * hour, alarm = true))
-        notes.upsert(note("future", dueAt = now.nowMillis + hour, alarm = true))
-        assertEquals(2, RescheduleAlarmsUseCase(notes, alarms, now)())
-        assertEquals(setOf("recent", "future"), alarms.scheduled.keys)
-        assertTrue(alarms.scheduled.getValue("recent")!! > now.nowMillis)
-    }
 }

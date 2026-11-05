@@ -91,7 +91,7 @@ class AlarmRestoreReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         runAsync {
             channels.ensure()
-            reschedule()
+            reschedule(ringMissed = intent.action == Intent.ACTION_BOOT_COMPLETED)
         }
     }
 }

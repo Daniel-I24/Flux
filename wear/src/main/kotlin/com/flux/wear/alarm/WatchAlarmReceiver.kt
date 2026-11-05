@@ -71,6 +71,6 @@ class WatchAlarmRestoreReceiver : BroadcastReceiver() {
     @Inject lateinit var reschedule: RescheduleAlarmsUseCase
 
     override fun onReceive(context: Context, intent: Intent) {
-        runAsync { reschedule() }
+        runAsync { reschedule(ringMissed = intent.action == Intent.ACTION_BOOT_COMPLETED) }
     }
 }

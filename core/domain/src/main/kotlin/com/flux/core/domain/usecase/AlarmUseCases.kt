@@ -26,16 +26,20 @@ class GetReminderUseCase @Inject constructor(private val notes: NoteRepository, 
     }
 }
 
-/** After a reboot (or time change) AlarmManager forgets everything: schedule pending reminders again. */
+/**
+ * Puts AlarmManager back in sync. Only a reboot can have silenced a reminder ([ringMissed]): an app
+ * update or a clock change (which the network can trigger at any time) must not ring old ones again.
+ */
 class RescheduleAlarmsUseCase @Inject constructor(
     private val notes: NoteRepository,
     private val alarms: AlarmScheduler,
     private val clock: Clock,
 ) {
-    suspend operator fun invoke(): Int {
+    suspend operator fun invoke(ringMissed: Boolean = false): Int {
         val now = clock.now()
         // Missed recently (device off or restarting): ring right away. Older ones just stay in Vencidos.
-        val pending = notes.getPendingAlarms().filter { (it.dueAt ?: 0) > now - MISSED_WINDOW_MS }
+        val from = if (ringMissed) now - MISSED_WINDOW_MS else now
+        val pending = notes.getPendingAlarms().filter { (it.dueAt ?: 0) > from }
         pending.forEach { note ->
             val due = note.dueAt?.coerceAtLeast(now + RING_DELAY_MS) ?: return@forEach
             alarms.schedule(note.copy(dueAt = due))
