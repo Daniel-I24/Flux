@@ -10,12 +10,13 @@ import com.flux.core.domain.usecase.ObserveOnboardingStepUseCase
 import com.flux.core.domain.usecase.SetOnboardingStepUseCase
 import com.flux.core.domain.usecase.SignInWithEmailUseCase
 import com.flux.core.domain.usecase.SignInWithGoogleUseCase
-import com.flux.core.domain.usecase.SignOutUseCase
 import com.flux.core.domain.usecase.StartLocalSessionUseCase
 import com.flux.core.domain.usecase.TransferAccountToThisPhoneUseCase
 import com.flux.core.model.FluxResult
 import com.flux.core.model.PhoneOwnership
+import com.flux.mobile.R
 import com.flux.mobile.config.FirebaseConfig
+import com.flux.mobile.link.AccountGuard
 import com.flux.mobile.ui.common.messageRes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -47,12 +48,17 @@ class AccountViewModel @Inject constructor(
     private val startLocalSession: StartLocalSessionUseCase,
     private val checkOwnership: CheckPhoneOwnershipUseCase,
     private val transfer: TransferAccountToThisPhoneUseCase,
-    private val signOut: SignOutUseCase,
     private val observeStep: ObserveOnboardingStepUseCase,
     private val setStep: SetOnboardingStepUseCase,
+    private val guard: AccountGuard,
 ) : ViewModel() {
-    private val state =
-        MutableStateFlow(AccountUiState(firebaseConfigured = config.isConfigured, googleAvailable = config.supportsGoogleSignIn))
+    private val state = MutableStateFlow(
+        AccountUiState(
+            firebaseConfigured = config.isConfigured,
+            googleAvailable = config.supportsGoogleSignIn,
+            error = R.string.account_signed_out_elsewhere.takeIf { guard.signedOutElsewhere.value },
+        ),
+    )
     val uiState: StateFlow<AccountUiState> = state.asStateFlow()
 
     fun onEmailChange(value: String) = state.update { it.copy(email = value, error = null) }
@@ -77,20 +83,27 @@ class AccountViewModel @Inject constructor(
     }
 
     fun cancelTransfer() = launchLoading {
-        signOut()
+        guard.cancelSignIn()
         state.update { it.copy(askTransfer = false) }
     }
 
     private fun authenticate(action: suspend () -> FluxResult<AuthSession>) = launchLoading {
+        guard.beginSignIn()
         when (val result = action()) {
-            is FluxResult.Failure -> state.update { it.copy(error = result.error.messageRes()) }
+            is FluxResult.Failure -> {
+                guard.endSignIn()
+                state.update { it.copy(error = result.error.messageRes()) }
+            }
             is FluxResult.Success -> verifyOwnership(result.value)
         }
     }
 
     private suspend fun verifyOwnership(session: AuthSession) {
         when (val ownership = checkOwnership(session.uid)) {
-            is FluxResult.Failure -> state.update { it.copy(error = ownership.error.messageRes()) }
+            is FluxResult.Failure -> {
+                guard.endSignIn()
+                state.update { it.copy(error = ownership.error.messageRes()) }
+            }
             is FluxResult.Success -> if (ownership.value == PhoneOwnership.OtherPhone) {
                 state.update { it.copy(askTransfer = true, transferNeedsPassword = !session.isLocal && it.password.isNotEmpty()) }
             } else {
@@ -100,6 +113,7 @@ class AccountViewModel @Inject constructor(
     }
 
     private suspend fun finish() {
+        guard.endSignIn()
         state.update { it.copy(askTransfer = false) }
         if (observeStep().first() < OnboardingStep.PROFILE) setStep(OnboardingStep.PROFILE)
     }
@@ -110,5 +124,10 @@ class AccountViewModel @Inject constructor(
             block()
             state.update { it.copy(loading = false) }
         }
+    }
+
+    override fun onCleared() {
+        guard.endSignIn()
+        super.onCleared()
     }
 }
