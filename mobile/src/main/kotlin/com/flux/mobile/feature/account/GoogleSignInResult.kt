@@ -5,6 +5,7 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import com.flux.mobile.R
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -27,6 +28,8 @@ suspend fun requestGoogleIdToken(context: Context, webClientId: String): GoogleS
         GoogleSignInResult.Token(GoogleIdTokenCredential.createFrom(credential.data).idToken)
     } catch (_: GetCredentialCancellationException) {
         GoogleSignInResult.Error(R.string.error_cancelled)
+    } catch (_: NoCredentialException) {
+        GoogleSignInResult.Error(R.string.error_no_google_account)
     } catch (_: GetCredentialException) {
         GoogleSignInResult.Error(R.string.error_unexpected)
     } catch (_: GoogleIdTokenParsingException) {
