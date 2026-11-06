@@ -11,11 +11,15 @@ import com.flux.wear.data.PhoneState
 import com.flux.wear.data.WatchStateStore
 import com.flux.wear.surface.SurfaceRefresher
 import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Applies the phone's snapshot: categories, agenda (cache) and account state.
  * Watch alarms follow the agenda, so completing on the phone cancels them here.
  */
+@Singleton
 class SnapshotApplier @Inject constructor(
     private val categories: RoomCategoryRepository,
     private val notes: NoteRepository,
@@ -25,7 +29,17 @@ class SnapshotApplier @Inject constructor(
     private val clock: Clock,
     private val surfaces: SurfaceRefresher,
 ) {
-    suspend fun apply(snapshot: WatchSnapshot) {
+    private val mutex = Mutex()
+    private var newestApplied = 0L
+
+    /** One at a time, newest wins: the snapshot read at start-up can race with one arriving from the phone. */
+    suspend fun apply(snapshot: WatchSnapshot) = mutex.withLock {
+        if (snapshot.generatedAt < newestApplied) return@withLock
+        newestApplied = snapshot.generatedAt
+        write(snapshot)
+    }
+
+    private suspend fun write(snapshot: WatchSnapshot) {
         categories.replaceAll(snapshot.categories)
         val queued = outbox.pending().mapNotNull { notes.getNote(it.noteId) }
         val agenda = mergeAgenda(snapshot.agenda, queued)
