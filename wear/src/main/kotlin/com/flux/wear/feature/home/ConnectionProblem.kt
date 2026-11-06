@@ -6,13 +6,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.Card
 import androidx.wear.compose.material3.CompactButton
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import com.flux.core.model.PhoneConnection
 import com.flux.wear.R
+import com.flux.wear.ui.WatchDimens
 
 private data class ProblemCopy(val title: Int, val message: Int, val action: ProblemAction)
 
@@ -42,7 +42,7 @@ private fun PhoneConnection.copy(): ProblemCopy? = when (this) {
 fun ConnectionProblemCard(connection: PhoneConnection, onAction: (ProblemAction) -> Unit, modifier: Modifier = Modifier) {
     val copy = connection.copy() ?: return
     Card(onClick = { onAction(copy.action) }, modifier = modifier.fillMaxWidth()) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(WatchDimens.gapSmall)) {
             Text(stringResource(copy.title), style = MaterialTheme.typography.titleSmall)
             Text(stringResource(copy.message), style = MaterialTheme.typography.bodySmall)
             val label = when (copy.action) {

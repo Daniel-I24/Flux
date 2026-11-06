@@ -24,7 +24,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
@@ -35,6 +34,7 @@ import com.flux.core.designsystem.theme.FluxColorTokens
 import com.flux.core.model.Note
 import com.flux.core.model.PhoneConnection
 import com.flux.wear.R
+import com.flux.wear.ui.WatchDimens
 import com.flux.wear.ui.rememberDueDateLabel
 
 /** Discreet status: a colored dot and two words (green ready, amber checking, red away). */
@@ -49,10 +49,10 @@ fun ConnectionLabel(connection: PhoneConnection) {
     }
     Row(
         modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
-        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(WatchDimens.gap, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(6.dp).background(color, CircleShape))
+        Box(Modifier.size(WatchDimens.statusDot).background(color, CircleShape))
         Text(text, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
@@ -62,7 +62,11 @@ fun ConnectionLabel(connection: PhoneConnection) {
 fun VoiceHeroButton(onClick: () -> Unit) {
     val scheme = MaterialTheme.colorScheme
     val label = stringResource(R.string.home_dictate)
-    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(
+        Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(WatchDimens.gapSmall),
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth(HERO_WIDTH)
@@ -81,7 +85,12 @@ fun VoiceHeroButton(onClick: () -> Unit) {
                 colors = LavaColors(scheme.primaryContainer, scheme.secondaryContainer, scheme.tertiaryContainer, scheme.primaryContainer),
                 modifier = Modifier.fillMaxSize(),
             )
-            Icon(Icons.Rounded.Mic, contentDescription = null, tint = scheme.onPrimaryContainer, modifier = Modifier.size(36.dp))
+            Icon(
+                Icons.Rounded.Mic,
+                contentDescription = null,
+                tint = scheme.onPrimaryContainer,
+                modifier = Modifier.size(WatchDimens.iconHero),
+            )
         }
         Text(label, style = MaterialTheme.typography.titleSmall)
     }

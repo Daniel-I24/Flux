@@ -26,6 +26,7 @@ object FluxSizes {
     val fab = 56.dp
     val categoryDot = 10.dp
     val borderThin = 1.dp
+    val strokeThin = 2.dp
     val accentStripe = 4.dp
 }
 

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Icon
@@ -32,7 +31,12 @@ fun CategoryChip(category: Category?, onClick: () -> Unit) {
 
 @Composable
 fun CategoryIconDot(category: Category) {
-    Icon(category.icon.toImageVector(), contentDescription = null, tint = category.color, modifier = Modifier.size(20.dp))
+    Icon(
+        category.icon.toImageVector(),
+        contentDescription = null,
+        tint = category.color,
+        modifier = Modifier.size(WatchDimens.iconCategory),
+    )
 }
 
 @Composable

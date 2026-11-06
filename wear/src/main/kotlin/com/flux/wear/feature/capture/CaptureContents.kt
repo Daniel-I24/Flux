@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.CircularProgressIndicator
 import androidx.wear.compose.material3.CompactButton
@@ -30,6 +29,7 @@ import androidx.wear.compose.material3.Text
 import com.flux.core.designsystem.component.LavaColors
 import com.flux.core.designsystem.component.VoiceLava
 import com.flux.wear.R
+import com.flux.wear.ui.WatchDimens
 import com.flux.wear.ui.rememberWatchInsets
 
 @Composable
@@ -49,8 +49,13 @@ fun ListeningContent(level: () -> Float, partial: String, onDone: () -> Unit) {
             modifier = Modifier.fillMaxSize(),
         )
         Centered {
-            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Icon(Icons.Rounded.Mic, contentDescription = null, tint = scheme.onPrimaryContainer, modifier = Modifier.size(32.dp))
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(WatchDimens.gap)) {
+                Icon(
+                    Icons.Rounded.Mic,
+                    contentDescription = null,
+                    tint = scheme.onPrimaryContainer,
+                    modifier = Modifier.size(WatchDimens.icon),
+                )
                 Text(stringResource(R.string.capture_listening), style = MaterialTheme.typography.titleMedium)
                 Text(
                     text = partial.ifBlank { stringResource(R.string.capture_listening_hint) },
@@ -66,8 +71,8 @@ fun ListeningContent(level: () -> Float, partial: String, onDone: () -> Unit) {
 
 @Composable
 fun ProcessingContent(text: String) = Centered {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        CircularProgressIndicator(modifier = Modifier.size(40.dp))
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(WatchDimens.gapLarge)) {
+        CircularProgressIndicator(modifier = Modifier.size(WatchDimens.progress))
         Text(stringResource(R.string.capture_processing), style = MaterialTheme.typography.titleSmall)
         Text(text, maxLines = 2, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall)
     }
@@ -75,12 +80,12 @@ fun ProcessingContent(text: String) = Centered {
 
 @Composable
 fun SavedContent(queued: Boolean) = Centered {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(WatchDimens.gap)) {
         Icon(
             imageVector = if (queued) Icons.Rounded.CloudQueue else Icons.Rounded.CheckCircle,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(48.dp),
+            modifier = Modifier.size(WatchDimens.iconStatus),
         )
         Text(stringResource(R.string.capture_saved), style = MaterialTheme.typography.titleMedium)
         Text(
@@ -105,7 +110,7 @@ fun ErrorContent(failure: CaptureFailure, onRetry: () -> Unit, onOpenSettings: (
     Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(rememberWatchInsets()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(WatchDimens.gapLarge, Alignment.CenterVertically),
     ) {
         Icon(Icons.Rounded.MicOff, contentDescription = null, tint = MaterialTheme.colorScheme.error)
         Text(stringResource(failure.message()), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall)

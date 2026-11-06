@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
@@ -32,6 +31,7 @@ import androidx.wear.compose.material3.TextButton
 import com.flux.core.designsystem.motion.fluxPageTransition
 import com.flux.core.designsystem.motion.rememberReducedMotion
 import com.flux.wear.R
+import com.flux.wear.ui.WatchDimens
 import com.flux.wear.ui.rememberWatchInsets
 
 private data class TutorialPage(val icon: ImageVector, val title: Int, val body: Int)
@@ -53,9 +53,14 @@ fun WatchTutorialScreen(onFinish: () -> Unit) {
         Column(
             modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(rememberWatchInsets()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
+            verticalArrangement = Arrangement.spacedBy(WatchDimens.gap, Alignment.CenterVertically),
         ) {
-            Icon(current.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(32.dp))
+            Icon(
+                current.icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(WatchDimens.icon),
+            )
             Text(stringResource(current.title), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
             Text(stringResource(current.body), style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
             Button(
