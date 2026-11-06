@@ -1,68 +1,21 @@
 package com.flux.core.ai.date
 
-import com.flux.core.ai.local.LocalNoteClassifier
-import com.flux.core.domain.port.Clock
-import com.flux.core.domain.repository.CategoryRepository
-import com.flux.core.domain.repository.ProfileRepository
-import com.flux.core.domain.usecase.ClassifyNoteUseCase
 import com.flux.core.model.Ambiguity
-import com.flux.core.model.Category
-import com.flux.core.model.Classification
 import com.flux.core.model.DailyRoutine
 import com.flux.core.model.DefaultCategory
-import com.flux.core.model.FluxResult
 import com.flux.core.model.Occupation
 import com.flux.core.model.TimeOfDay
 import com.flux.core.model.TimeRange
 import com.flux.core.model.UserProfile
 import java.time.DayOfWeek
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** End-to-end hour variants through [ClassifyNoteUseCase] with an injected clock (America/Bogota). */
-class HourVariantsTest {
-    private val zone = ZoneId.of("America/Bogota")
-
-    private class FixedClock(private val at: ZonedDateTime) : Clock {
-        override fun now() = at.toInstant().toEpochMilli()
-        override fun zone(): ZoneId = at.zone
-    }
-
-    private class Categories : CategoryRepository {
-        override fun observeCategories() = flowOf(DefaultCategory.all())
-        override suspend fun getCategories(): List<Category> = DefaultCategory.all()
-        override suspend fun upsert(category: Category) = Unit
-        override suspend fun delete(id: String) = Unit
-        override suspend fun ensureDefaults() = Unit
-    }
-
-    private class Profiles(private val profile: UserProfile?) : ProfileRepository {
-        override fun observeProfile() = flowOf(profile)
-        override suspend fun getProfile() = profile
-        override suspend fun saveProfile(profile: UserProfile) = Unit
-        override suspend fun clear() = Unit
-    }
-
-    /** Thursday 5 Nov 2026, 10:00. */
-    private val thursday = at(2026, 11, 5, 10)
-
-    private fun at(year: Int, month: Int, day: Int, hour: Int, minute: Int = 0) =
-        ZonedDateTime.of(year, month, day, hour, minute, 0, 0, zone)
-
-    private suspend fun classify(text: String, now: ZonedDateTime = thursday, profile: UserProfile? = null): Classification {
-        val useCase = ClassifyNoteUseCase(listOf(LocalNoteClassifier()), Categories(), Profiles(profile), FixedClock(now))
-        return (useCase(text) as FluxResult.Success).value
-    }
-
-    private suspend fun due(text: String, now: ZonedDateTime = thursday) =
-        classify(text, now).dueAt?.let { java.time.Instant.ofEpochMilli(it).atZone(zone) }
-
+/** End-to-end hour variants through the classifier with an injected clock (America/Bogota). */
+class HourVariantsTest : HourVariantsHarness() {
     @Test
     fun `the two reported notes keep their explicit time`() = runTest {
         val clase = classify("clase para mañana a las 7 a.m de Diseño de Interfaces")
