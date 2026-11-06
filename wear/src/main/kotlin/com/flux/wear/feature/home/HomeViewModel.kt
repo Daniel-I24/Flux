@@ -34,7 +34,6 @@ data class HomeUiState(
     val pendingLink: PendingLink? = null,
     /** The phone runs another FLUX version: features may not match until both are updated. */
     val versionMismatch: Boolean = false,
-    val tutorialDone: Boolean = true,
 )
 
 @HiltViewModel
@@ -44,18 +43,14 @@ class HomeViewModel @Inject constructor(
     private val linkRequests: LinkRequests,
     observeSections: ObserveNoteSectionsUseCase,
     outbox: OutboxRepository,
-    store: WatchStateStore,
+    private val store: WatchStateStore,
 ) : ViewModel() {
-    private val local = combine(observeSections(), outbox.observePendingCount(), store.observeSettings()) { sections, pending, settings ->
-        Triple(sections, pending, settings.tutorialDone)
-    }
-
     val uiState: StateFlow<HomeUiState> = combine(
         monitor.connection,
-        local,
+        combine(observeSections(), outbox.observePendingCount(), ::Pair),
         linkRequests.pendingLink,
         store.observePhoneState(),
-    ) { connection, (sections, pending, tutorialDone), link, phone ->
+    ) { connection, (sections, pending), link, phone ->
         HomeUiState(
             connection = connection,
             nextReminder = sections.next,
@@ -63,7 +58,6 @@ class HomeViewModel @Inject constructor(
             pendingCount = pending,
             pendingLink = link,
             versionMismatch = phone.phoneAppVersion != 0 && phone.phoneAppVersion != BuildConfig.VERSION_CODE,
-            tutorialDone = tutorialDone,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), HomeUiState())
 
@@ -74,6 +68,9 @@ class HomeViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch { monitor.refresh() }
     }
+
+    /** Reads the store, not [uiState]: on returning from the tutorial uiState can still hold the old value. */
+    suspend fun shouldShowTutorial(): Boolean = !store.settings().tutorialDone
 
     fun answerLink(accepted: Boolean) {
         viewModelScope.launch { linkRequests.answer(accepted) }

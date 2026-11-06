@@ -37,7 +37,7 @@ fun HomeScreen(actions: HomeActions, viewModel: HomeViewModel = hiltViewModel())
     val haptics = rememberHaptics()
     val context = LocalContext.current
     val opened = stringResource(R.string.problem_opened_on_phone)
-    LaunchedEffect(state.tutorialDone) { if (!state.tutorialDone) actions.tutorial() }
+    LaunchedEffect(Unit) { if (viewModel.shouldShowTutorial()) actions.tutorial() }
     state.pendingLink?.let { pending ->
         LinkConfirmContent(pending, onAnswer = { accepted ->
             if (accepted) haptics.confirm() else haptics.reject()

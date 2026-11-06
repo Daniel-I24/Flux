@@ -77,6 +77,7 @@ Cada decisión con una línea de justificación, en orden cronológico. Las deci
 | N-071 | API 26 | `AlarmActivity` usa las banderas de ventana en Android 8.0 | `setShowWhenLocked` existe desde 8.1; el lint detectó un cierre inesperado al sonar la alarma. |
 | N-072 | KSP | Se mantiene KSP1 (N-018) | KSP2 falló con los módulos JVM puros; cambiar antes de entregar agrega riesgo sin beneficio para el usuario. |
 | N-073 | Alarma atendida | `ActiveAlarm.awaitHandled` devuelve un booleano explícito | `first { it != noteId }` devolvía `null` al detener la alarma, igual que `withTimeoutOrNull` al agotarse el tiempo: un recordatorio completado o pospuesto desde la notificación quedaba además como "perdido" (hallado en el emulador con el APK release). |
+| N-074 | Fin del tutorial del reloj | Se guarda `tutorialDone` y solo entonces se sale; Inicio decide leyendo el almacén, no `uiState` | Tras 5 s en el tutorial, `WhileSubscribed` detiene el flujo de Inicio y su último valor seguía en `false`: "Omitir" y "Empezar" reabrían el tutorial hasta matar la app (hallado en el emulador con el APK release, 6 de 6 intentos). |
 
 ## Contraste de la paleta (N-057)
 

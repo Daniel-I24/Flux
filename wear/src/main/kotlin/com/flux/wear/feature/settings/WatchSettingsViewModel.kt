@@ -27,6 +27,8 @@ class WatchSettingsViewModel @Inject constructor(
     private val store: WatchStateStore,
     private val linkRequests: LinkRequests,
 ) : ViewModel() {
+    private var finishing = false
+
     val uiState: StateFlow<WatchSettingsUiState> =
         combine(store.observeSettings(), store.observePhoneState(), store.observeLinkedAccount(), ::WatchSettingsUiState)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), WatchSettingsUiState())
@@ -37,7 +39,15 @@ class WatchSettingsViewModel @Inject constructor(
 
     fun setHighContrast(enabled: Boolean) = update { it.copy(theme = if (enabled) WatchTheme.HIGH_CONTRAST else WatchTheme.DEFAULT) }
 
-    fun setTutorialDone() = update { it.copy(tutorialDone = true) }
+    /** Saves first and only then leaves: leaving pops this screen and would cancel a save still in progress. */
+    fun finishTutorial(onSaved: () -> Unit) {
+        if (finishing) return
+        finishing = true
+        viewModelScope.launch {
+            store.updateSettings { it.copy(tutorialDone = true) }
+            onSaved()
+        }
+    }
 
     fun unlink() {
         viewModelScope.launch { linkRequests.unlink(notifyPhone = true) }

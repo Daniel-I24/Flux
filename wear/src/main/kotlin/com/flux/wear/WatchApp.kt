@@ -45,10 +45,7 @@ fun WatchApp(startRoute: String = WatchRoutes.HOME, navController: NavHostContro
             composable(WatchRoutes.SETTINGS) { WatchSettingsScreen(onTutorial = { navController.navigate(WatchRoutes.TUTORIAL) }) }
             composable(WatchRoutes.TUTORIAL) {
                 val settings: WatchSettingsViewModel = hiltViewModel()
-                WatchTutorialScreen(onFinish = {
-                    settings.setTutorialDone()
-                    navController.popBackOrHome()
-                })
+                WatchTutorialScreen(onFinish = { settings.finishTutorial(onSaved = navController::popBackOrHome) })
             }
         }
     }
