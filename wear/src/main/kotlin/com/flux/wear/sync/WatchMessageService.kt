@@ -1,6 +1,7 @@
 package com.flux.wear.sync
 
 import com.flux.core.sync.datalayer.SyncInbox
+import com.flux.core.sync.datalayer.SyncWorkScope
 import com.flux.core.sync.protocol.DecodeResult
 import com.flux.core.sync.protocol.SyncCodec
 import com.flux.core.sync.protocol.SyncProtocol
@@ -12,10 +13,6 @@ import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.WearableListenerService
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 /**
@@ -36,7 +33,7 @@ class WatchMessageService : WearableListenerService() {
 
     @Inject lateinit var outboxSender: OutboxSender
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    @Inject lateinit var scope: SyncWorkScope
 
     override fun onMessageReceived(event: MessageEvent) {
         val incoming = inbox.receive(event.data, event.sourceNodeId) ?: return
@@ -59,10 +56,5 @@ class WatchMessageService : WearableListenerService() {
             monitor.refresh()
             outboxSender.trigger()
         }
-    }
-
-    override fun onDestroy() {
-        scope.cancel()
-        super.onDestroy()
     }
 }
