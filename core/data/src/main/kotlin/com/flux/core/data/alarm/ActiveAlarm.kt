@@ -5,6 +5,8 @@ import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * The reminder ringing right now in this process (at most one). The alarm service and the
@@ -25,4 +27,11 @@ class ActiveAlarm @Inject constructor() {
     fun stop(noteId: String) {
         ringing.compareAndSet(noteId, null)
     }
+
+    /** True when [noteId] stops ringing because someone acted on it; false when [timeoutMillis] runs out first. */
+    suspend fun awaitHandled(noteId: String, timeoutMillis: Long): Boolean =
+        withTimeoutOrNull(timeoutMillis) {
+            ringing.first { it != noteId }
+            true
+        } ?: false
 }

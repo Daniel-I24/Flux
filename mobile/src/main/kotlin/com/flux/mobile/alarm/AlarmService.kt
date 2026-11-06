@@ -16,10 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * Foreground service (type mediaPlayback) that rings a reminder in a loop with USAGE_ALARM until
@@ -73,9 +71,7 @@ class AlarmService : Service() {
             )
             activeAlarm.start(noteId)
             withContext(Dispatchers.IO) { ringer.start(reminder.sound, settings.vibration) }
-            val handled = withTimeoutOrNull(settings.alarmDurationSeconds * MILLIS_PER_SECOND) {
-                activeAlarm.noteId.first { it != noteId }
-            } != null
+            val handled = activeAlarm.awaitHandled(noteId, settings.alarmDurationSeconds * MILLIS_PER_SECOND)
             ringer.stop()
             current = null
             if (!handled) activeAlarm.stop(noteId)

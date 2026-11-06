@@ -76,6 +76,7 @@ Cada decisión con una línea de justificación, en orden cronológico. Las deci
 | N-070 | Límite de 150 líneas | `scripts/check-line-limit.mjs` en la CI; excluye generados, lockfiles, XML, documentación y catálogos | Una regla sin verificación automática se incumple sin que nadie lo note. |
 | N-071 | API 26 | `AlarmActivity` usa las banderas de ventana en Android 8.0 | `setShowWhenLocked` existe desde 8.1; el lint detectó un cierre inesperado al sonar la alarma. |
 | N-072 | KSP | Se mantiene KSP1 (N-018) | KSP2 falló con los módulos JVM puros; cambiar antes de entregar agrega riesgo sin beneficio para el usuario. |
+| N-073 | Alarma atendida | `ActiveAlarm.awaitHandled` devuelve un booleano explícito | `first { it != noteId }` devolvía `null` al detener la alarma, igual que `withTimeoutOrNull` al agotarse el tiempo: un recordatorio completado o pospuesto desde la notificación quedaba además como "perdido" (hallado en el emulador con el APK release). |
 
 ## Contraste de la paleta (N-057)
 
