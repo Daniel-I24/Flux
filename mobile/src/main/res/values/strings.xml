@@ -5,11 +5,9 @@
     <!-- Common -->
     <string name="action_continue">Continuar</string>
     <string name="action_back">Atrás</string>
-    <string name="action_skip">Omitir por ahora</string>
     <string name="action_save">Guardar</string>
     <string name="action_cancel">Cancelar</string>
     <string name="action_accept">Aceptar</string>
-    <string name="action_open_settings">Abrir ajustes</string>
     <string name="onboarding_progress">Paso %1$d de %2$d</string>
 
     <!-- Errors -->
@@ -26,6 +24,7 @@
     <string name="error_weak_password">La contraseña debe tener al menos 8 caracteres.</string>
     <string name="error_reauth_required">Por seguridad, vuelve a escribir tu contraseña.</string>
     <string name="error_cancelled">Operación cancelada.</string>
+    <string name="error_no_google_account">Agrega una cuenta de Google en este celular o entra con tu correo.</string>
     <string name="error_unexpected">Ocurrió un error inesperado.</string>
 
     <!-- Welcome -->
@@ -122,8 +121,6 @@
     <string name="link_retry">Buscar de nuevo</string>
 
     <!-- Reminders -->
-    <string name="channel_reminders">Recordatorios</string>
-    <string name="channel_reminders_description">Alarmas de tus notas con fecha.</string>
     <string name="channel_quiet">Recordatorios silenciosos</string>
     <string name="channel_quiet_description">Recordatorios durante tus horas de sueño (No molestar de FLUX).</string>
     <string name="reminder_complete">Completar</string>
@@ -169,11 +166,8 @@
     <string name="notes_sort_due">Por fecha</string>
     <string name="notes_sort_category">Por categoría</string>
     <string name="notes_empty">No hay notas aquí</string>
-    <string name="notes_empty_hint">Cambia los filtros o crea una nota nueva.</string>
     <string name="notes_new">Nueva nota</string>
     <string name="notes_new_hint">Escríbela como la dirías: FLUX detecta la categoría y la fecha.</string>
-    <string name="notes_new_placeholder">Comprar pan el viernes</string>
-    <string name="notes_classifying">Clasificando…</string>
     <string name="notes_deleted">Nota eliminada</string>
     <string name="notes_undo">Deshacer</string>
     <string name="notes_delete">Eliminar nota</string>

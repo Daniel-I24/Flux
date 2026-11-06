@@ -24,8 +24,6 @@
     <string name="notes_empty_examples">Toca «Nueva nota» y prueba: «comprar pan el viernes», «llamar a mamá mañana a las 6 p. m.» o «estudiar para el parcial el lunes».</string>
     <string name="overdue_in_one_hour">En 1 hora</string>
     <string name="overdue_reschedule">Reprogramar</string>
-    <string name="home_next">Próximo recordatorio</string>
-    <string name="home_overdue">Vencidos</string>
     <plurals name="home_overdue_count">
         <item quantity="one">Tienes %1$d recordatorio vencido</item>
         <item quantity="other">Tienes %1$d recordatorios vencidos</item>

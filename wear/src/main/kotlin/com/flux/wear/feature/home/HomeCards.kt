@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -102,7 +103,12 @@ fun NextReminderCard(note: Note?, pendingCount: Int, onClick: () -> Unit) {
         onClick = onClick,
         title = { Text(stringResource(R.string.home_next_reminder)) },
         subtitle = if (pendingCount > 0) {
-            { Text(stringResource(R.string.home_pending_queue, pendingCount), color = MaterialTheme.colorScheme.secondary) }
+            {
+                Text(
+                    pluralStringResource(R.plurals.home_pending_queue, pendingCount, pendingCount),
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+            }
         } else {
             null
         },

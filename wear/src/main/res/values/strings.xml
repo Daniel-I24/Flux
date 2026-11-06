@@ -4,13 +4,15 @@
 
     <!-- Home -->
     <string name="home_dictate">Dictar nota</string>
-    <string name="home_type">Escribir</string>
     <string name="home_agenda">Agenda</string>
     <string name="home_categories">Categorías</string>
     <string name="home_settings">Ajustes</string>
     <string name="home_next_reminder">Próximo recordatorio</string>
     <string name="home_no_reminders">Sin recordatorios pendientes</string>
-    <string name="home_pending_queue">%1$d nota(s) por enviar</string>
+    <plurals name="home_pending_queue">
+        <item quantity="one">%1$d nota por enviar</item>
+        <item quantity="other">%1$d notas por enviar</item>
+    </plurals>
 
     <!-- Connection -->
     <string name="connection_checking">Conectando…</string>
@@ -39,9 +41,6 @@
     <string name="capture_listening">Escuchando…</string>
     <string name="capture_processing">Entendiendo tu nota…</string>
     <string name="capture_prompt">¿Qué quieres anotar?</string>
-    <string name="capture_quick_buy">Comprar…</string>
-    <string name="capture_quick_call">Llamar a…</string>
-    <string name="capture_quick_remind">Recuérdame…</string>
     <string name="capture_no_date">Sin fecha</string>
     <string name="capture_saving_in">Se guarda en %1$d s</string>
     <string name="capture_paused">Revisa y confirma</string>
@@ -52,10 +51,8 @@
     <string name="capture_saved">Guardada</string>
     <string name="capture_saved_sent">Enviada al celular</string>
     <string name="capture_saved_queued">Se enviará al reconectar</string>
-    <string name="capture_error_no_speech">No te escuché. Intenta de nuevo o escribe la nota.</string>
     <string name="capture_error_not_saved">No se pudo guardar la nota.</string>
     <string name="capture_try_again">Intentar de nuevo</string>
-    <string name="capture_alarm">Con alarma</string>
 
     <!-- Agenda -->
     <string name="agenda_title">Agenda</string>
@@ -64,7 +61,6 @@
     <string name="agenda_upcoming">Próximos</string>
     <string name="agenda_empty">Nada pendiente. ¡Dicta una nota!</string>
     <string name="agenda_complete">Completar</string>
-    <string name="agenda_completed">Completada</string>
 
     <!-- Categories -->
     <string name="categories_title">Categorías</string>
