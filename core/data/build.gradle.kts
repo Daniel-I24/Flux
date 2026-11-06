@@ -7,6 +7,8 @@ plugins {
 
 android {
     namespace = "com.flux.core.data"
+    // MigrationTestHelper reads the exported schemas as assets.
+    sourceSets["test"].assets.srcDir("schemas")
 }
 
 room {
