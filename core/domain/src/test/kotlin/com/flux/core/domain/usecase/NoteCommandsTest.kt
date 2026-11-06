@@ -79,15 +79,6 @@ class NoteCommandsTest {
     }
 
     @Test
-    fun `category correction is remembered`() = runTest {
-        notes.upsert(note("a"))
-        CorrectCategoryUseCase(update)("a", "health")
-        val corrected = notes.getNote("a")!!
-        assertEquals("health", corrected.categoryId)
-        assertTrue(corrected.categoryCorrected)
-    }
-
-    @Test
     fun `editing validates the title`() = runTest {
         notes.upsert(note("a"))
         val blank = NoteEdit("  ", "x", "tasks", null, requiresAlarm = false, sound = null)

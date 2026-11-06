@@ -38,7 +38,6 @@ enum class DefaultCategory(val id: String, val icon: CategoryIcon, val colorArgb
     fun toCategory(): Category = Category(id = id, defaultKey = this, colorArgb = colorArgb, icon = icon, position = ordinal)
 
     companion object {
-        fun fromId(id: String): DefaultCategory? = entries.firstOrNull { it.id == id }
         fun all(): List<Category> = entries.map { it.toCategory() }
     }
 }

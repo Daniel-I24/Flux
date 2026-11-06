@@ -90,12 +90,6 @@ class RescheduleNoteUseCase @Inject constructor(private val update: UpdateNoteUs
     suspend operator fun invoke(id: String, dueAt: Long) = update(id) { it.copy(dueAt = dueAt, completed = false, requiresAlarm = true) }
 }
 
-/** The user fixed the AI's category in the preview: remembered so it is never reclassified. */
-class CorrectCategoryUseCase @Inject constructor(private val update: UpdateNoteUseCase) {
-    suspend operator fun invoke(id: String, categoryId: String) =
-        update(id) { it.copy(categoryId = categoryId, categoryCorrected = true) }
-}
-
 /** Everything the phone's note editor can change. */
 data class NoteEdit(
     val title: String,

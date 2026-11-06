@@ -13,7 +13,6 @@ object FluxSpacing {
     val lg = 16.dp
     val xl = 24.dp
     val xxl = 32.dp
-    val xxxl = 48.dp
 }
 
 object FluxSizes {
@@ -27,7 +26,6 @@ object FluxSizes {
     val categoryDot = 10.dp
     val borderThin = 1.dp
     val strokeThin = 2.dp
-    val accentStripe = 4.dp
 }
 
 val FluxShapes = Shapes(

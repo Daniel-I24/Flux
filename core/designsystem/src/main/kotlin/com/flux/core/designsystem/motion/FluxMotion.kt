@@ -10,9 +10,6 @@ import androidx.compose.ui.platform.LocalContext
 object FluxMotion {
     const val SHORT_MS = 150
     const val MEDIUM_MS = 280
-    const val LONG_MS = 450
-    const val LIST_STAGGER_MS = 40
-    const val LIST_STAGGER_MAX_ITEMS = 8
 }
 
 /** True when the user turned animations off ("Quitar animaciones" / animator scale 0). */

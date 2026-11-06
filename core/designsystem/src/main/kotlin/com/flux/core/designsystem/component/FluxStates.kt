@@ -8,10 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -76,15 +73,4 @@ fun FluxLoadingState(modifier: Modifier = Modifier) {
             Text(stringResource(R.string.state_loading), style = MaterialTheme.typography.bodyMedium)
         }
     }
-}
-
-@Composable
-fun FluxErrorState(message: String, onRetry: (() -> Unit)?, modifier: Modifier = Modifier) {
-    FluxEmptyState(
-        icon = Icons.Rounded.ErrorOutline,
-        title = stringResource(R.string.state_error_title),
-        description = message,
-        modifier = modifier,
-        action = onRetry?.let { retry -> { FilledTonalButton(onClick = retry) { Text(stringResource(R.string.action_retry)) } } },
-    )
 }
