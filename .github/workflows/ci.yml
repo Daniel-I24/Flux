@@ -23,6 +23,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+      - name: File size limit
+        run: node scripts/check-line-limit.mjs
       - name: Static analysis
         run: ./gradlew ktlintCheck detekt --console=plain
       - name: Unit and UI tests (JVM / Robolectric)
