@@ -12,7 +12,7 @@ const flag = z
 const EnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().int().positive().default(3001),
-  CORS_ORIGINS: csv.default(''),
+  CORS_ORIGINS: csv.default([]),
   GEMINI_API_KEY: z.string().trim().default(''),
   GEMINI_MODEL: z.string().trim().min(1).default('gemini-3.5-flash-lite'),
   GEMINI_TIMEOUT_MS: z.coerce.number().int().positive().default(7500),
