@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flux.core.domain.port.Clock
 import com.flux.core.domain.repository.CategoryRepository
-import com.flux.core.domain.usecase.ObserveUpcomingRemindersUseCase
+import com.flux.core.domain.usecase.NoteSections
+import com.flux.core.domain.usecase.ObserveNoteSectionsUseCase
 import com.flux.core.model.Category
 import com.flux.core.model.Note
 import com.flux.wear.alarm.ReminderActions
@@ -24,27 +25,21 @@ data class AgendaUiState(
     val loading: Boolean = true,
 )
 
+/** Upcoming reminders, live: one that becomes overdue moves to Vencidos without reopening the screen. */
 @HiltViewModel
 class AgendaViewModel @Inject constructor(
-    observeUpcoming: ObserveUpcomingRemindersUseCase,
+    observeSections: ObserveNoteSectionsUseCase,
     categoryRepository: CategoryRepository,
     private val actions: ReminderActions,
-    clock: Clock,
+    private val clock: Clock,
 ) : ViewModel() {
-    private val today = Instant.ofEpochMilli(clock.now()).atZone(clock.zone()).toLocalDate()
-    private val startOfToday = today.atStartOfDay(clock.zone()).toInstant().toEpochMilli()
-
-    private val zone = clock.zone()
-
-    val uiState: StateFlow<AgendaUiState> = combine(
-        observeUpcoming(startOfToday, AGENDA_SIZE),
-        categoryRepository.observeCategories(),
-        ::toUiState
-    )
+    val uiState: StateFlow<AgendaUiState> = combine(observeSections(), categoryRepository.observeCategories(), ::toUiState)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), AgendaUiState())
 
-    private fun toUiState(notes: List<Note>, categories: List<Category>): AgendaUiState {
-        val (todayNotes, later) = notes.partition { note ->
+    private fun toUiState(sections: NoteSections, categories: List<Category>): AgendaUiState {
+        val zone = clock.zone()
+        val today = Instant.ofEpochMilli(clock.now()).atZone(zone).toLocalDate()
+        val (todayNotes, later) = sections.upcoming.take(AGENDA_SIZE).partition { note ->
             note.dueAt?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate() == today } ?: false
         }
         return AgendaUiState(todayNotes, later, categories.associateBy { it.id }, loading = false)
