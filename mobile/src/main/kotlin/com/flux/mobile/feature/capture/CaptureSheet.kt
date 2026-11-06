@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.provider.Settings
 import android.speech.RecognizerIntent
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -30,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flux.core.data.speech.VoiceRecognizer
@@ -55,7 +55,7 @@ fun CaptureSheet(onDismiss: () -> Unit, viewModel: PhoneCaptureViewModel = hiltV
             Text(stringResource(R.string.notes_new), style = MaterialTheme.typography.titleLarge)
             when (state.phase) {
                 CapturePhase.EDITING, CapturePhase.LISTENING -> CaptureComposer(state, viewModel, onMic, onOpenSettings = {
-                    context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}")))
+                    context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, "package:${context.packageName}".toUri()))
                 })
                 CapturePhase.CLASSIFYING -> Box(Modifier.fillMaxWidth().padding(FluxSpacing.xl), Alignment.Center) {
                     CircularProgressIndicator()

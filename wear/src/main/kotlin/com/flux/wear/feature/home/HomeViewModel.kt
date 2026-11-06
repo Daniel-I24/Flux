@@ -2,7 +2,7 @@ package com.flux.wear.feature.home
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.wear.remote.interactions.RemoteActivityHelper
@@ -82,7 +82,7 @@ class HomeViewModel @Inject constructor(
     /** Opens FLUX (or its Play Store page) on the phone so the user can fix the problem there. */
     fun openOnPhone(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val intent = Intent(Intent.ACTION_VIEW).addCategory(Intent.CATEGORY_BROWSABLE).setData(Uri.parse(BuildConfig.PLAY_STORE_URL))
+            val intent = Intent(Intent.ACTION_VIEW).addCategory(Intent.CATEGORY_BROWSABLE).setData(BuildConfig.PLAY_STORE_URL.toUri())
             val executor = Executors.newSingleThreadExecutor()
             val opened = runCatching { RemoteActivityHelper(context, executor).startRemoteActivity(intent).await() }
             executor.shutdown()

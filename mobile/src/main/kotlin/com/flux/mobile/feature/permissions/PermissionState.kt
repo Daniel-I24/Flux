@@ -7,10 +7,10 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 
 /** Permissions FLUX may ask for, each requested only when its benefit is explained. */
 enum class FluxPermission { NOTIFICATIONS, EXACT_ALARMS, FULL_SCREEN }
@@ -47,7 +47,7 @@ object PermissionChecker {
         } else {
             Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
         }
-        return Intent(action, Uri.parse("package:${context.packageName}"))
+        return Intent(action, "package:${context.packageName}".toUri())
     }
 
     private fun granted(context: Context, name: String) =

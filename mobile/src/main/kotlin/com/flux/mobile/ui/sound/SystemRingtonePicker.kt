@@ -9,6 +9,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.runtime.Composable
 import androidx.core.content.IntentCompat
+import androidx.core.net.toUri
 import com.flux.core.model.SoundRef
 
 /** Android's own ringtone picker; returns the chosen tone as a [SoundRef.System]. */
@@ -31,7 +32,7 @@ private class PickSystemSound(private val title: String) : ActivityResultContrac
 fun rememberSystemSoundPicker(context: Context, title: String, onPicked: (SoundRef.System) -> Unit): () -> Unit {
     val launcher = rememberLauncherForActivityResult(PickSystemSound(title)) { picked ->
         picked ?: return@rememberLauncherForActivityResult
-        val name = RingtoneManager.getRingtone(context, Uri.parse(picked.uri))?.getTitle(context).orEmpty()
+        val name = RingtoneManager.getRingtone(context, picked.uri.toUri())?.getTitle(context).orEmpty()
         onPicked(picked.copy(title = name.take(MAX_TITLE)))
     }
     return { launcher.launch(Unit) }

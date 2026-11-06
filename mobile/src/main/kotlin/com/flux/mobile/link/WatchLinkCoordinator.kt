@@ -2,7 +2,8 @@ package com.flux.mobile.link
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.wear.remote.interactions.RemoteActivityHelper
 import com.flux.core.domain.policy.WatchLinkDecision
 import com.flux.core.domain.policy.WatchLinkPolicy
@@ -21,7 +22,6 @@ import com.flux.core.sync.protocol.SyncProtocol
 import com.flux.mobile.BuildConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.security.SecureRandom
-import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -99,8 +99,8 @@ class WatchLinkCoordinator @Inject constructor(
     suspend fun installOnWatch(nodeId: String): LinkProblem? = runCatching {
         val intent = Intent(Intent.ACTION_VIEW)
             .addCategory(Intent.CATEGORY_BROWSABLE)
-            .setData(Uri.parse(BuildConfig.PLAY_STORE_URL))
-        RemoteActivityHelper(context, Executors.newSingleThreadExecutor()).startRemoteActivity(intent, nodeId).await()
+            .setData(BuildConfig.PLAY_STORE_URL.toUri())
+        RemoteActivityHelper(context, ContextCompat.getMainExecutor(context)).startRemoteActivity(intent, nodeId).await()
     }.fold(onSuccess = { null }, onFailure = { LinkProblem.INSTALL_FAILED })
 
     private companion object {
