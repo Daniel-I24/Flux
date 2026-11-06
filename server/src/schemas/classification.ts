@@ -33,9 +33,20 @@ export const ClassificationSchema = z.object({
   priority: z.enum(['LOW', 'NORMAL', 'HIGH']),
   requiresAlarm: z.boolean(),
   confidence: z.number().min(0).max(1),
+  /** Other categories that fit just as well: the app asks the user (older apps ignore it). */
+  alternativeCategoryIds: z.array(z.string().min(1).max(64)).max(3).optional(),
 });
 
 export type Classification = z.infer<typeof ClassificationSchema>;
+
+/** Alternatives the app did not send, or equal to the chosen category, are dropped (not worth failing the answer). */
+export const withValidAlternatives = (classification: Classification, request: ClassifyRequest): Classification => {
+  const { alternativeCategoryIds, ...rest } = classification;
+  const valid = (alternativeCategoryIds ?? []).filter(
+    (id) => id !== classification.categoryId && request.categories.some((category) => category.id === id)
+  );
+  return valid.length > 0 ? { ...rest, alternativeCategoryIds: valid } : rest;
+};
 
 /** The model may only pick one of the categories the app sent. */
 export const belongsToRequest = (classification: Classification, request: ClassifyRequest): boolean =>

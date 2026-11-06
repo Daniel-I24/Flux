@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { AiUnavailableError, UpstreamError } from '../errors/AppError.js';
-import { belongsToRequest, ClassificationSchema, type Classification, type ClassifyRequest } from '../schemas/classification.js';
+import { belongsToRequest, ClassificationSchema, withValidAlternatives, type Classification, type ClassifyRequest } from '../schemas/classification.js';
 import { buildUserContent, responseSchema, SYSTEM_INSTRUCTION } from './classificationPrompt.js';
 
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
@@ -82,6 +82,6 @@ export class GeminiClient implements Classifier {
     if (!classification.success || !belongsToRequest(classification.data, request)) {
       throw new UpstreamError('Gemini answer does not match the schema');
     }
-    return classification.data;
+    return withValidAlternatives(classification.data, request);
   }
 }

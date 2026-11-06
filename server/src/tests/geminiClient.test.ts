@@ -38,6 +38,19 @@ describe('GeminiClient', () => {
     await expect(clientWith(new Response(JSON.stringify(geminiAnswer('not json')))).client.classify(validBody)).rejects.toBeInstanceOf(UpstreamError);
   });
 
+  it('keeps valid alternative categories and drops foreign or repeated ones', async () => {
+    const answer = JSON.stringify({ ...SAMPLE, alternativeCategoryIds: ['tasks', 'hacked', SAMPLE.categoryId] });
+    const result = await clientWith(new Response(JSON.stringify(geminiAnswer(answer)))).client.classify(validBody);
+    expect(result.alternativeCategoryIds).toEqual(SAMPLE.categoryId === 'tasks' ? undefined : ['tasks']);
+  });
+
+  it('answers without alternatives when the model gives none, so older apps are unaffected', async () => {
+    const answer = JSON.stringify({ ...SAMPLE, alternativeCategoryIds: [] });
+    const result = await clientWith(new Response(JSON.stringify(geminiAnswer(answer)))).client.classify(validBody);
+    expect(result).toEqual(SAMPLE);
+    expect('alternativeCategoryIds' in result).toBe(false);
+  });
+
   it('wraps HTTP and network failures', async () => {
     await expect(clientWith(new Response('{}', { status: 429 })).client.classify(validBody)).rejects.toBeInstanceOf(UpstreamError);
     await expect(clientWith(new Error('ECONNRESET')).client.classify(validBody)).rejects.toBeInstanceOf(UpstreamError);

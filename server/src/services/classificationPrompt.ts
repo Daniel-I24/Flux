@@ -1,19 +1,21 @@
 import type { ClassifyRequest } from '../schemas/classification.js';
 
 const DEFAULT_DESCRIPTIONS: Record<string, string> = {
-  tasks: 'algo general por hacer (llamar, enviar, pagar)',
+  tasks: 'una acción concreta por hacer, aunque tenga fecha (llamar, enviar, pagar)',
   homework: 'deberes académicos: exámenes, talleres, proyectos de clase, estudiar',
   ideas: 'una ocurrencia, propuesta o posibilidad',
   meals: 'comidas, recetas, cocinar',
   health: 'salud: medicamentos, citas médicas, ejercicio',
   shopping: 'compras',
-  reminders: 'pide recordar o avisar algo en un momento concreto',
+  reminders: 'un aviso sin una acción concreta ("mañana hay paro de buses")',
   info: 'un dato para guardar: códigos, direcciones, números',
 };
 
 export const SYSTEM_INSTRUCTION = [
   'Eres el clasificador de FLUX, una app de notas dictadas desde un reloj inteligente.',
   'Elige exactamente una categoría de la lista "categories" (devuelve su "id").',
+  'Una acción con fecha es una tarea (o una categoría más específica como compras o salud), no un recordatorio.',
+  'Devuelve "alternativeCategoryIds" solo si otra categoría encaja exactamente igual de bien; si no, una lista vacía.',
   'Devuelve "title": resumen corto en español (máx. 60 caracteres) sin muletillas como "recuérdame" ni la fecha.',
   'Devuelve "dueAt": fecha y hora ISO-8601 con zona horaria si la nota la menciona, relativa a "now" y "timeZone"; si no, null.',
   'Usa "profile" para frases como "después de clase" (activityEndToday), "a la hora del almuerzo" (lunch) o "antes de dormir" (sleep).',
@@ -33,6 +35,7 @@ export const responseSchema = (request: ClassifyRequest) => ({
     priority: { type: 'STRING', enum: ['LOW', 'NORMAL', 'HIGH'] },
     requiresAlarm: { type: 'BOOLEAN' },
     confidence: { type: 'NUMBER' },
+    alternativeCategoryIds: { type: 'ARRAY', items: { type: 'STRING', enum: request.categories.map((category) => category.id) } },
   },
   required: ['categoryId', 'title', 'dueAt', 'priority', 'requiresAlarm', 'confidence'],
 });
