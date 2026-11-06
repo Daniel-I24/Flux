@@ -1,6 +1,7 @@
 package com.flux.mobile.feature.capture
 
 import com.flux.core.data.speech.VoiceError
+import com.flux.core.data.speech.VoiceState
 import com.flux.core.model.Classification
 
 enum class CapturePhase { EDITING, LISTENING, CLASSIFYING, PREVIEW, SAVED }
@@ -21,3 +22,18 @@ data class PhoneCaptureUi(
         const val AUTO_SAVE_SECONDS = 5
     }
 }
+
+/** What the recognizer's new state means for the sheet. */
+internal fun PhoneCaptureUi.after(voice: VoiceState): PhoneCaptureUi = when (voice) {
+    is VoiceState.Listening -> if (voice.partial.isBlank()) this else copy(text = voice.partial)
+    is VoiceState.Heard -> copy(text = voice.text, phase = CapturePhase.EDITING)
+    is VoiceState.Failed -> copy(phase = CapturePhase.EDITING, voiceError = voice.error)
+    VoiceState.Idle -> this
+}
+
+internal fun PhoneCaptureUi.previewing(classification: Classification, corrected: Boolean) = copy(
+    phase = CapturePhase.PREVIEW,
+    classification = classification,
+    corrected = corrected,
+    secondsLeft = PhoneCaptureUi.AUTO_SAVE_SECONDS,
+)

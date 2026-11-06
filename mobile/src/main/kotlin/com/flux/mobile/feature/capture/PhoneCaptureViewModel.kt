@@ -47,15 +47,8 @@ class PhoneCaptureViewModel @Inject constructor(
     }
 
     private fun onVoice(voice: VoiceState) {
-        when (voice) {
-            is VoiceState.Listening -> if (voice.partial.isNotBlank()) state.update { it.copy(text = voice.partial) }
-            is VoiceState.Heard -> {
-                state.update { it.copy(text = voice.text, phase = CapturePhase.EDITING) }
-                classify()
-            }
-            is VoiceState.Failed -> state.update { it.copy(phase = CapturePhase.EDITING, voiceError = voice.error) }
-            VoiceState.Idle -> Unit
-        }
+        state.update { it.after(voice) }
+        if (voice is VoiceState.Heard) classify()
     }
 
     fun setText(text: String) = state.update { it.copy(text = text, errorMessage = null) }
@@ -127,14 +120,7 @@ class PhoneCaptureViewModel @Inject constructor(
 
     private fun showPreview(classification: Classification, corrected: Boolean) {
         work?.cancel()
-        state.update {
-            it.copy(
-                phase = CapturePhase.PREVIEW,
-                classification = classification,
-                corrected = corrected,
-                secondsLeft = PhoneCaptureUi.AUTO_SAVE_SECONDS,
-            )
-        }
+        state.update { it.previewing(classification, corrected) }
         if (classification.needsAnswer) return
         work = viewModelScope.launch {
             while (state.value.secondsLeft > 0) {
