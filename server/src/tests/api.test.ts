@@ -17,7 +17,7 @@ describe('GET /api/health', () => {
   it('reports what is configured without exposing secrets', async () => {
     const response = await request(appWith()).get('/api/health');
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ status: 'ok', ai: { gemini: true, model: 'fake-model' }, auth: { firebase: true } });
+    expect(response.body).toEqual({ status: 'ok', release: '', ai: { gemini: true, model: 'fake-model' }, auth: { firebase: true } });
     expect(response.headers['x-powered-by']).toBeUndefined();
     expect(response.headers['content-security-policy']).toBeDefined();
   });

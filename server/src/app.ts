@@ -40,7 +40,7 @@ export const createApp = ({ config, classifier, verifier }: AppDependencies): Ex
       message: { error: { code: 'RATE_LIMITED', message: 'Too many requests' } },
     })
   );
-  app.use('/api/health', createHealthRouter(classifier, verifier));
+  app.use('/api/health', createHealthRouter(classifier, verifier, config.release));
   app.use('/api/classify', createClassifyRouter(classifier, verifier, config));
   app.use(notFound);
   app.use(errorHandler);

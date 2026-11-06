@@ -23,6 +23,7 @@ const EnvSchema = z.object({
   RATE_LIMIT_PER_USER: z.coerce.number().int().positive().default(30),
   RATE_LIMIT_PER_IP: z.coerce.number().int().positive().default(120),
   BODY_LIMIT: z.string().default('16kb'),
+  RENDER_GIT_COMMIT: z.string().trim().default(''),
 });
 
 export interface ServerConfig {
@@ -34,6 +35,8 @@ export interface ServerConfig {
   firebase: { projectId: string; serviceAccountBase64: string; appCheckRequired: boolean };
   rateLimit: { windowMs: number; perUser: number; perIp: number };
   bodyLimit: string;
+  /** Git commit being served (Render sets it); empty when running locally. */
+  release: string;
 }
 
 /** Validates process.env once at startup; a bad value stops the server with a clear message. */
@@ -51,5 +54,6 @@ export const loadConfig = (source: NodeJS.ProcessEnv = process.env): ServerConfi
     },
     rateLimit: { windowMs: env.RATE_LIMIT_WINDOW_MS, perUser: env.RATE_LIMIT_PER_USER, perIp: env.RATE_LIMIT_PER_IP },
     bodyLimit: env.BODY_LIMIT,
+    release: env.RENDER_GIT_COMMIT,
   };
 };
