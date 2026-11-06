@@ -1,13 +1,13 @@
 # FLUX — Notas y recordatorios por voz para Wear OS
 
-FLUX permite dictar una idea, tarea o recordatorio en el reloj. La app la clasifica con IA, detecta la fecha ("mañana a las 8", "el viernes a las 3") y programa la alarma en el reloj y en el celular.
+FLUX permite dictar una idea, tarea o recordatorio en el reloj o en el celular. La app la clasifica con IA, detecta la fecha ("mañana a las 8", "el viernes a las 3") y programa la alarma en el reloj y en el celular.
 
 El proyecto tiene tres partes:
 
 | Parte | Tecnología | Qué hace |
 |---|---|---|
-| `wear/` | Kotlin, Compose for Wear OS | Dictado, vista previa, agenda, tile, complicación, alarmas y cola offline |
-| `mobile/` | Kotlin, Compose Material 3 | Cuenta, onboarding, vinculación del reloj, notas, categorías, ajustes y modo demostración |
+| `wear/` | Kotlin, Compose for Wear OS | Dictado con lava reactiva, preguntas de ambigüedad, agenda, Vencidos, tile, complicación, alarmas y cola offline |
+| `mobile/` | Kotlin, Compose Material 3 | Cuenta, onboarding, tutorial, vinculación del reloj, notas por voz o texto, secciones en vivo, alarma a pantalla completa, tonos propios, ajustes y modo demostración |
 | `server/` | Node 22, Express, TypeScript | Clasificación con Gemini, protegida con token de Firebase y App Check |
 
 La versión web anterior (simulador en el navegador) se conserva en el tag [`web-simulator-v1`](https://github.com/Daniel-I24/Flux/tree/web-simulator-v1).
@@ -21,7 +21,14 @@ La versión web anterior (simulador en el navegador) se conserva en el tag [`web
 
 Ambas apps usan el mismo `applicationId` (`com.flux.notes`) y la misma firma; la Wearable Data Layer lo exige para conectarlas.
 
+**Para actualizar desde v1.0.0** no desinstales: instala encima con `adb install -r` (misma llave y mismo `applicationId`). Notas, categorías, sesión y ajustes se conservan.
+
 **Para una demostración sin reloj ni red:** en el celular, ve a **Ajustes → Modo demostración → Cargar ejemplos**. Se cargan 5 notas ya clasificadas y suena una alarma a los 10 segundos.
+
+## Dictar desde la esfera y con la doble pulsación
+
+- **Tile y complicación:** agrega el tile *Dictar nota* o la complicación *Próximo recordatorio* desde la esfera. Ambos abren el dictado directamente.
+- **Doble pulsación:** el botón se asigna en el reloj, porque Android no permite que una app lo configure por sí misma. Ve a *Ajustes → Gestos* (en Galaxy Watch: *Ajustes → Funciones avanzadas → Personalizar botones → Pulsar dos veces*) y elige **FLUX**. Se abre el inicio de FLUX, donde dictar es la acción principal. La ruta exacta cambia según el fabricante.
 
 ## Arquitectura
 
@@ -40,12 +47,12 @@ Ambas apps usan el mismo `applicationId` (`com.flux.notes`) y la misma firma; la
 
 ### Flujo de una nota dictada
 
-1. El reloj reconoce la voz con el reconocedor del sistema.
+1. El reloj reconoce la voz dentro de la app con `SpeechRecognizer` (es-CO, respaldo es-ES) y, si no está disponible, con `RecognizerIntent`.
 2. Pide la clasificación al celular por la Data Layer (`MessageClient`). Si el celular no responde a tiempo, usa el clasificador local.
-3. Muestra la vista previa (categoría, título y fecha) para confirmar o editar.
+3. Muestra la vista previa. Solo pregunta si algo es realmente ambiguo; si no, guarda sola al terminar la cuenta regresiva.
 4. Guarda la nota en Room y la encola en el `outbox`. WorkManager la envía al celular con reintentos y la borra al recibir `NoteAck`.
 5. El celular programa la alarma. Si la nota se clasificó localmente, la reclasifica con la IA remota cuando hay red, sin tocar las correcciones del usuario.
-6. Completar o posponer en un dispositivo retira la notificación en el otro.
+6. Completar o posponer en un dispositivo detiene la alarma en el otro. Un recordatorio vencido pasa a *Vencidos* sin reabrir la app.
 
 ### Patrones de diseño
 
@@ -148,4 +155,7 @@ Sigue [`scripts/emulators.md`](scripts/emulators.md): crear un celular con Googl
 - **ktlint** y **detekt** en todos los módulos.
 - Pruebas unitarias del dominio, del parser de fechas en español, de los clasificadores, del protocolo, de Room y de DataStore; máquina de estados de captura del reloj; pruebas de UI con Compose sobre Robolectric (sin emulador).
 - Pruebas del servidor con Vitest y Supertest. Reglas de Firestore probadas con el emulador.
+- Ningún archivo de código supera 150 líneas: `node scripts/check-line-limit.mjs`.
 - La CI (`.github/workflows/ci.yml`) corre todo lo anterior en cada push a `main`.
+
+Más material: [`docs/CHANGELOG.md`](docs/CHANGELOG.md), [`docs/V1.1_CHECKLIST.md`](docs/V1.1_CHECKLIST.md) y [`docs/SUSTENTACION.md`](docs/SUSTENTACION.md).
