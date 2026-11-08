@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.mobile.R
 import com.flux.mobile.feature.capture.CaptureSheet
+import com.flux.mobile.ui.common.alarmConfirmation
 
 /** Notas: sections, search, filters, complete and delete with "Deshacer", edit and create (voice or text). */
 @Composable
@@ -75,10 +76,13 @@ fun NotesScreen(
     // Without this the search field takes the focus back and opens the keyboard.
     val focus = LocalFocusManager.current
     if (creating) {
-        CaptureSheet(onDismiss = {
-            creating = false
-            focus.clearFocus()
-        })
+        CaptureSheet(
+            onDismiss = {
+                creating = false
+                focus.clearFocus()
+            },
+            onAlarmSaved = viewModel::announceAlarm,
+        )
     }
 }
 
@@ -101,6 +105,10 @@ private fun NotesEventEffect(event: NotesEvent?, snackbar: SnackbarHostState, vi
             is NotesEvent.Failed -> {
                 viewModel.consumeEvent()
                 snackbar.showSnackbar(context.getString(event.message))
+            }
+            is NotesEvent.Scheduled -> {
+                viewModel.consumeEvent()
+                snackbar.showSnackbar(context.alarmConfirmation(event.dueAt))
             }
             null -> Unit
         }

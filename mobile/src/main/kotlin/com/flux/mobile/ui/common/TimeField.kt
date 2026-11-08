@@ -23,13 +23,8 @@ import com.flux.core.designsystem.theme.FluxSizes
 import com.flux.core.model.TimeOfDay
 import com.flux.mobile.R
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
-fun TimeOfDay.formatted(): String = LocalTime.of(
-    hour,
-    minute
-).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(FluxLocale.SPANISH))
+fun TimeOfDay.formatted(): String = LocalTime.of(hour, minute).format(FluxLocale.TIME_24H)
 
 /** Label + current time; tapping opens the Material 3 time picker. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +39,7 @@ fun TimeField(label: String, value: TimeOfDay, onChange: (TimeOfDay) -> Unit, mo
         TextButton(onClick = { open = true }) { Text(value.formatted(), style = MaterialTheme.typography.titleMedium) }
     }
     if (open) {
-        val pickerState = rememberTimePickerState(initialHour = value.hour, initialMinute = value.minute)
+        val pickerState = rememberTimePickerState(initialHour = value.hour, initialMinute = value.minute, is24Hour = true)
         AlertDialog(
             onDismissRequest = { open = false },
             title = { Text(stringResource(R.string.routine_pick_time)) },

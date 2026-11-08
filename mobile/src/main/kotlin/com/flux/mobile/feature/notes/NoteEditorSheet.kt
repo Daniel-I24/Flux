@@ -39,6 +39,7 @@ import com.flux.core.model.Note
 import com.flux.core.model.SoundRef
 import com.flux.mobile.R
 import com.flux.mobile.feature.home.CategoryDot
+import com.flux.mobile.ui.common.DateTimePickerDialogs
 import com.flux.mobile.ui.common.DueDateField
 import com.flux.mobile.ui.sound.SoundPicker
 
@@ -49,8 +50,7 @@ fun NoteEditorSheet(note: Note, categories: List<Category>, onSave: (NoteEdit) -
     var title by rememberSaveable { mutableStateOf(note.title) }
     var text by rememberSaveable { mutableStateOf(note.text) }
     var categoryId by rememberSaveable { mutableStateOf(note.categoryId) }
-    var dueAt by rememberSaveable { mutableStateOf(note.dueAt) }
-    var alarm by rememberSaveable { mutableStateOf(note.requiresAlarm) }
+    var reminder by rememberSaveable(stateSaver = ReminderDraft.saver) { mutableStateOf(ReminderDraft(note.dueAt, note.requiresAlarm)) }
     // SoundRef is not Parcelable: kept across recompositions, reset if another note is opened.
     var sound by remember(note.id) { mutableStateOf(note.sound) }
     val titleValid = title.isNotBlank() && title.length <= Note.MAX_TITLE_LENGTH
@@ -63,9 +63,7 @@ fun NoteEditorSheet(note: Note, categories: List<Category>, onSave: (NoteEdit) -
             Text(
                 stringResource(R.string.editor_title),
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.semantics {
-                    heading()
-                }
+                modifier = Modifier.semantics { heading() },
             )
             OutlinedTextField(
                 value = title,
@@ -93,10 +91,12 @@ fun NoteEditorSheet(note: Note, categories: List<Category>, onSave: (NoteEdit) -
                     )
                 }
             }
-            DueDateField(dueAt = dueAt, onChange = { dueAt = it })
-            AlarmSection(hasDate = dueAt != null, alarm = alarm, onAlarm = { alarm = it }, sound = sound, onSound = { sound = it })
+            ReminderFields(reminder, onChange = { reminder = it }, sound = sound, onSound = { sound = it })
             Button(
-                onClick = { onSave(NoteEdit(title, text, categoryId, dueAt, alarm, sound.takeIf { alarm })) },
+                onClick = {
+                    val alarm = reminder.requiresAlarm
+                    onSave(NoteEdit(title, text, categoryId, reminder.dueAt, alarm, sound.takeIf { alarm }))
+                },
                 enabled = titleValid,
                 modifier = Modifier.fillMaxWidth().padding(bottom = FluxSpacing.lg),
             ) { Text(stringResource(R.string.action_save)) }
@@ -104,13 +104,22 @@ fun NoteEditorSheet(note: Note, categories: List<Category>, onSave: (NoteEdit) -
     }
 }
 
+/** Date, alarm and sound. The alarm switch is always enabled: turning it on without a date asks for one. */
 @Composable
-private fun AlarmSection(hasDate: Boolean, alarm: Boolean, onAlarm: (Boolean) -> Unit, sound: SoundRef?, onSound: (SoundRef?) -> Unit) {
+private fun ReminderFields(reminder: ReminderDraft, onChange: (ReminderDraft) -> Unit, sound: SoundRef?, onSound: (SoundRef?) -> Unit) {
+    DueDateField(dueAt = reminder.dueAt, onPick = { onChange(reminder.openPicker()) }, onClear = { onChange(reminder.clearDate()) })
     Row(Modifier.fillMaxWidth().heightIn(min = FluxSizes.minTouchTarget), verticalAlignment = Alignment.CenterVertically) {
         Text(stringResource(R.string.editor_alarm), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-        Switch(checked = alarm && hasDate, onCheckedChange = onAlarm, enabled = hasDate)
+        Switch(checked = reminder.switchOn, onCheckedChange = { onChange(reminder.setAlarm(it)) })
     }
-    if (alarm && hasDate) {
+    if (reminder.picking) {
+        DateTimePickerDialogs(
+            initial = reminder.dueAt,
+            onPicked = { onChange(reminder.picked(it)) },
+            onCancel = { onChange(reminder.cancelPicker()) },
+        )
+    }
+    if (reminder.requiresAlarm) {
         Text(stringResource(R.string.editor_sound), style = MaterialTheme.typography.titleSmall)
         SoundPicker(selected = sound, onSelect = onSound, defaultLabel = stringResource(R.string.sound_use_category))
     }

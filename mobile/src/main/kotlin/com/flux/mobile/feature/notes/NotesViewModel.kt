@@ -50,6 +50,9 @@ sealed interface NotesEvent {
     data class Deleted(val noteId: String) : NotesEvent
     data class Completed(val noteId: String) : NotesEvent
     data class Failed(@param:StringRes val message: Int) : NotesEvent
+
+    /** "Sonará hoy a las 18:00" after saving a note with an alarm. */
+    data class Scheduled(val dueAt: Long) : NotesEvent
 }
 
 /** Notes in four live sections (Próximos, Pendientes, Vencidos, Completados) with search and filters. */
@@ -105,7 +108,14 @@ class NotesViewModel @Inject constructor(
 
     fun inOneHour(noteId: String) = launchResult { reschedule(noteId, clock.now() + HOUR_MS) }
 
-    fun save(noteId: String, change: NoteEdit, onDone: () -> Unit) = launchResult(onDone) { edit(noteId, change) }
+    fun save(noteId: String, change: NoteEdit, onDone: () -> Unit) = launchResult({
+        onDone()
+        change.dueAt?.takeIf { change.requiresAlarm }?.let(::announceAlarm)
+    }) { edit(noteId, change) }
+
+    fun announceAlarm(dueAt: Long) {
+        events.value = NotesEvent.Scheduled(dueAt)
+    }
 
     fun consumeEvent() {
         events.value = null

@@ -21,24 +21,23 @@ import com.flux.core.model.Note
 import com.flux.mobile.R
 import com.flux.mobile.ui.common.dueDateLabel
 
+/** Category and when the note rings: alarm icon + "Hoy · 18:00", the date "· sin aviso", or a discreet "Sin recordatorio". */
 @Composable
 fun NoteMeta(note: Note, category: Category?) {
     Row(horizontalArrangement = Arrangement.spacedBy(FluxSpacing.sm), verticalAlignment = Alignment.CenterVertically) {
         category?.let { CategoryBadge(it) }
-        note.dueAt?.let { dueAt ->
-            if (note.requiresAlarm) {
-                Icon(
-                    Icons.Rounded.Alarm,
-                    stringResource(R.string.notes_has_alarm),
-                    Modifier.size(FluxSizes.iconSm)
-                )
-            }
-            Text(
-                dueDateLabel(dueAt),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+        val due = note.dueAt
+        val rings = due != null && note.requiresAlarm
+        if (rings) Icon(Icons.Rounded.Alarm, stringResource(R.string.notes_has_alarm), Modifier.size(FluxSizes.iconSm))
+        Text(
+            text = when {
+                due == null -> stringResource(R.string.notes_no_reminder)
+                rings -> dueDateLabel(due)
+                else -> stringResource(R.string.notes_no_alert, dueDateLabel(due))
+            },
+            style = MaterialTheme.typography.labelMedium,
+            color = if (rings) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.outline,
+        )
     }
 }
 
