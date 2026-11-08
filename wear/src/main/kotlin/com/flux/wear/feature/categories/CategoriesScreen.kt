@@ -16,6 +16,7 @@ import androidx.wear.compose.material3.ListHeader
 import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.Text
 import com.flux.core.designsystem.category.displayName
+import com.flux.core.model.Category
 import com.flux.wear.R
 import com.flux.wear.ui.CategoryIconDot
 
@@ -23,6 +24,12 @@ import com.flux.wear.ui.CategoryIconDot
 @Composable
 fun CategoriesScreen(onDictate: () -> Unit, viewModel: CategoriesViewModel = hiltViewModel()) {
     val categories by viewModel.categories.collectAsStateWithLifecycle()
+    CategoriesContent(categories, onDictate)
+}
+
+/** Stateless, so every watch shape can be previewed. */
+@Composable
+fun CategoriesContent(categories: List<Category>, onDictate: () -> Unit) {
     val listState = rememberTransformingLazyColumnState()
     ScreenScaffold(scrollState = listState) { padding ->
         TransformingLazyColumn(state = listState, contentPadding = padding, modifier = Modifier.fillMaxSize()) {

@@ -36,8 +36,24 @@ import com.flux.wear.ui.rememberHaptics
 @Composable
 fun OverdueScreen(viewModel: OverdueViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    OverdueContent(
+        state,
+        OverdueActions(viewModel::complete, viewModel::inOneHour, viewModel::tomorrowMorning, viewModel::delete),
+    )
+}
+
+data class OverdueActions(
+    val complete: (String) -> Unit,
+    val inOneHour: (String) -> Unit,
+    val tomorrow: (String) -> Unit,
+    val delete: (String) -> Unit,
+)
+
+/** Stateless, so every watch shape can be previewed. */
+@Composable
+fun OverdueContent(state: OverdueUiState, actions: OverdueActions, initiallySelected: String? = null) {
     val haptics = rememberHaptics()
-    var selected by rememberSaveable { mutableStateOf<String?>(null) }
+    var selected by rememberSaveable { mutableStateOf(initiallySelected) }
     val listState = rememberTransformingLazyColumnState()
     ScreenScaffold(scrollState = listState) { padding ->
         TransformingLazyColumn(state = listState, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
@@ -59,10 +75,10 @@ fun OverdueScreen(viewModel: OverdueViewModel = hiltViewModel()) {
                             selected = null
                             action()
                         }
-                        Action(Icons.Rounded.Check, R.string.agenda_complete) { act { viewModel.complete(note.id) } }
-                        Action(Icons.Rounded.Schedule, R.string.overdue_in_one_hour) { act { viewModel.inOneHour(note.id) } }
-                        Action(Icons.Rounded.WbSunny, R.string.overdue_tomorrow) { act { viewModel.tomorrowMorning(note.id) } }
-                        Action(Icons.Rounded.Delete, R.string.overdue_delete) { act { viewModel.delete(note.id) } }
+                        Action(Icons.Rounded.Check, R.string.agenda_complete) { act { actions.complete(note.id) } }
+                        Action(Icons.Rounded.Schedule, R.string.overdue_in_one_hour) { act { actions.inOneHour(note.id) } }
+                        Action(Icons.Rounded.WbSunny, R.string.overdue_tomorrow) { act { actions.tomorrow(note.id) } }
+                        Action(Icons.Rounded.Delete, R.string.overdue_delete) { act { actions.delete(note.id) } }
                     }
                 }
             }

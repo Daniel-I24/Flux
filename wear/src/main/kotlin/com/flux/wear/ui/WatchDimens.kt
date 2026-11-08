@@ -8,7 +8,6 @@ object WatchDimens {
     val gap = 6.dp
     val gapLarge = 8.dp
     val gapButtons = 16.dp
-    val marginScreen = 20.dp
     val statusDot = 6.dp
     val iconCategory = 20.dp
     val icon = 32.dp

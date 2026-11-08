@@ -35,6 +35,19 @@ internal fun HomePreview() = FluxWearTheme {
     )
 }
 
+/** The longest problem messages: they must fit above the microphone without being cut. */
+@FluxWearPreviews
+@Composable
+internal fun HomeNotPairedPreview() = FluxWearTheme {
+    HomeContent(state = HomeUiState(connection = PhoneConnection.NoPairedPhone), actions = noActions, onProblem = {})
+}
+
+@FluxWearPreviews
+@Composable
+internal fun HomeNotLinkedPreview() = FluxWearTheme {
+    HomeContent(state = HomeUiState(connection = PhoneConnection.NotLinked), actions = noActions, onProblem = {})
+}
+
 @FluxWearPreviews
 @Composable
 internal fun AlertPreview() = FluxWearTheme { AlertScreen(note = sampleNote, onComplete = {}, onSnooze = {}) }

@@ -43,6 +43,40 @@ fun WatchSettingsScreen(onTutorial: () -> Unit, viewModel: WatchSettingsViewMode
     val context = LocalContext.current
     val opened = stringResource(R.string.problem_opened_on_phone)
     val failed = stringResource(R.string.problem_open_failed)
+    WatchSettingsContent(
+        state,
+        WatchSettingsActions(
+            vibration = {
+                haptics.tap()
+                viewModel.setVibration(it)
+            },
+            sound = viewModel::setSoundEnabled,
+            highContrast = viewModel::setHighContrast,
+            tutorial = onTutorial,
+            link = {
+                haptics.tap()
+                viewModel.link { ok -> Toast.makeText(context, if (ok) opened else failed, Toast.LENGTH_SHORT).show() }
+            },
+            unlink = {
+                haptics.confirm()
+                viewModel.unlink()
+            },
+        ),
+    )
+}
+
+data class WatchSettingsActions(
+    val vibration: (VibrationPattern) -> Unit,
+    val sound: (Boolean) -> Unit,
+    val highContrast: (Boolean) -> Unit,
+    val tutorial: () -> Unit,
+    val link: () -> Unit,
+    val unlink: () -> Unit,
+)
+
+/** Stateless, so every watch shape can be previewed. Vertical list only: nothing competes with swipe-back. */
+@Composable
+fun WatchSettingsContent(state: WatchSettingsUiState, actions: WatchSettingsActions) {
     val listState = rememberTransformingLazyColumnState()
     ScreenScaffold(scrollState = listState) { padding ->
         TransformingLazyColumn(state = listState, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
@@ -51,10 +85,7 @@ fun WatchSettingsScreen(onTutorial: () -> Unit, viewModel: WatchSettingsViewMode
             items(VibrationPattern.entries, key = { it.name }) { pattern ->
                 RadioButton(
                     selected = state.settings.vibration == pattern,
-                    onSelect = {
-                        haptics.tap()
-                        viewModel.setVibration(pattern)
-                    },
+                    onSelect = { actions.vibration(pattern) },
                     label = { Text(stringResource(pattern.labelRes())) },
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -62,7 +93,7 @@ fun WatchSettingsScreen(onTutorial: () -> Unit, viewModel: WatchSettingsViewMode
             item {
                 SwitchButton(
                     checked = state.settings.soundEnabled,
-                    onCheckedChange = viewModel::setSoundEnabled,
+                    onCheckedChange = actions.sound,
                     label = { Text(stringResource(R.string.settings_sound)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -70,28 +101,24 @@ fun WatchSettingsScreen(onTutorial: () -> Unit, viewModel: WatchSettingsViewMode
             item {
                 SwitchButton(
                     checked = state.settings.theme == WatchTheme.HIGH_CONTRAST,
-                    onCheckedChange = viewModel::setHighContrast,
+                    onCheckedChange = actions.highContrast,
                     label = { Text(stringResource(R.string.settings_theme_contrast)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
             item {
-                OutlinedButton(onClick = onTutorial, label = {
+                OutlinedButton(onClick = actions.tutorial, label = {
                     Text(stringResource(R.string.settings_tutorial))
                 }, modifier = Modifier.fillMaxWidth())
             }
-            linkSection(
-                state,
-                onLink = {
-                    haptics.tap()
-                    viewModel.link { ok -> Toast.makeText(context, if (ok) opened else failed, Toast.LENGTH_SHORT).show() }
-                },
-                onUnlink = {
-                    haptics.confirm()
-                    viewModel.unlink()
-                },
-            )
-            item { Text(stringResource(R.string.settings_version, BuildConfig.VERSION_NAME)) }
+            linkSection(state, onLink = actions.link, onUnlink = actions.unlink)
+            item {
+                Text(
+                    stringResource(R.string.settings_version, BuildConfig.VERSION_NAME),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
         }
     }
 }

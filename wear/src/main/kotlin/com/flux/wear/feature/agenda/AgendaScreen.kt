@@ -30,6 +30,15 @@ import com.flux.wear.ui.rememberHaptics
 fun AgendaScreen(viewModel: AgendaViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val haptics = rememberHaptics()
+    AgendaContent(state) {
+        haptics.confirm()
+        viewModel.complete(it)
+    }
+}
+
+/** Stateless, so every watch shape can be previewed. */
+@Composable
+fun AgendaContent(state: AgendaUiState, onComplete: (String) -> Unit) {
     val listState = rememberTransformingLazyColumnState()
     ScreenScaffold(scrollState = listState) { padding ->
         TransformingLazyColumn(state = listState, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
@@ -37,17 +46,11 @@ fun AgendaScreen(viewModel: AgendaViewModel = hiltViewModel()) {
             when {
                 state.loading -> item { CircularProgressIndicator() }
                 state.today.isEmpty() && state.upcoming.isEmpty() -> item {
-                    Text(stringResource(R.string.agenda_empty), textAlign = TextAlign.Center)
+                    Text(stringResource(R.string.agenda_empty), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                 }
                 else -> {
-                    section(R.string.agenda_today, state.today, state.categories) {
-                        haptics.confirm()
-                        viewModel.complete(it)
-                    }
-                    section(R.string.agenda_upcoming, state.upcoming, state.categories) {
-                        haptics.confirm()
-                        viewModel.complete(it)
-                    }
+                    section(R.string.agenda_today, state.today, state.categories, onComplete)
+                    section(R.string.agenda_upcoming, state.upcoming, state.categories, onComplete)
                 }
             }
         }
