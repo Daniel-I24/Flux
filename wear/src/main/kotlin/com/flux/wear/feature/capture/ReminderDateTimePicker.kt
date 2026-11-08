@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.wear.compose.material3.DatePicker
 import androidx.wear.compose.material3.TimePicker
 import androidx.wear.compose.material3.TimePickerType
@@ -35,8 +36,10 @@ fun ReminderDateTimePicker(initial: Long?, onPicked: (Long) -> Unit, onCancel: (
         if (pickedDay != null) pickedDay = null else onCancel()
     }
     val base = LocalConfiguration.current
+    val context = LocalContext.current
     val spanish = remember(base) { Configuration(base).apply { setLocale(FluxLocale.SPANISH) } }
-    CompositionLocalProvider(LocalConfiguration provides spanish) {
+    val spanishContext = remember(context, spanish) { context.createConfigurationContext(spanish) }
+    CompositionLocalProvider(LocalConfiguration provides spanish, LocalContext provides spanishContext) {
         val day = pickedDay
         if (day == null) {
             val today = LocalDate.now(zone)
