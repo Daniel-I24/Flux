@@ -3,7 +3,8 @@ package com.flux.mobile.feature.settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
@@ -39,6 +40,7 @@ fun SettingsSection(title: String, content: @Composable ColumnScope.() -> Unit) 
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AccountSettings(email: String?, localAccount: Boolean, onProfile: () -> Unit, onRoutine: () -> Unit, onSignOut: () -> Unit) {
     var confirming by rememberSaveable { mutableStateOf(false) }
@@ -52,7 +54,7 @@ fun AccountSettings(email: String?, localAccount: Boolean, onProfile: () -> Unit
             },
             style = MaterialTheme.typography.bodyMedium,
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(FluxSpacing.sm)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(FluxSpacing.sm)) {
             OutlinedButton(onClick = onProfile) { Text(stringResource(R.string.settings_profile)) }
             OutlinedButton(onClick = onRoutine) { Text(stringResource(R.string.settings_routine)) }
         }
@@ -120,6 +122,7 @@ fun TutorialSettings(onRepeat: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DemoSettings(onLoad: () -> Unit, onClear: () -> Unit) {
     SettingsSection(stringResource(R.string.settings_demo)) {
@@ -128,7 +131,7 @@ fun DemoSettings(onLoad: () -> Unit, onClear: () -> Unit) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(FluxSpacing.sm)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(FluxSpacing.sm)) {
             OutlinedButton(onClick = onLoad) { Text(stringResource(R.string.settings_demo_load)) }
             TextButton(onClick = onClear) { Text(stringResource(R.string.settings_demo_clear)) }
         }

@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import com.flux.core.designsystem.theme.FluxSizes
@@ -97,40 +96,38 @@ private fun VibrationChoice(selected: VibrationPattern, onSelect: (VibrationPatt
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SnoozeChoice(minutes: Int, onSelect: (Int) -> Unit) {
-    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-        AppSettings.SNOOZE_OPTIONS.forEachIndexed { index, option ->
-            SegmentedButton(
-                selected = option == minutes,
-                onClick = { onSelect(option) },
-                shape = SegmentedButtonDefaults.itemShape(index, AppSettings.SNOOZE_OPTIONS.size),
-            ) { Text(stringResource(R.string.settings_snooze_minutes, option)) }
-        }
-    }
+    ChoiceRow(AppSettings.SNOOZE_OPTIONS, minutes, onSelect) { stringResource(R.string.settings_snooze_minutes, it) }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AlarmDurationChoice(seconds: Int, onSelect: (Int) -> Unit) {
-    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-        AppSettings.ALARM_DURATION_OPTIONS.forEachIndexed { index, option ->
-            SegmentedButton(
-                selected = option == seconds,
-                onClick = { onSelect(option) },
-                shape = SegmentedButtonDefaults.itemShape(index, AppSettings.ALARM_DURATION_OPTIONS.size),
-            ) { Text(durationLabel(option)) }
+    ChoiceRow(AppSettings.ALARM_DURATION_OPTIONS, seconds, onSelect) { option ->
+        when (val label = ShortDuration.of(option)) {
+            is ShortDuration.Seconds -> stringResource(R.string.settings_duration_seconds, label.value)
+            is ShortDuration.Minutes -> stringResource(R.string.settings_snooze_minutes, label.value)
         }
     }
 }
 
+/**
+ * Equal segments with one-line labels ("30 s", "1 min"): no check icon, which widened the chosen
+ * segment, so "30 segundos" no longer wrapped into a deformed button at 360 dp or with large text.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun durationLabel(seconds: Int): String = if (seconds < SECONDS_PER_MINUTE) {
-    pluralStringResource(R.plurals.duration_seconds, seconds, seconds)
-} else {
-    pluralStringResource(R.plurals.duration_minutes, seconds / SECONDS_PER_MINUTE, seconds / SECONDS_PER_MINUTE)
+private fun ChoiceRow(options: List<Int>, selected: Int, onSelect: (Int) -> Unit, label: @Composable (Int) -> String) {
+    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+        options.forEachIndexed { index, option ->
+            SegmentedButton(
+                selected = option == selected,
+                onClick = { onSelect(option) },
+                shape = SegmentedButtonDefaults.itemShape(index, options.size),
+                icon = {},
+            ) { Text(label(option), maxLines = 1, softWrap = false) }
+        }
+    }
 }
 
 private const val NO_REPEAT = -1
-private const val SECONDS_PER_MINUTE = 60
