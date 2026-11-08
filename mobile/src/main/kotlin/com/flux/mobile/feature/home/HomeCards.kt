@@ -33,6 +33,7 @@ import com.flux.core.model.Category
 import com.flux.core.model.Note
 import com.flux.core.model.WatchLink
 import com.flux.mobile.R
+import com.flux.mobile.feature.link.watchName
 import com.flux.mobile.ui.common.dueDateLabel
 
 /** Linked watch and whether it is in range; any other state invites the user to Ajustes. */
@@ -49,7 +50,7 @@ fun WatchStatusCard(watch: WatchLink, onOpenSettings: () -> Unit) {
             Column(Modifier.weight(1f)) {
                 Text(
                     text =
-                    linked?.let { stringResource(R.string.link_linked, it.displayName) }
+                    linked?.let { stringResource(R.string.link_linked, it.watchName()) }
                         ?: stringResource(R.string.home_watch_not_linked),
                     style = MaterialTheme.typography.titleSmall,
                 )

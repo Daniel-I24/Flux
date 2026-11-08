@@ -15,6 +15,7 @@ import com.flux.core.domain.usecase.UnlinkWatchUseCase
 import com.flux.core.model.FluxResult
 import com.flux.core.model.WatchLink
 import com.flux.core.sync.datalayer.DataLayerGateway
+import com.flux.core.sync.datalayer.LinkLog
 import com.flux.core.sync.datalayer.SyncInbox
 import com.flux.core.sync.protocol.SyncMessage
 import com.flux.core.sync.protocol.SyncMessageFactory
@@ -46,7 +47,11 @@ class WatchLinkCoordinator @Inject constructor(
     private val unlinkWatch: UnlinkWatchUseCase,
 ) {
     private val state = MutableStateFlow<WatchLink>(WatchLink.Searching)
+    private val candidateList = MutableStateFlow<List<WatchCandidate>>(emptyList())
     val watchLink: StateFlow<WatchLink> = state.asStateFlow()
+
+    /** Watches that could be linked now (or replace the linked one), FLUX installed or not. */
+    val candidates: StateFlow<List<WatchCandidate>> = candidateList.asStateFlow()
     val protocolMismatch: StateFlow<Boolean> = inbox.versionMismatch
 
     suspend fun refresh() {
@@ -54,17 +59,19 @@ class WatchLinkCoordinator @Inject constructor(
         val linkedId = observeLink().first()?.watchNodeId
         val withApp = gateway.nodesWithCapability(SyncProtocol.WATCH_CAPABILITY, reachableOnly = false)
         val connected = gateway.connectedNodes()
-        val linked = withApp.firstOrNull { it.id == linkedId }
-        state.value = when {
-            linked != null -> WatchLink.Linked(linked.id, linked.displayName, connected = connected.any { it.id == linked.id })
-            withApp.isNotEmpty() -> withApp.first().let { WatchLink.Available(it.id, it.displayName) }
-            connected.isNotEmpty() -> connected.first().let { WatchLink.AppMissingOnWatch(it.id, it.displayName) }
-            else -> WatchLink.NoWatchFound
-        }
+        val view = WatchLinkRules.resolve(linkedId, withApp, connected)
+        LinkLog.info(
+            "phone linked=${linkedId != null} withApp=${withApp.size} connected=${connected.size} " +
+                "state=${view.link.javaClass.simpleName} candidates=${view.candidates.size}",
+        )
+        candidateList.value = view.candidates
+        state.value = view.link
     }
 
+    /** Links [nodeId]; if the account had another watch, that one is told it was unlinked ("Cambiar de reloj"). */
     suspend fun link(nodeId: String, displayName: String): LinkProblem? {
         val accountId = currentAccountId() ?: return LinkProblem.STORAGE
+        val previous = observeLink().first()?.watchNodeId
         val code = WatchLinkPolicy.confirmationCode(SecureRandom().nextInt())
         state.value = WatchLink.AwaitingConfirmation(nodeId, displayName, code)
         val request = factory.envelope(SyncMessage.LinkRequest(code, accountId, observeProfile().first()?.displayName))
@@ -83,6 +90,10 @@ class WatchLinkCoordinator @Inject constructor(
                 is FluxResult.Success -> if (saved.value == WatchLinkDecision.WatchOwnedByOtherAccount) LinkProblem.REJECTED else null
             }
         }
+        if (problem == null && previous != null && previous != nodeId) {
+            gateway.send(previous, factory.envelope(SyncMessage.Unlink(accountId)))
+        }
+        LinkLog.info("phone link result=${problem ?: "LINKED"} replaced=${problem == null && previous != null && previous != nodeId}")
         refresh()
         return problem
     }
@@ -92,6 +103,7 @@ class WatchLinkCoordinator @Inject constructor(
         val linkedId = observeLink().first()?.watchNodeId
         if (accountId != null && linkedId != null) gateway.send(linkedId, factory.envelope(SyncMessage.Unlink(accountId)))
         unlinkWatch()
+        LinkLog.info("phone unlink sent=${linkedId != null}")
         refresh()
     }
 

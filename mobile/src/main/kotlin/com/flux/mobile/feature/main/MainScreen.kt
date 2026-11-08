@@ -11,6 +11,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,11 +26,14 @@ import com.flux.mobile.feature.home.HomeScreen
 import com.flux.mobile.feature.notes.NotesRequest
 import com.flux.mobile.feature.notes.NotesScreen
 import com.flux.mobile.feature.settings.SettingsScreen
+import com.flux.mobile.link.LinkLaunch
 
 /** Main area after onboarding: four tabs sharing one snackbar host (used for "Deshacer"). */
 @Composable
-fun MainScreen() {
+fun MainScreen(linkRequest: LinkLaunch? = null) {
     var tab by rememberSaveable { mutableStateOf(MainTab.HOME) }
+    // "Vincular" on the watch: Ajustes > Reloj takes it from here.
+    LaunchedEffect(linkRequest) { if (linkRequest != null) tab = MainTab.SETTINGS }
     var notesRequest by remember { mutableStateOf<NotesRequest?>(null) }
     val snackbar = remember { SnackbarHostState() }
     Scaffold(

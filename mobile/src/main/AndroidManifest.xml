@@ -45,6 +45,15 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- "Vincular" on the watch opens Ajustes > Reloj here. Must match SyncProtocol.LINK_SCHEME/LINK_HOST. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="link"
+                    android:scheme="flux" />
+            </intent-filter>
         </activity>
 
         <!-- Full-screen alarm, shown over the lock screen while AlarmService rings. -->
