@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sound_change">Cambiar</string>
+    <string name="sound_sheet_title">Elige un tono</string>
+    <string name="sound_add_files">Agregar desde archivos</string>
+    <string name="sound_section_bundled">Tonos de FLUX</string>
+    <string name="sound_section_system">Tonos del teléfono</string>
+    <string name="sound_section_imported">Tus tonos</string>
+    <string name="sound_stop">Detener %1$s</string>
+    <string name="sound_more">Opciones de %1$s</string>
+    <string name="sound_rename">Renombrar</string>
+    <string name="sound_rename_title">Renombrar tono</string>
+    <string name="sound_name">Nombre</string>
+    <string name="sound_delete">Eliminar</string>
+    <string name="sound_delete_title">¿Eliminar «%1$s»?</string>
+    <string name="sound_delete_message">Los recordatorios que lo usan sonarán con el tono de respaldo.</string>
+    <string name="sound_imported">Tono importado</string>
+    <string name="sound_whatsapp">Audio de WhatsApp %1$02d/%2$02d/%3$d</string>
+</resources>

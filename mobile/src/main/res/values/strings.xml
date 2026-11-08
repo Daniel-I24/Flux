@@ -131,7 +131,6 @@
     <string name="home_greeting_anonymous">Hola</string>
 
     <!-- Sounds -->
-    <string name="sound_pick_system">Elegir tono del teléfono</string>
     <string name="sound_system">Tono del teléfono</string>
     <string name="sound_preview">Escuchar %1$s</string>
     <string name="sound_use_category">Sonido de la categoría</string>
@@ -221,6 +220,7 @@
     <string name="settings_vibration">Vibración</string>
     <string name="settings_snooze">Posponer</string>
     <string name="settings_snooze_minutes">%1$d min</string>
+    <string name="settings_duration_seconds">%1$d s</string>
     <string name="settings_quiet_hours">No molestar de FLUX</string>
     <string name="settings_quiet_hours_detail">Recordatorios en silencio de %1$s a %2$s (tus horas de sueño).</string>
     <string name="settings_quiet_hours_no_routine">Configura tu rutina para usar las horas de sueño.</string>
