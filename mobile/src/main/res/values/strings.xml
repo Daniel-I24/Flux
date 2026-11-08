@@ -181,7 +181,6 @@
     <string name="editor_date">Fecha</string>
     <string name="editor_no_date">Sin fecha</string>
     <string name="editor_clear_date">Quitar</string>
-    <string name="editor_time">Hora</string>
     <string name="editor_alarm">Alarma</string>
     <string name="editor_sound">Sonido de este recordatorio</string>
 

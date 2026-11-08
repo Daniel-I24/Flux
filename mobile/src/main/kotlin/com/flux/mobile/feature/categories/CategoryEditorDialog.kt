@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -53,7 +54,7 @@ import com.flux.mobile.ui.sound.SoundPicker
 fun CategoryEditorDialog(category: Category?, onSave: (CategoryDraft, Map<String, String>) -> Unit, onDismiss: () -> Unit) {
     val currentName = category?.displayName().orEmpty()
     var name by rememberSaveable { mutableStateOf(currentName) }
-    var color by rememberSaveable { mutableStateOf(category?.colorArgb ?: FluxColorTokens.CategoryPalette.first()) }
+    var color by rememberSaveable { mutableLongStateOf(category?.colorArgb ?: FluxColorTokens.CategoryPalette.first()) }
     var icon by rememberSaveable { mutableStateOf(category?.icon ?: CategoryIcon.STAR) }
     var sound by remember(category?.id) { mutableStateOf(category?.sound) }
     val defaultNames = DefaultCategory.entries.associate { it.id to stringResource(it.nameRes()) }

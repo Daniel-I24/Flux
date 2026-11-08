@@ -1,5 +1,6 @@
 package com.flux.mobile.ui.common
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
@@ -78,6 +79,8 @@ fun DateTimePickerDialogs(initial: Long?, onPicked: (Long) -> Unit, onCancel: ()
 }
 
 /** Month and weekday names of the pickers follow the configuration's locale: always Spanish in FLUX. */
+// FLUX ships APKs with every language, so no Play language split is ever missing. Only the pickers' locale changes.
+@SuppressLint("AppBundleLocaleChanges")
 @Composable
 private fun InSpanish(content: @Composable () -> Unit) {
     val base = LocalConfiguration.current

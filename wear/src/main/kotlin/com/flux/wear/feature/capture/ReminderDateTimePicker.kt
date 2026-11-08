@@ -1,5 +1,6 @@
 package com.flux.wear.feature.capture
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
@@ -23,6 +24,8 @@ import java.time.ZoneId
  * "Elegir fecha y hora" on the watch: the day (from today on), then the time in 24 h, in Spanish.
  * Back returns to the question without changing anything.
  */
+// FLUX ships APKs with every language, so no Play language split is ever missing. Only the pickers' locale changes.
+@SuppressLint("AppBundleLocaleChanges")
 @Composable
 fun ReminderDateTimePicker(initial: Long?, onPicked: (Long) -> Unit, onCancel: () -> Unit) {
     val zone = ZoneId.systemDefault()
