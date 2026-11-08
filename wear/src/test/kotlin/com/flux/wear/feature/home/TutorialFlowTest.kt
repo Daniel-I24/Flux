@@ -25,7 +25,7 @@ class TutorialFlowTest {
     private val store = mockk<WatchStateStore>(relaxed = true)
 
     private fun homeViewModel() = HomeViewModel(
-        context = mockk(relaxed = true),
+        launcher = mockk(relaxed = true),
         monitor = mockk(relaxed = true),
         linkRequests = mockk(relaxed = true),
         observeSections = mockk(relaxed = true),
@@ -33,7 +33,7 @@ class TutorialFlowTest {
         store = store,
     )
 
-    private fun settingsViewModel() = WatchSettingsViewModel(store, mockk(relaxed = true))
+    private fun settingsViewModel() = WatchSettingsViewModel(store, mockk(relaxed = true), mockk(relaxed = true))
 
     @Before
     fun setUp() = Dispatchers.setMain(UnconfinedTestDispatcher())

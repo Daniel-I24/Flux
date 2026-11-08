@@ -1,11 +1,14 @@
 package com.flux.wear.feature.settings
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
@@ -37,6 +40,9 @@ private fun VibrationPattern.labelRes(): Int = when (this) {
 fun WatchSettingsScreen(onTutorial: () -> Unit, viewModel: WatchSettingsViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val haptics = rememberHaptics()
+    val context = LocalContext.current
+    val opened = stringResource(R.string.problem_opened_on_phone)
+    val failed = stringResource(R.string.problem_open_failed)
     val listState = rememberTransformingLazyColumnState()
     ScreenScaffold(scrollState = listState) { padding ->
         TransformingLazyColumn(state = listState, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
@@ -74,16 +80,23 @@ fun WatchSettingsScreen(onTutorial: () -> Unit, viewModel: WatchSettingsViewMode
                     Text(stringResource(R.string.settings_tutorial))
                 }, modifier = Modifier.fillMaxWidth())
             }
-            linkSection(state, onUnlink = {
-                haptics.confirm()
-                viewModel.unlink()
-            })
+            linkSection(
+                state,
+                onLink = {
+                    haptics.tap()
+                    viewModel.link { ok -> Toast.makeText(context, if (ok) opened else failed, Toast.LENGTH_SHORT).show() }
+                },
+                onUnlink = {
+                    haptics.confirm()
+                    viewModel.unlink()
+                },
+            )
             item { Text(stringResource(R.string.settings_version, BuildConfig.VERSION_NAME)) }
         }
     }
 }
 
-private fun TransformingLazyColumnScope.linkSection(state: WatchSettingsUiState, onUnlink: () -> Unit) {
+private fun TransformingLazyColumnScope.linkSection(state: WatchSettingsUiState, onLink: () -> Unit, onUnlink: () -> Unit) {
     item { ListHeader { Text(stringResource(R.string.settings_link)) } }
     item {
         val label = when {
@@ -91,13 +104,14 @@ private fun TransformingLazyColumnScope.linkSection(state: WatchSettingsUiState,
             state.phone.userName != null -> stringResource(R.string.settings_linked_to, state.phone.userName)
             else -> stringResource(R.string.settings_linked_unknown)
         }
-        Text(label)
+        Text(label, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
     }
-    if (state.linkedAccount != null) {
-        item {
-            OutlinedButton(onClick = onUnlink, label = {
-                Text(stringResource(R.string.settings_unlink))
-            }, modifier = Modifier.fillMaxWidth())
-        }
+    item {
+        val linked = state.linkedAccount != null
+        OutlinedButton(
+            onClick = if (linked) onUnlink else onLink,
+            label = { Text(stringResource(if (linked) R.string.settings_unlink else R.string.settings_link_phone)) },
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }

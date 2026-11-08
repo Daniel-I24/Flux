@@ -1,11 +1,7 @@
 package com.flux.wear.feature.home
 
-import android.content.Context
-import android.content.Intent
-import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.wear.remote.interactions.RemoteActivityHelper
 import com.flux.core.data.repository.OutboxRepository
 import com.flux.core.domain.usecase.ObserveNoteSectionsUseCase
 import com.flux.core.model.Note
@@ -15,15 +11,13 @@ import com.flux.wear.data.WatchStateStore
 import com.flux.wear.sync.LinkRequests
 import com.flux.wear.sync.PendingLink
 import com.flux.wear.sync.PhoneConnectionMonitor
+import com.flux.wear.sync.PhoneLauncher
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.concurrent.Executors
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 
 data class HomeUiState(
@@ -38,7 +32,7 @@ data class HomeUiState(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    @param:ApplicationContext private val context: Context,
+    private val launcher: PhoneLauncher,
     private val monitor: PhoneConnectionMonitor,
     private val linkRequests: LinkRequests,
     observeSections: ObserveNoteSectionsUseCase,
@@ -76,14 +70,10 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch { linkRequests.answer(accepted) }
     }
 
-    /** Opens FLUX (or its Play Store page) on the phone so the user can fix the problem there. */
-    fun openOnPhone(onResult: (Boolean) -> Unit) {
+    /** Opens FLUX's store page, or FLUX itself to link this watch, on the phone: the fix happens there. */
+    fun openOnPhone(action: ProblemAction, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val intent = Intent(Intent.ACTION_VIEW).addCategory(Intent.CATEGORY_BROWSABLE).setData(BuildConfig.PLAY_STORE_URL.toUri())
-            val executor = Executors.newSingleThreadExecutor()
-            val opened = runCatching { RemoteActivityHelper(context, executor).startRemoteActivity(intent).await() }
-            executor.shutdown()
-            onResult(opened.isSuccess)
+            onResult(if (action == ProblemAction.OPEN_STORE) launcher.openStore() else launcher.openLink())
         }
     }
 

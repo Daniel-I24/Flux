@@ -8,6 +8,7 @@ import com.flux.wear.data.WatchSettings
 import com.flux.wear.data.WatchStateStore
 import com.flux.wear.data.WatchTheme
 import com.flux.wear.sync.LinkRequests
+import com.flux.wear.sync.PhoneLauncher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,6 +27,7 @@ data class WatchSettingsUiState(
 class WatchSettingsViewModel @Inject constructor(
     private val store: WatchStateStore,
     private val linkRequests: LinkRequests,
+    private val launcher: PhoneLauncher,
 ) : ViewModel() {
     private var finishing = false
 
@@ -47,6 +49,11 @@ class WatchSettingsViewModel @Inject constructor(
             store.updateSettings { it.copy(tutorialDone = true) }
             onSaved()
         }
+    }
+
+    /** Opens FLUX on the phone at Ajustes > Reloj, which sends the code to confirm here. */
+    fun link(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch { onResult(launcher.openLink()) }
     }
 
     fun unlink() {

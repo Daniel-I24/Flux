@@ -37,6 +37,7 @@ fun HomeScreen(actions: HomeActions, viewModel: HomeViewModel = hiltViewModel())
     val haptics = rememberHaptics()
     val context = LocalContext.current
     val opened = stringResource(R.string.problem_opened_on_phone)
+    val unreachable = stringResource(R.string.problem_open_failed)
     LaunchedEffect(Unit) { if (viewModel.shouldShowTutorial()) actions.tutorial() }
     state.pendingLink?.let { pending ->
         LinkConfirmContent(pending, onAnswer = { accepted ->
@@ -49,8 +50,8 @@ fun HomeScreen(actions: HomeActions, viewModel: HomeViewModel = hiltViewModel())
         haptics.tap()
         when (action) {
             ProblemAction.RETRY -> viewModel.refresh()
-            ProblemAction.OPEN_ON_PHONE -> viewModel.openOnPhone { ok ->
-                if (ok) Toast.makeText(context, opened, Toast.LENGTH_SHORT).show()
+            ProblemAction.OPEN_STORE, ProblemAction.OPEN_APP, ProblemAction.LINK -> viewModel.openOnPhone(action) { ok ->
+                Toast.makeText(context, if (ok) opened else unreachable, Toast.LENGTH_SHORT).show()
             }
             ProblemAction.OPEN_SETTINGS -> actions.settings()
             ProblemAction.NONE -> Unit
@@ -66,13 +67,14 @@ fun HomeContent(state: HomeUiState, actions: HomeActions, onProblem: (ProblemAct
     ScreenScaffold(scrollState = listState) { padding ->
         TransformingLazyColumn(state = listState, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
             item { ConnectionLabel(state.connection) }
+            // The problem goes first: it is what the user must read, and the bottom of a round screen cuts it.
+            item { ConnectionProblemCard(state.connection, onAction = onProblem) }
             item {
                 VoiceHeroButton(onClick = {
                     haptics.tap()
                     actions.dictate()
                 })
             }
-            item { ConnectionProblemCard(state.connection, onAction = onProblem) }
             if (state.versionMismatch) item { VersionMismatchCard() }
             item { NextReminderCard(state.nextReminder, state.pendingCount, onClick = actions.agenda) }
             item { Shortcut(Icons.AutoMirrored.Rounded.EventNote, stringResource(R.string.home_agenda), actions.agenda) }

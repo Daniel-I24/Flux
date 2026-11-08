@@ -46,7 +46,7 @@ fun ConnectionLabel(connection: PhoneConnection) {
         is PhoneConnection.Ready -> FluxColorTokens.Green400 to stringResource(
             if (connection.serverReachable) R.string.connection_ready else R.string.connection_ready_local_ai,
         )
-        else -> FluxColorTokens.Red400 to stringResource(R.string.connection_offline)
+        else -> FluxColorTokens.Red400 to stringResource(connection.shortLabel())
     }
     Row(
         modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
@@ -56,6 +56,17 @@ fun ConnectionLabel(connection: PhoneConnection) {
         Box(Modifier.size(WatchDimens.statusDot).background(color, CircleShape))
         Text(text, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
+}
+
+/** Two words per cause, so the top of the screen already tells the states apart. */
+private fun PhoneConnection.shortLabel(): Int = when (this) {
+    PhoneConnection.NoPairedPhone -> R.string.connection_not_paired
+    PhoneConnection.AppNotInstalled -> R.string.connection_no_app
+    PhoneConnection.SetupIncomplete -> R.string.connection_no_session
+    PhoneConnection.NotLinked -> R.string.connection_not_linked
+    PhoneConnection.LinkedToOtherAccount -> R.string.connection_other_account
+    PhoneConnection.UpdateRequired -> R.string.connection_update
+    else -> R.string.connection_offline
 }
 
 /** The protagonist: a large round microphone over a still lava of the theme colors. */
