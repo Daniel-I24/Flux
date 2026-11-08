@@ -39,13 +39,16 @@ class DataLayerGateway @Inject constructor(
 
     suspend fun connectedNodes(): List<NodeInfo> = runCatching {
         nodes.connectedNodes.await().map { NodeInfo(it.id, it.displayName, it.isNearby) }
-    }.getOrDefault(emptyList())
+    }.onFailure { LinkLog.info("connectedNodes failed: ${it.javaClass.simpleName}") }.getOrDefault(emptyList())
+
+    /** This device's own node id (null when the Wearable API is unavailable). */
+    suspend fun localNodeId(): String? = runCatching { nodes.localNode.await().id }.getOrNull()
 
     /** Nodes that installed the other FLUX app; [reachableOnly] = currently connected. */
     suspend fun nodesWithCapability(capability: String, reachableOnly: Boolean): List<NodeInfo> = runCatching {
         val filter = if (reachableOnly) CapabilityClient.FILTER_REACHABLE else CapabilityClient.FILTER_ALL
         capabilities.getCapability(capability, filter).await().nodes.map { NodeInfo(it.id, it.displayName, it.isNearby) }
-    }.getOrDefault(emptyList())
+    }.onFailure { LinkLog.info("getCapability($capability) failed: ${it.javaClass.simpleName}") }.getOrDefault(emptyList())
 
     suspend fun send(nodeId: String, envelope: SyncEnvelope): FluxResult<Unit> = sendRaw(nodeId, codec.encode(envelope))
 

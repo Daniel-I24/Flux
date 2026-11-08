@@ -78,6 +78,7 @@ Cada decisión con una línea de justificación, en orden cronológico. Las deci
 | N-072 | KSP | Se mantiene KSP1 (N-018) | KSP2 falló con los módulos JVM puros; cambiar antes de entregar agrega riesgo sin beneficio para el usuario. |
 | N-073 | Alarma atendida | `ActiveAlarm.awaitHandled` devuelve un booleano explícito | `first { it != noteId }` devolvía `null` al detener la alarma, igual que `withTimeoutOrNull` al agotarse el tiempo: un recordatorio completado o pospuesto desde la notificación quedaba además como "perdido" (hallado en el emulador con el APK release). |
 | N-074 | Fin del tutorial del reloj | Se guarda `tutorialDone` y solo entonces se sale; Inicio decide leyendo el almacén, no `uiState` | Tras 5 s en el tutorial, `WhileSubscribed` detiene el flujo de Inicio y su último valor seguía en `false`: "Omitir" y "Empezar" reabrían el tutorial hasta matar la app (hallado en el emulador con el APK release, 6 de 6 intentos). |
+| N-075 | Registros FluxLink | `LinkLog` escribe con `Log.println(INFO)` bajo la etiqueta `FluxLink`, también en release; solo estados y conteos | N-045 quita los logs de release, pero la vinculación falla en relojes reales donde no hay depurador. R8 elimina `Log.v/d/i`, no `println`. Nunca se registran ids de nodo, nombres, códigos ni cuentas. |
 
 ## Contraste de la paleta (N-057)
 

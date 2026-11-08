@@ -13,4 +13,12 @@ object SyncProtocol {
     const val MAX_MESSAGE_BYTES = 16 * 1024
     const val MAX_SNAPSHOT_BYTES = 90 * 1024
     const val LINK_CODE_LENGTH = 6
+
+    /**
+     * Opened on the phone by the watch ("Vincular"): FLUX shows Ajustes > Reloj and starts linking
+     * the watch named in [LINK_WATCH_PARAM]. Must match the intent filter of the phone's MainActivity.
+     */
+    const val LINK_SCHEME = "flux"
+    const val LINK_HOST = "link"
+    const val LINK_WATCH_PARAM = "watch"
 }
