@@ -30,7 +30,7 @@ import com.flux.mobile.feature.permissions.PermissionsList
 
 private enum class SettingsPage { MAIN, PROFILE, ROUTINE }
 
-/** Ajustes: every setting of FLUX lives here (profile, account, watch, reminders, theme, AI, demo). */
+/** Ajustes: every setting of FLUX lives here (profile, account, watch, reminders, theme, AI, tutorial, Avanzado). */
 @Composable
 fun SettingsScreen(snackbar: SnackbarHostState, modifier: Modifier = Modifier, viewModel: SettingsViewModel = hiltViewModel()) {
     var page by rememberSaveable { mutableStateOf(SettingsPage.MAIN) }
@@ -65,8 +65,8 @@ fun SettingsScreen(snackbar: SnackbarHostState, modifier: Modifier = Modifier, v
             ReminderSettings(state.settings, state.profile?.routine, viewModel)
             AppearanceSettings(state.settings.themeMode, viewModel::setTheme)
             AiSettings(state.ai, viewModel::refreshAi)
-            DemoSettings(onLoad = viewModel::loadDemo, onClear = viewModel::clearDemo)
             TutorialSettings(onRepeat = viewModel::repeatTutorial)
+            AdvancedSettings(onLoadDemo = viewModel::loadDemo, onClearDemo = viewModel::clearDemo)
             Text(
                 stringResource(R.string.settings_version, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodySmall,

@@ -3,6 +3,7 @@ package com.flux.mobile.feature.settings
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.flux.core.domain.port.RemoteAiState
 import com.flux.core.domain.repository.AuthSession
 import com.flux.core.domain.usecase.CheckRemoteAiUseCase
 import com.flux.core.domain.usecase.ClearDemoDataUseCase
@@ -20,6 +21,7 @@ import com.flux.core.model.VibrationPattern
 import com.flux.mobile.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +30,18 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-enum class AiStatus { CHECKING, REMOTE, LOCAL }
+/** What the AI row in Ajustes shows; the last three are the local AI, each for its own reason. */
+enum class AiStatus {
+    CHECKING,
+    CONNECTING,
+    REMOTE,
+    OFFLINE,
+    NO_SESSION,
+    NOT_CONFIGURED,
+    ;
+
+    val isLocal: Boolean get() = this == OFFLINE || this == NO_SESSION || this == NOT_CONFIGURED
+}
 
 data class SettingsUiState(
     val settings: AppSettings = AppSettings(),
@@ -52,6 +65,7 @@ class SettingsViewModel @Inject constructor(
     private val demoContent: DemoContent,
 ) : ViewModel() {
     private val ai = MutableStateFlow(AiStatus.CHECKING)
+    private var aiCheck: Job? = null
     private val messages = MutableStateFlow<Int?>(null)
 
     /** One-shot message for the snackbar. */
@@ -64,9 +78,19 @@ class SettingsViewModel @Inject constructor(
         refreshAi()
     }
 
+    /** Runs in the background: a sleeping server shows "Conectando con la IA…" while it wakes up. */
     fun refreshAi() {
+        aiCheck?.cancel()
         ai.value = AiStatus.CHECKING
-        viewModelScope.launch { ai.value = if (checkRemoteAi()) AiStatus.REMOTE else AiStatus.LOCAL }
+        aiCheck = viewModelScope.launch {
+            val state = checkRemoteAi(onWaking = { ai.value = AiStatus.CONNECTING })
+            ai.value = when (state) {
+                RemoteAiState.AVAILABLE -> AiStatus.REMOTE
+                RemoteAiState.WAKING, RemoteAiState.OFFLINE -> AiStatus.OFFLINE
+                RemoteAiState.NO_SESSION -> AiStatus.NO_SESSION
+                RemoteAiState.NOT_CONFIGURED -> AiStatus.NOT_CONFIGURED
+            }
+        }
     }
 
     fun setTheme(mode: ThemeMode) = update { it.copy(themeMode = mode) }

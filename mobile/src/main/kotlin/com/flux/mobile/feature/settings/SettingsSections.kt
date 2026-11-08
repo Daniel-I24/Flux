@@ -30,11 +30,12 @@ import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.core.model.ThemeMode
 import com.flux.mobile.R
 
+/** A card with its title; [header] replaces the plain title (e.g. a foldable one). */
 @Composable
-fun SettingsSection(title: String, content: @Composable ColumnScope.() -> Unit) {
+fun SettingsSection(title: String, header: (@Composable () -> Unit)? = null, content: @Composable ColumnScope.() -> Unit) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(FluxSpacing.lg), verticalArrangement = Arrangement.spacedBy(FluxSpacing.sm)) {
-            Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+            header?.invoke() ?: Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
             content()
         }
     }
@@ -98,19 +99,6 @@ fun AppearanceSettings(theme: ThemeMode, onTheme: (ThemeMode) -> Unit) {
 }
 
 @Composable
-fun AiSettings(status: AiStatus, onRefresh: () -> Unit) {
-    SettingsSection(stringResource(R.string.settings_ai)) {
-        val text = when (status) {
-            AiStatus.CHECKING -> R.string.settings_ai_checking
-            AiStatus.REMOTE -> R.string.settings_ai_remote
-            AiStatus.LOCAL -> R.string.settings_ai_local
-        }
-        Text(stringResource(text), style = MaterialTheme.typography.bodyMedium)
-        TextButton(onClick = onRefresh, enabled = status != AiStatus.CHECKING) { Text(stringResource(R.string.settings_ai_refresh)) }
-    }
-}
-
-@Composable
 fun TutorialSettings(onRepeat: () -> Unit) {
     SettingsSection(stringResource(R.string.settings_tutorial)) {
         Text(
@@ -119,21 +107,5 @@ fun TutorialSettings(onRepeat: () -> Unit) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         OutlinedButton(onClick = onRepeat) { Text(stringResource(R.string.settings_tutorial_repeat)) }
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun DemoSettings(onLoad: () -> Unit, onClear: () -> Unit) {
-    SettingsSection(stringResource(R.string.settings_demo)) {
-        Text(
-            stringResource(R.string.settings_demo_description),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(FluxSpacing.sm)) {
-            OutlinedButton(onClick = onLoad) { Text(stringResource(R.string.settings_demo_load)) }
-            TextButton(onClick = onClear) { Text(stringResource(R.string.settings_demo_clear)) }
-        }
     }
 }

@@ -48,7 +48,22 @@ fun interface ReclassificationQueue {
     fun enqueue(noteId: String)
 }
 
-/** Whether the remote AI (our server + Gemini) can be reached right now. */
+/** What stands between the user and the remote AI (our server + Gemini). */
+enum class RemoteAiState {
+    AVAILABLE,
+
+    /** The server did not answer in a few seconds: it is probably waking up (free hosting sleeps). */
+    WAKING,
+
+    /** No internet, or the server did not answer even after waiting for it to wake up. */
+    OFFLINE,
+
+    /** No Firebase session token, so the server would reject the request. */
+    NO_SESSION,
+    NOT_CONFIGURED,
+}
+
 fun interface RemoteAiStatus {
-    suspend fun isAvailable(): Boolean
+    /** [patient] waits long enough for a sleeping server to wake up; otherwise answers in a few seconds. */
+    suspend fun check(patient: Boolean): RemoteAiState
 }

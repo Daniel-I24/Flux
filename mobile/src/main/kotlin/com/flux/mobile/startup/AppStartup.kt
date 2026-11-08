@@ -1,5 +1,6 @@
 package com.flux.mobile.startup
 
+import com.flux.core.domain.port.RemoteAiStatus
 import com.flux.core.domain.repository.CategoryRepository
 import com.flux.mobile.alarm.AlarmChannels
 import com.flux.mobile.link.AccountGuard
@@ -18,6 +19,7 @@ class AppStartup @Inject constructor(
     private val accountGuard: AccountGuard,
     private val snapshotPublisher: SnapshotPublisher,
     private val alarmChannels: AlarmChannels,
+    private val remoteAi: RemoteAiStatus,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -26,5 +28,7 @@ class AppStartup @Inject constructor(
         scope.launch { alarmChannels.ensure() }
         accountGuard.start(scope)
         snapshotPublisher.start(scope)
+        // Wakes the free-hosted server early, so the first note is more likely classified by the remote AI.
+        scope.launch { remoteAi.check(patient = true) }
     }
 }

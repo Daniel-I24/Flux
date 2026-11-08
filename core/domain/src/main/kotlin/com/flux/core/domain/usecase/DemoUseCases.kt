@@ -1,6 +1,7 @@
 package com.flux.core.domain.usecase
 
 import com.flux.core.domain.port.Clock
+import com.flux.core.domain.port.RemoteAiState
 import com.flux.core.domain.port.RemoteAiStatus
 import com.flux.core.domain.repository.NoteRepository
 import com.flux.core.model.Classification
@@ -55,8 +56,17 @@ class ClearDemoDataUseCase @Inject constructor(private val notes: NoteRepository
     }
 }
 
+/**
+ * Quick check first; if the server seems asleep, [onWaking] is told and a patient check
+ * (long enough for a cold start) gives the final answer.
+ */
 class CheckRemoteAiUseCase @Inject constructor(private val status: RemoteAiStatus) {
-    suspend operator fun invoke(): Boolean = status.isAvailable()
+    suspend operator fun invoke(onWaking: () -> Unit = {}): RemoteAiState {
+        val quick = status.check(patient = false)
+        if (quick != RemoteAiState.WAKING) return quick
+        onWaking()
+        return status.check(patient = true)
+    }
 }
 
 private const val DEMO_PREFIX = "demo-"

@@ -18,6 +18,9 @@ object FluxSpacing {
 object FluxSizes {
     val minTouchTarget = 48.dp
     val iconSm = 16.dp
+
+    /** The colored dot next to a short status ("IA en la nube activa"). */
+    val statusDot = 10.dp
     val iconMd = 20.dp
     val iconLg = 24.dp
     val iconXl = 32.dp
