@@ -20,7 +20,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -41,6 +40,7 @@ import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.core.model.Category
 import com.flux.mobile.R
 import com.flux.mobile.feature.home.CategoryCount
+import com.flux.mobile.ui.common.SnackbarEventEffect
 
 /** Categorías: built-in and user categories with color, icon, sound and pending count. */
 @Composable
@@ -52,12 +52,7 @@ fun CategoriesScreen(snackbar: SnackbarHostState, modifier: Modifier = Modifier,
     var deletingId by rememberSaveable { mutableStateOf<String?>(null) }
     val context = LocalContext.current
 
-    LaunchedEffect(message) {
-        message?.let {
-            viewModel.consumeMessage()
-            snackbar.showSnackbar(context.getString(it))
-        }
-    }
+    SnackbarEventEffect(message, onConsumed = viewModel::consumeMessage) { snackbar.showSnackbar(context.getString(it)) }
     if (state.loading) {
         FluxLoadingState(modifier)
         return

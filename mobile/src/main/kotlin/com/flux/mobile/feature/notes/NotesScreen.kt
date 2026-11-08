@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.mobile.R
 import com.flux.mobile.feature.capture.CaptureSheet
+import com.flux.mobile.ui.common.SnackbarEventEffect
 import com.flux.mobile.ui.common.alarmConfirmation
 
 /** Notas: sections, search, filters, complete and delete with "Deshacer", edit and create (voice or text). */
@@ -90,27 +91,18 @@ fun NotesScreen(
 @Composable
 private fun NotesEventEffect(event: NotesEvent?, snackbar: SnackbarHostState, viewModel: NotesViewModel) {
     val context = LocalContext.current
-    LaunchedEffect(event) {
-        when (event) {
+    SnackbarEventEffect(event, onConsumed = viewModel::consumeEvent) { current ->
+        when (current) {
             is NotesEvent.Deleted -> {
-                viewModel.consumeEvent()
                 val result = snackbar.showSnackbar(context.getString(R.string.notes_deleted), context.getString(R.string.notes_undo))
-                if (result == SnackbarResult.ActionPerformed) viewModel.undoDelete(event.noteId)
+                if (result == SnackbarResult.ActionPerformed) viewModel.undoDelete(current.noteId)
             }
             is NotesEvent.Completed -> {
-                viewModel.consumeEvent()
                 val result = snackbar.showSnackbar(context.getString(R.string.notes_completed), context.getString(R.string.notes_undo))
-                if (result == SnackbarResult.ActionPerformed) viewModel.undoComplete(event.noteId)
+                if (result == SnackbarResult.ActionPerformed) viewModel.undoComplete(current.noteId)
             }
-            is NotesEvent.Failed -> {
-                viewModel.consumeEvent()
-                snackbar.showSnackbar(context.getString(event.message))
-            }
-            is NotesEvent.Scheduled -> {
-                viewModel.consumeEvent()
-                snackbar.showSnackbar(context.alarmConfirmation(event.dueAt))
-            }
-            null -> Unit
+            is NotesEvent.Failed -> snackbar.showSnackbar(context.getString(current.message))
+            is NotesEvent.Scheduled -> snackbar.showSnackbar(context.alarmConfirmation(current.dueAt))
         }
     }
 }

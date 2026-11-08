@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -27,6 +26,7 @@ import com.flux.mobile.BuildConfig
 import com.flux.mobile.R
 import com.flux.mobile.feature.link.WatchLinkPanel
 import com.flux.mobile.feature.permissions.PermissionsList
+import com.flux.mobile.ui.common.SnackbarEventEffect
 
 private enum class SettingsPage { MAIN, PROFILE, ROUTINE }
 
@@ -37,12 +37,7 @@ fun SettingsScreen(snackbar: SnackbarHostState, modifier: Modifier = Modifier, v
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    LaunchedEffect(message) {
-        message?.let {
-            viewModel.consumeMessage()
-            snackbar.showSnackbar(context.getString(it))
-        }
-    }
+    SnackbarEventEffect(message, onConsumed = viewModel::consumeMessage) { snackbar.showSnackbar(context.getString(it)) }
     BackHandler(enabled = page != SettingsPage.MAIN) { page = SettingsPage.MAIN }
 
     when {
