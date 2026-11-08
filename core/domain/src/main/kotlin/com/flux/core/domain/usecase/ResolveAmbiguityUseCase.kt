@@ -21,6 +21,15 @@ class ResolveAmbiguityUseCase @Inject constructor() {
         return classification.copy(categoryId = categoryId, ambiguities = classification.ambiguities - question)
     }
 
-    /** "Guardar igual": keeps the first option of every question (already applied). */
+    /**
+     * "¿Cuándo te aviso?": a suggestion or any date picked by the user turns the alarm on;
+     * null is "Guardar sin recordatorio" (no date, no alarm).
+     */
+    fun chooseReminder(classification: Classification, dueAt: Long?): Classification {
+        val question = classification.ambiguities.filterIsInstance<Ambiguity.ReminderTime>().firstOrNull() ?: return classification
+        return classification.copy(dueAt = dueAt, requiresAlarm = dueAt != null, ambiguities = classification.ambiguities - question)
+    }
+
+    /** "Guardar igual": keeps the first option of every question (already applied); an open reminder stays without one. */
     fun acceptDefaults(classification: Classification): Classification = classification.copy(ambiguities = emptyList())
 }

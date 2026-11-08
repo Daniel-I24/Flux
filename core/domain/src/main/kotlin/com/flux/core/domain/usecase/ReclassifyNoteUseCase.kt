@@ -46,8 +46,7 @@ class ReclassifyNoteUseCase @Inject constructor(
                             categoryId = better.categoryId,
                             title = better.title,
                             priority = better.priority,
-                            dueAt = current.dueAt ?: better.dueAt,
-                            requiresAlarm = current.requiresAlarm || better.requiresAlarm,
+                            // The date and the alarm were confirmed by the user in the preview: never added behind their back.
                             engine = ClassifierEngine.REMOTE,
                         )
                     }

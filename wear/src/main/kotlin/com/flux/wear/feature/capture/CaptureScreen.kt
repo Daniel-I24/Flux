@@ -59,7 +59,7 @@ fun CaptureScreen(onDone: () -> Unit, startWithKeyboard: Boolean = false, viewMo
             onEditText = inputs.type,
         )
         is CaptureState.Saving -> ProcessingContent(current.preview.text)
-        is CaptureState.Saved -> SavedContent(current.queued)
+        is CaptureState.Saved -> SavedContent(current.queued, current.note.dueAt?.takeIf { current.note.requiresAlarm })
         is CaptureState.Error -> ErrorContent(
             failure = current.failure,
             onRetry = inputs.dictate,

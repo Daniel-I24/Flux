@@ -20,21 +20,23 @@ class ClassifyNoteUseCase @Inject constructor(
     private val categories: CategoryRepository,
     private val profiles: ProfileRepository,
     private val clock: Clock,
+    private val askReminderTime: AskReminderTimeUseCase,
 ) {
     suspend operator fun invoke(rawText: String): FluxResult<Classification> {
         val text = rawText.trim().replace(WHITESPACE, " ").take(Note.MAX_TEXT_LENGTH)
         if (text.isEmpty()) return FluxResult.Failure(AppError.InvalidInput)
+        val profile = profiles.getProfile()
         val request = ClassificationRequest(
             text = text,
             nowMillis = clock.now(),
             zone = clock.zone(),
             categories = categories.getCategories(),
-            profile = profiles.getProfile(),
+            profile = profile,
         )
         var lastError: AppError = AppError.Unexpected("No classifier available")
         for (strategy in strategies) {
             when (val result = strategy.classify(request)) {
-                is FluxResult.Success -> return result
+                is FluxResult.Success -> return FluxResult.Success(askReminderTime(text, result.value, profile?.routine))
                 is FluxResult.Failure -> lastError = result.error
             }
         }

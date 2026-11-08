@@ -39,6 +39,15 @@ import com.flux.wear.ui.rememberDueDateLabel
 @Composable
 fun PreviewContent(preview: CaptureState.Preview, categories: List<Category>, onEvent: (CaptureEvent) -> Unit, onEditText: (() -> Unit)?) {
     var picking by rememberSaveable { mutableStateOf(false) }
+    var pickingDate by rememberSaveable { mutableStateOf(false) }
+    val question = preview.classification.ambiguities.firstOrNull()
+    if (pickingDate && question is Ambiguity.ReminderTime) {
+        ReminderDateTimePicker(initial = question.options.firstOrNull(), onPicked = {
+            pickingDate = false
+            onEvent(CaptureEvent.AnswerReminder(it))
+        }, onCancel = { pickingDate = false })
+        return
+    }
     if (picking) {
         CategoryPicker(categories, selectedId = preview.classification.categoryId) { id ->
             picking = false
@@ -47,7 +56,6 @@ fun PreviewContent(preview: CaptureState.Preview, categories: List<Category>, on
         return
     }
     val category = categories.firstOrNull { it.id == preview.classification.categoryId }
-    val question = preview.classification.ambiguities.firstOrNull()
     val listState = rememberTransformingLazyColumnState()
     ScreenScaffold(scrollState = listState) { padding ->
         if (question == null) {
@@ -67,17 +75,20 @@ fun PreviewContent(preview: CaptureState.Preview, categories: List<Category>, on
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
-            item {
-                Text(
-                    text = preview.classification.dueAt?.let { rememberDueDateLabel(it) } ?: stringResource(R.string.capture_no_date),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+            if (question !is Ambiguity.ReminderTime) {
+                item {
+                    Text(
+                        text =
+                        preview.classification.dueAt?.let { rememberDueDateLabel(it) } ?: stringResource(R.string.capture_no_reminder),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.secondary,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
             if (question != null) {
-                ambiguityQuestion(question, categories, onEvent)
+                ambiguityQuestion(question, categories, onEvent, onPickDateTime = { pickingDate = true })
             } else {
                 item { CountdownLabel(preview) }
             }
@@ -120,10 +131,4 @@ private fun PreviewActions(onEvent: (CaptureEvent) -> Unit, onEditText: (() -> U
             Icon(Icons.Rounded.Check, contentDescription = stringResource(R.string.capture_save))
         }
     }
-}
-
-/** Ambiguity options as large buttons; answering removes the question and starts the countdown. */
-internal fun Ambiguity.answers(): List<CaptureEvent> = when (this) {
-    is Ambiguity.DueTime -> options.map(CaptureEvent::AnswerTime)
-    is Ambiguity.CategoryChoice -> options.map(CaptureEvent::AnswerCategory)
 }

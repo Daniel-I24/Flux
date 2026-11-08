@@ -11,5 +11,10 @@
     <string name="capture_question_time">¿A qué hora?</string>
     <string name="capture_question_category">¿En qué categoría?</string>
     <string name="capture_save_anyway">Guardar así</string>
+    <string name="capture_question_reminder">¿Cuándo te aviso?</string>
+    <string name="capture_pick_date_time">Elegir fecha y hora</string>
+    <string name="capture_save_without_reminder">Sin recordatorio</string>
+    <string name="capture_no_reminder">Sin recordatorio</string>
+    <string name="capture_rings">Sonará: %1$s</string>
     <string name="capture_type_debug">Escribir (debug)</string>
 </resources>

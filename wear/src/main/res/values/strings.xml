@@ -51,7 +51,6 @@
     <string name="capture_listening">Escuchando…</string>
     <string name="capture_processing">Entendiendo tu nota…</string>
     <string name="capture_prompt">¿Qué quieres anotar?</string>
-    <string name="capture_no_date">Sin fecha</string>
     <string name="capture_saving_in">Se guarda en %1$d s</string>
     <string name="capture_paused">Revisa y confirma</string>
     <string name="capture_save">Guardar</string>

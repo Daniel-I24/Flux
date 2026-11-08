@@ -4,6 +4,7 @@ import com.flux.core.ai.local.LocalNoteClassifier
 import com.flux.core.domain.port.ClassificationRequest
 import com.flux.core.domain.port.Clock
 import com.flux.core.domain.repository.CategoryRepository
+import com.flux.core.domain.usecase.AskReminderTimeUseCase
 import com.flux.core.model.Classification
 import com.flux.core.model.DefaultCategory
 import com.flux.core.model.FluxResult
@@ -29,6 +30,7 @@ class WatchCaptureRepository @Inject constructor(
     private val categories: CategoryRepository,
     private val saver: WatchNoteSaver,
     private val clock: Clock,
+    private val askReminderTime: AskReminderTimeUseCase,
 ) : CaptureEffects {
     override suspend fun classify(text: String): Classification {
         monitor.readyPhoneNode()?.let { phone ->
@@ -40,7 +42,7 @@ class WatchCaptureRepository @Inject constructor(
         }
         val available = categories.getCategories().ifEmpty { DefaultCategory.all() }
         val local = localClassifier.classify(ClassificationRequest(text, clock.now(), clock.zone(), available, profile = null))
-        return (local as FluxResult.Success).value
+        return askReminderTime(text, (local as FluxResult.Success).value, routine = null)
     }
 
     override suspend fun save(text: String, classification: Classification, corrected: Boolean): SaveResult =

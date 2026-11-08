@@ -29,7 +29,19 @@ class CaptureNoteUseCaseTest {
             override suspend fun classify(request: ClassificationRequest) =
                 FluxResult.Success(Classification(categoryId = "shopping", title = "Comprar pan", confidence = 0.8, engine = engine))
         }
-        val classify = ClassifyNoteUseCase(listOf(classifier), FakeCategoryRepository(), FakeProfileRepository(), clock)
+        val classify =
+            ClassifyNoteUseCase(
+                listOf(classifier),
+                FakeCategoryRepository(),
+                FakeProfileRepository(),
+                clock,
+                AskReminderTimeUseCase({
+                        _,
+                        _
+                    ->
+                    null
+                }, clock)
+            )
         return CaptureNoteUseCase(classify, CreateNoteUseCase(notes, FakeAlarms(), clock, SequentialIds()), queued::add)
     }
 

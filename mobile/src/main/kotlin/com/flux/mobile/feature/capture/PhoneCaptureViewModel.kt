@@ -88,6 +88,11 @@ class PhoneCaptureViewModel @Inject constructor(
 
     fun answerTime(dueAt: Long) = state.value.classification?.let { showPreview(resolve.chooseTime(it, dueAt), state.value.corrected) }
 
+    /** A suggestion, a picked date and time, or null for "Guardar sin recordatorio". */
+    fun answerReminder(dueAt: Long?) = state.value.classification?.let {
+        showPreview(resolve.chooseReminder(it, dueAt), state.value.corrected)
+    }
+
     fun answerCategory(categoryId: String) = state.value.classification?.let {
         showPreview(resolve.chooseCategory(it, categoryId), state.value.corrected || categoryId != it.categoryId)
     }

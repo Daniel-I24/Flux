@@ -19,6 +19,9 @@ sealed interface CaptureEvent {
     data class ChangeCategory(val categoryId: String) : CaptureEvent
     data class AnswerTime(val dueAt: Long) : CaptureEvent
     data class AnswerCategory(val categoryId: String) : CaptureEvent
+
+    /** A suggestion, a picked date and time, or null for "Sin recordatorio". */
+    data class AnswerReminder(val dueAt: Long?) : CaptureEvent
     data object Confirm : CaptureEvent
     data object Cancel : CaptureEvent
     data class Saved(val note: Note, val queued: Boolean) : CaptureEvent
@@ -83,6 +86,7 @@ sealed interface CaptureState {
                 paused = true,
             )
             is CaptureEvent.AnswerTime -> answered(RESOLVER.chooseTime(classification, event.dueAt), corrected)
+            is CaptureEvent.AnswerReminder -> answered(RESOLVER.chooseReminder(classification, event.dueAt), corrected)
             is CaptureEvent.AnswerCategory -> answered(
                 RESOLVER.chooseCategory(classification, event.categoryId),
                 corrected || event.categoryId != classification.categoryId,

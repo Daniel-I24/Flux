@@ -88,6 +88,18 @@ class PhoneCaptureViewModelTest {
     }
 
     @Test
+    fun `an incomplete reminder waits for when to ring and then counts down with the alarm`() = runTest(dispatcher) {
+        val asked = clear.copy(ambiguities = listOf(Ambiguity.ReminderTime(listOf(AT))))
+        coEvery { capture.classify(any()) } returns FluxResult.Success(asked)
+        classified("salir de mi casa a las")
+        assertFalse(viewModel.uiState.value.counting)
+        viewModel.answerReminder(AT)
+        assertEquals(AT, viewModel.uiState.value.classification?.dueAt)
+        assertEquals(true, viewModel.uiState.value.classification?.requiresAlarm)
+        assertEquals(true, viewModel.uiState.value.counting)
+    }
+
+    @Test
     fun `tapping save twice stores one note`() = runTest(dispatcher) {
         classified()
         viewModel.save()
@@ -130,5 +142,6 @@ class PhoneCaptureViewModelTest {
 
     private companion object {
         const val COUNTDOWN_MS = PhoneCaptureUi.AUTO_SAVE_SECONDS * 1_000L
+        const val AT = 1_762_380_000_000L
     }
 }

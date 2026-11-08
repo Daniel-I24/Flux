@@ -5,7 +5,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import java.util.Locale
 
 /** Short, glanceable due date: "Hoy 08:00", "Mañana 08:00" or "vie 23 oct 09:00". */
@@ -19,7 +18,7 @@ object DueDateText {
         locale: Locale = FluxLocale.SPANISH
     ): String {
         val dateTime = Instant.ofEpochMilli(dueAt).atZone(zone)
-        val time = dateTime.toLocalTime().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale))
+        val time = dateTime.toLocalTime().format(FluxLocale.TIME_24H)
         return when (dateTime.toLocalDate()) {
             today -> "$todayLabel $time"
             today.plusDays(1) -> "$tomorrowLabel $time"

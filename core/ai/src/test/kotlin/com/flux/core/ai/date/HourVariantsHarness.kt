@@ -4,6 +4,7 @@ import com.flux.core.ai.local.LocalNoteClassifier
 import com.flux.core.domain.port.Clock
 import com.flux.core.domain.repository.CategoryRepository
 import com.flux.core.domain.repository.ProfileRepository
+import com.flux.core.domain.usecase.AskReminderTimeUseCase
 import com.flux.core.domain.usecase.ClassifyNoteUseCase
 import com.flux.core.model.Category
 import com.flux.core.model.Classification
@@ -45,7 +46,9 @@ abstract class HourVariantsHarness {
         ZonedDateTime.of(year, month, day, hour, minute, 0, 0, zone)
 
     protected suspend fun classify(text: String, now: ZonedDateTime = thursday, profile: UserProfile? = null): Classification {
-        val useCase = ClassifyNoteUseCase(listOf(LocalNoteClassifier()), Categories(), Profiles(profile), FixedClock(now))
+        val clock = FixedClock(now)
+        val ask = AskReminderTimeUseCase(SpanishScheduleGapDetector(), clock)
+        val useCase = ClassifyNoteUseCase(listOf(LocalNoteClassifier()), Categories(), Profiles(profile), clock, ask)
         return (useCase(text) as FluxResult.Success).value
     }
 

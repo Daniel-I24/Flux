@@ -39,11 +39,15 @@ import com.flux.mobile.R
 /** "Nueva nota" by voice or text: the microphone permission is asked only when the mic is tapped. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CaptureSheet(onDismiss: () -> Unit, viewModel: PhoneCaptureViewModel = hiltViewModel()) {
+fun CaptureSheet(onDismiss: () -> Unit, onAlarmSaved: (Long) -> Unit = {}, viewModel: PhoneCaptureViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    LaunchedEffect(state.phase) { if (state.phase == CapturePhase.SAVED) onDismiss() }
+    LaunchedEffect(state.phase) {
+        if (state.phase != CapturePhase.SAVED) return@LaunchedEffect
+        state.classification?.takeIf { it.requiresAlarm }?.dueAt?.let(onAlarmSaved)
+        onDismiss()
+    }
     DisposableEffect(viewModel) { onDispose(viewModel::reset) }
     val onMic = rememberMicAction(viewModel)
 

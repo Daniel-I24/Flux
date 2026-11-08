@@ -30,6 +30,7 @@ import com.flux.core.designsystem.component.LavaColors
 import com.flux.core.designsystem.component.VoiceLava
 import com.flux.wear.R
 import com.flux.wear.ui.WatchDimens
+import com.flux.wear.ui.rememberDueDateLabel
 import com.flux.wear.ui.rememberWatchInsets
 
 @Composable
@@ -79,7 +80,7 @@ fun ProcessingContent(text: String) = Centered {
 }
 
 @Composable
-fun SavedContent(queued: Boolean) = Centered {
+fun SavedContent(queued: Boolean, ringsAt: Long? = null) = Centered {
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(WatchDimens.gap)) {
         Icon(
             imageVector = if (queued) Icons.Rounded.CloudQueue else Icons.Rounded.CheckCircle,
@@ -93,6 +94,13 @@ fun SavedContent(queued: Boolean) = Centered {
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodySmall,
         )
+        ringsAt?.let {
+            Text(
+                stringResource(R.string.capture_rings, rememberDueDateLabel(it)),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
     }
 }
 

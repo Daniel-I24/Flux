@@ -77,6 +77,9 @@ class CaptureMachineTest {
         val saving = preview.on(CaptureEvent.Confirm) as CaptureState.Saving
         assertTrue(saving.preview.classification.ambiguities.isEmpty())
         assertEquals(20L, saving.preview.classification.dueAt)
+        val reminder = preview.copy(classification = ambiguous.copy(dueAt = null, ambiguities = listOf(Ambiguity.ReminderTime(listOf(9L)))))
+        val rings = reminder.on(CaptureEvent.AnswerReminder(9)) as CaptureState.Preview
+        assertTrue(rings.classification.requiresAlarm && rings.classification.dueAt == 9L && !rings.paused)
     }
 
     @Test

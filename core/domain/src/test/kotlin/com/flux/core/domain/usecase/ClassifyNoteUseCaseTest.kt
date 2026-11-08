@@ -27,7 +27,18 @@ class ClassifyNoteUseCaseTest {
         FluxResult.Success(Classification(categoryId = "tasks", title = "x", confidence = 0.9, engine = engine))
 
     private fun useCase(vararg strategies: NoteClassifier) =
-        ClassifyNoteUseCase(strategies.toList(), FakeCategoryRepository(), FakeProfileRepository(), FixedClock())
+        ClassifyNoteUseCase(
+            strategies.toList(),
+            FakeCategoryRepository(),
+            FakeProfileRepository(),
+            FixedClock(),
+            AskReminderTimeUseCase({
+                    _,
+                    _
+                ->
+                null
+            }, FixedClock())
+        )
 
     @Test
     fun `uses the remote strategy when it succeeds`() = runTest {

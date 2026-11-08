@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="alarm_rings_today">Sonará hoy a las %1$s</string>
+    <string name="alarm_rings_tomorrow">Sonará mañana a las %1$s</string>
+    <string name="alarm_rings_on">Sonará el %1$s a las %2$s</string>
+    <string name="capture_question_reminder">¿Cuándo te aviso?</string>
+    <string name="capture_pick_date_time">Elegir fecha y hora</string>
+    <string name="capture_save_without_reminder">Guardar sin recordatorio</string>
+    <string name="capture_no_reminder">Sin recordatorio</string>
+    <string name="notes_no_reminder">Sin recordatorio</string>
+    <string name="notes_no_alert">%1$s · sin aviso</string>
+    <string name="picker_next">Siguiente</string>
+    <string name="picker_time_title">Elige la hora</string>
+</resources>

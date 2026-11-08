@@ -22,6 +22,7 @@ import com.flux.core.model.Category
 import com.flux.core.model.Classification
 import com.flux.mobile.R
 import com.flux.mobile.feature.home.CategoryDot
+import com.flux.mobile.ui.common.alarmConfirmation
 import com.flux.mobile.ui.common.dueDateLabel
 
 /** What FLUX understood; ambiguities as chips (the countdown waits for the answer). */
@@ -30,12 +31,22 @@ import com.flux.mobile.ui.common.dueDateLabel
 fun CapturePreview(state: PhoneCaptureUi, classification: Classification, categories: List<Category>, viewModel: PhoneCaptureViewModel) {
     categories.firstOrNull { it.id == classification.categoryId }?.let { CategoryBadge(it) }
     Text(classification.title, style = MaterialTheme.typography.titleMedium)
-    Text(
-        classification.dueAt?.let { dueDateLabel(it) } ?: stringResource(R.string.capture_no_date),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    classification.ambiguities.firstOrNull()?.let { question ->
+    val question = classification.ambiguities.firstOrNull()
+    val due = classification.dueAt
+    if (question !is Ambiguity.ReminderTime) {
+        Text(
+            when {
+                due == null -> stringResource(R.string.capture_no_reminder)
+                classification.requiresAlarm -> alarmConfirmation(due)
+                else -> dueDateLabel(due)
+            },
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    if (question is Ambiguity.ReminderTime) {
+        ReminderQuestion(question, onAnswer = viewModel::answerReminder)
+    } else if (question != null) {
         Text(
             stringResource(if (question is Ambiguity.DueTime) R.string.capture_question_time else R.string.capture_question_category),
             style = MaterialTheme.typography.titleSmall,
@@ -45,6 +56,7 @@ fun CapturePreview(state: PhoneCaptureUi, classification: Classification, catego
                 is Ambiguity.DueTime -> question.options.forEach { option ->
                     FilterChip(selected = false, onClick = { viewModel.answerTime(option) }, label = { Text(dueDateLabel(option)) })
                 }
+                is Ambiguity.ReminderTime -> Unit
                 is Ambiguity.CategoryChoice -> question.options.forEach { id ->
                     val category = categories.firstOrNull { it.id == id }
                     FilterChip(

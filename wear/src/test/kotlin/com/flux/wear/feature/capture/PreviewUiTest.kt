@@ -77,6 +77,21 @@ class PreviewUiTest {
     }
 
     @Test
+    fun an_incomplete_reminder_offers_suggestions_another_time_or_none() {
+        val events = mutableListOf<CaptureEvent>()
+        val question = preview.copy(
+            classification = preview.classification.copy(ambiguities = listOf(Ambiguity.ReminderTime(listOf(System.currentTimeMillis())))),
+            paused = true,
+        )
+        show(events, question)
+        listOf("¿Cuándo te aviso?", "Elegir fecha y hora", "Sin recordatorio").forEach {
+            compose.onNode(hasScrollToNodeAction()).performScrollToNode(hasText(it))
+        }
+        compose.onNodeWithText("Sin recordatorio").performClick()
+        assertEquals(CaptureEvent.AnswerReminder(null), events.single())
+    }
+
+    @Test
     fun category_can_be_changed() {
         val events = mutableListOf<CaptureEvent>()
         show(events)

@@ -4,7 +4,6 @@
     <string name="capture_stop">Terminar de dictar</string>
     <string name="capture_listening_phone">Escuchando… di tu nota como se la dirías a alguien.</string>
     <string name="capture_example_phrase">Ej.: «cita con el dentista mañana a las 4 p. m.»</string>
-    <string name="capture_no_date">Sin fecha</string>
     <string name="capture_saving_in">Se guarda en %1$d s</string>
     <string name="capture_edit">Editar</string>
     <string name="capture_question_time">¿A qué hora?</string>

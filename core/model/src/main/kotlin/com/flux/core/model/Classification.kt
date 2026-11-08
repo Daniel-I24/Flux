@@ -34,4 +34,13 @@ sealed interface Ambiguity {
     @Serializable
     @SerialName("category")
     data class CategoryChoice(val options: List<String>) : Ambiguity
+
+    /**
+     * A reminder whose time or day was left incomplete ("a las", "mañana a las", "el viernes").
+     * Unlike the other questions nothing is applied in advance: the note has no date until the
+     * user picks a suggestion (epoch millis), another date and time, or "Guardar sin recordatorio".
+     */
+    @Serializable
+    @SerialName("reminder_time")
+    data class ReminderTime(val options: List<Long>) : Ambiguity
 }
