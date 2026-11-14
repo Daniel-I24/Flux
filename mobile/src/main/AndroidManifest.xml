@@ -56,7 +56,8 @@
             </intent-filter>
         </activity>
 
-        <!-- Full-screen alarm, shown over the lock screen while AlarmService rings. -->
+        <!-- Full-screen alarm, shown over the lock screen while AlarmService rings.
+             Own theme: the application's splash theme would add a "FLUX" title bar. -->
         <activity
             android:name=".alarm.AlarmActivity"
             android:exported="false"
@@ -64,6 +65,7 @@
             android:launchMode="singleTop"
             android:showWhenLocked="true"
             android:taskAffinity=".alarm"
+            android:theme="@style/Theme.Flux"
             android:turnScreenOn="true" />
 
         <!-- Rings a due reminder in a loop (USAGE_ALARM) until the user acts or the time runs out. -->
