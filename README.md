@@ -25,6 +25,35 @@ Ambas apps usan el mismo `applicationId` (`com.flux.notes`) y la misma firma; la
 
 **Para una demostración sin reloj ni red:** en el celular, ve a **Ajustes → Modo demostración → Cargar ejemplos**. Se cargan 5 notas ya clasificadas y suena una alarma a los 10 segundos.
 
+## Compatibilidad
+
+FLUX funciona en cualquier reloj con **Wear OS 3 o superior**, de cualquier marca, tamaño y forma (redondo, cuadrado o rectangular), emparejado con un celular Android. No funciona con iPhone ni con relojes Wear OS 2.
+
+| | Celular (`mobile`) | Reloj (`wear`) |
+|---|---|---|
+| Versión mínima (`minSdk`) | 26 · Android 8.0 | 30 · Wear OS 3 |
+| `targetSdk` y `compileSdk` | 36 · Android 16 | 36 · Wear OS 6 |
+| Hardware obligatorio | Ninguno | Ser un reloj (`android.hardware.type.watch`) |
+| Micrófono | Opcional: sin él se escribe la nota | Opcional: sin él FLUX muestra un aviso claro |
+
+- **Voz en el reloj:** FLUX usa el reconocedor del reloj (`SpeechRecognizer`, es-CO con respaldo es-ES). Si el reloj no tiene ese servicio, abre el dictado del sistema (`RecognizerIntent`). Si tampoco existe, muestra *El reconocimiento de voz no está disponible en este reloj* en lugar de cerrarse.
+- **Vibración:** si el reloj no tiene vibrador, la alerta se muestra igual en pantalla y el celular suena.
+- **Lava de colores:** con shader AGSL desde Android 13 (Wear OS 4) y con Canvas en versiones anteriores.
+- **Tamaño de fuente:** los textos usan `sp` y respetan el tamaño de fuente del sistema. Las pantallas del reloj usan márgenes proporcionales para pantallas redondas y cuadradas.
+
+### Si los recordatorios llegan tarde (batería e inicio automático)
+
+Algunas marcas cierran apps en segundo plano para ahorrar batería. Haz esto **para FLUX y para la app de tu reloj** (Galaxy Wearable, Pixel Watch u otra). La misma ayuda está en la app, en *Ajustes → Permisos → Si los recordatorios llegan tarde*. Las rutas son aproximadas y cambian con cada versión del sistema:
+
+| Marca | Qué hacer |
+|---|---|
+| Cualquier Android (Pixel, Motorola, Nokia, Sony y otros) | *Ajustes → Apps → FLUX → Batería → Sin restricciones* |
+| Samsung (One UI) | Lo anterior, y en *Ajustes → Batería → Límites de uso en segundo plano* quita FLUX y Galaxy Wearable de *Apps en suspensión* y *Apps en suspensión profunda* |
+| Xiaomi, Redmi y POCO (MIUI / HyperOS) | *Ajustes → Apps → Administrar apps → FLUX*: activa *Inicio automático* y en *Ahorro de batería* elige *Sin restricciones* |
+| Oppo, Realme y OnePlus (ColorOS / OxygenOS) | *Ajustes → Apps → FLUX → Uso de batería*: permite la actividad en segundo plano y el inicio automático |
+| Huawei y Honor | *Ajustes → Batería → Inicio de aplicaciones → FLUX → Administrar manualmente* y activa las tres opciones |
+| Otra marca | Busca «batería» o «inicio automático» en *Ajustes* y aplica lo mismo a FLUX y a la app del reloj |
+
 ## Dictar desde la esfera y con la doble pulsación
 
 - **Tile y complicación:** agrega el tile *Dictar nota* o la complicación *Próximo recordatorio* desde la esfera. Ambos abren el dictado directamente.
