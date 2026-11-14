@@ -1,5 +1,6 @@
 package com.flux.wear.feature.capture
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flux.core.data.speech.VoiceError
@@ -21,11 +22,12 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class CaptureViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val recognizer: VoiceRecognizer,
     repository: WatchCaptureRepository,
     categoryRepository: CategoryRepository,
 ) : ViewModel() {
-    private val machine = CaptureMachine(viewModelScope, repository)
+    private val machine = CaptureMachine(viewModelScope, FixedCategoryEffects(repository, savedState[CATEGORY_ARG]))
 
     val state: StateFlow<CaptureState> = machine.state
 
@@ -82,12 +84,17 @@ class CaptureViewModel @Inject constructor(
         machine.send(event)
     }
 
+    /** The screen went away (swipe back): the microphone is freed now, not when the system clears this ViewModel. */
+    fun releaseVoice() = recognizer.release()
+
     override fun onCleared() {
         recognizer.release()
         super.onCleared()
     }
 
-    private companion object {
-        const val STOP_TIMEOUT_MS = 5_000L
+    companion object {
+        /** Navigation argument: dictating from a category (Categorías). */
+        const val CATEGORY_ARG = "categoryId"
+        private const val STOP_TIMEOUT_MS = 5_000L
     }
 }

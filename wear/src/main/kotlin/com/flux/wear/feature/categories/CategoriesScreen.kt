@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,29 +17,29 @@ import androidx.wear.compose.material3.ListHeader
 import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.Text
 import com.flux.core.designsystem.category.displayName
-import com.flux.core.model.Category
 import com.flux.wear.R
 import com.flux.wear.ui.CategoryIconDot
 
-/** Categories come from the phone (edited there); tapping one starts a dictation. */
+/** Categories come from the phone (edited there); tapping one dictates a note saved in it. */
 @Composable
-fun CategoriesScreen(onDictate: () -> Unit, viewModel: CategoriesViewModel = hiltViewModel()) {
+fun CategoriesScreen(onDictate: (categoryId: String) -> Unit, viewModel: CategoriesViewModel = hiltViewModel()) {
     val categories by viewModel.categories.collectAsStateWithLifecycle()
     CategoriesContent(categories, onDictate)
 }
 
 /** Stateless, so every watch shape can be previewed. */
 @Composable
-fun CategoriesContent(categories: List<Category>, onDictate: () -> Unit) {
+fun CategoriesContent(categories: List<CategoryCount>, onDictate: (categoryId: String) -> Unit) {
     val listState = rememberTransformingLazyColumnState()
     ScreenScaffold(scrollState = listState) { padding ->
         TransformingLazyColumn(state = listState, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
             item { ListHeader { Text(stringResource(R.string.categories_title)) } }
-            items(categories, key = { it.id }) { category ->
+            items(categories, key = { it.category.id }) { (category, pending) ->
                 FilledTonalButton(
-                    onClick = onDictate,
+                    onClick = { onDictate(category.id) },
                     icon = { CategoryIconDot(category) },
                     label = { Text(category.displayName()) },
+                    secondaryLabel = { Text(pluralStringResource(R.plurals.categories_pending, pending, pending)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }

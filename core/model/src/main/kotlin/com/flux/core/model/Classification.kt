@@ -19,6 +19,10 @@ data class Classification(
     val isNote: Boolean = true,
 ) {
     val needsAnswer: Boolean get() = ambiguities.isNotEmpty()
+
+    /** "Nueva nota" inside a category: that category wins and the category question is dropped. */
+    fun inCategory(id: String): Classification =
+        copy(categoryId = id, ambiguities = ambiguities.filterNot { it is Ambiguity.CategoryChoice })
 }
 
 /**

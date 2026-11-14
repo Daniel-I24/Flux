@@ -37,12 +37,13 @@ fun WatchApp(startRoute: String = WatchRoutes.HOME, navController: NavHostContro
                 )
             }
             composable(WatchRoutes.DICTATE) { CaptureScreen(onDone = { navController.popBackOrHome() }) }
+            composable(WatchRoutes.DICTATE_IN) { CaptureScreen(onDone = { navController.popBackOrHome() }) }
             if (BuildConfig.DEBUG) {
                 composable(WatchRoutes.TYPE) { CaptureScreen(onDone = { navController.popBackOrHome() }, startWithKeyboard = true) }
             }
             composable(WatchRoutes.AGENDA) { AgendaScreen() }
             composable(WatchRoutes.OVERDUE) { OverdueScreen() }
-            composable(WatchRoutes.CATEGORIES) { CategoriesScreen(onDictate = { navController.navigate(WatchRoutes.DICTATE) }) }
+            composable(WatchRoutes.CATEGORIES) { CategoriesScreen(onDictate = { navController.navigate(WatchRoutes.dictateIn(it)) }) }
             composable(WatchRoutes.SETTINGS) {
                 WatchSettingsScreen(
                     onTutorial = { navController.navigate(WatchRoutes.TUTORIAL) },

@@ -42,4 +42,9 @@
     <string name="settings_theme">Tema</string>
     <string name="theme_andean_sunset">Atardecer andino</string>
     <string name="theme_night_jungle">Selva nocturna</string>
+    <plurals name="categories_pending">
+        <item quantity="one">%1$d pendiente</item>
+        <item quantity="many">%1$d pendientes</item>
+        <item quantity="other">%1$d pendientes</item>
+    </plurals>
 </resources>

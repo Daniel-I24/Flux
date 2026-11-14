@@ -1,6 +1,7 @@
 package com.flux.wear.feature.capture
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +22,8 @@ fun CaptureScreen(onDone: () -> Unit, startWithKeyboard: Boolean = false, viewMo
     var started by rememberSaveable { mutableStateOf(false) }
     var leftIdle by rememberSaveable { mutableStateOf(false) }
     val inputs = rememberVoiceInputs(viewModel)
+    // Leaving without speaking frees the microphone at once: entering another category then works.
+    DisposableEffect(viewModel) { onDispose(viewModel::releaseVoice) }
 
     LaunchedEffect(Unit) {
         if (started) return@LaunchedEffect

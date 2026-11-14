@@ -13,6 +13,7 @@ import com.flux.wear.feature.capture.ErrorContent
 import com.flux.wear.feature.capture.ListeningContent
 import com.flux.wear.feature.capture.SavedContent
 import com.flux.wear.feature.categories.CategoriesContent
+import com.flux.wear.feature.categories.CategoryCount
 import com.flux.wear.feature.link.LinkConfirmContent
 import com.flux.wear.feature.overdue.OverdueActions
 import com.flux.wear.feature.overdue.OverdueContent
@@ -66,7 +67,9 @@ internal fun OverduePreview() = FluxWearTheme {
 
 @FluxWearPreviews
 @Composable
-internal fun CategoriesPreview() = FluxWearTheme { CategoriesContent(categories) {} }
+internal fun CategoriesPreview() = FluxWearTheme {
+    CategoriesContent(categories.mapIndexed { index, category -> CategoryCount(category, index) }) {}
+}
 
 @FluxWearPreviews
 @Composable
