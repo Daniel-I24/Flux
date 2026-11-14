@@ -24,6 +24,7 @@ import com.flux.core.designsystem.component.FluxLoadingState
 import com.flux.core.designsystem.motion.rememberReducedMotion
 import com.flux.core.designsystem.theme.FluxSizes
 import com.flux.core.designsystem.theme.FluxSpacing
+import com.flux.core.domain.usecase.NoteQuery
 import com.flux.core.model.Note
 import com.flux.mobile.R
 
@@ -34,11 +35,7 @@ fun NotesSectionsList(state: NotesUiState, viewModel: NotesViewModel, onOpen: (S
     val reduced = rememberReducedMotion()
     when {
         state.loading -> FluxLoadingState()
-        sections.isEmpty -> FluxEmptyState(
-            icon = Icons.Rounded.SearchOff,
-            title = stringResource(R.string.notes_empty),
-            description = stringResource(R.string.notes_empty_examples),
-        )
+        sections.isEmpty -> NotesEmptyState(filtered = state.query.isFiltering())
         else -> LazyColumn(contentPadding = PaddingValues(bottom = FluxSizes.fab + FluxSpacing.xxl)) {
             val categories = state.categories.associateBy { it.id }
             val row: @Composable LazyItemScope.(Note, Boolean) -> Unit = { note, overdue ->
@@ -61,6 +58,19 @@ fun NotesSectionsList(state: NotesUiState, viewModel: NotesViewModel, onOpen: (S
             section(R.string.notes_section_completed, sections.completed) { row(it, false) }
         }
     }
+}
+
+/** Search text, a category or "Solo pendientes" narrow the list; the sort order does not. */
+internal fun NoteQuery.isFiltering(): Boolean = text.isNotBlank() || categoryId != null || !includeCompleted
+
+/** No notes at all suggests examples; no matches asks to change the search or the filters. */
+@Composable
+internal fun NotesEmptyState(filtered: Boolean) {
+    FluxEmptyState(
+        icon = Icons.Rounded.SearchOff,
+        title = stringResource(if (filtered) R.string.notes_empty_filtered_title else R.string.notes_empty),
+        description = stringResource(if (filtered) R.string.notes_empty_filtered else R.string.notes_empty_examples),
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)

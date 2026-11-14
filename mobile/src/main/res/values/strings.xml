@@ -165,6 +165,8 @@
     <string name="notes_sort_due">Por fecha</string>
     <string name="notes_sort_category">Por categoría</string>
     <string name="notes_empty">No hay notas aquí</string>
+    <string name="notes_empty_filtered_title">Sin resultados</string>
+    <string name="notes_empty_filtered">Ninguna nota coincide con tu búsqueda o tus filtros. Cámbialos o quítalos para ver más notas.</string>
     <string name="notes_new">Nueva nota</string>
     <string name="notes_new_hint">Escríbela como la dirías: FLUX detecta la categoría y la fecha.</string>
     <string name="notes_deleted">Nota eliminada</string>
