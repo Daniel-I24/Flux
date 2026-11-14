@@ -36,11 +36,11 @@ fun CaptureComposer(state: PhoneCaptureUi, viewModel: PhoneCaptureViewModel, onM
     Box(Modifier.fillMaxWidth().height(LAVA_HEIGHT).clip(RoundedCornerShape(FluxSpacing.xl)), contentAlignment = Alignment.Center) {
         VoiceLava(
             active = listening,
-            level = { viewModel.level.value },
+            level = { viewModel.voice.level.value },
             colors = LavaColors(scheme.primaryContainer, scheme.secondaryContainer, scheme.tertiaryContainer, scheme.surfaceContainer),
             modifier = Modifier.matchParentSize(),
         )
-        FilledIconButton(onClick = if (listening) viewModel::stopListening else onMic, modifier = Modifier.size(FluxSizes.fab)) {
+        FilledIconButton(onClick = if (listening) viewModel.voice::stop else onMic, modifier = Modifier.size(FluxSizes.fab)) {
             Icon(
                 if (listening) Icons.Rounded.Stop else Icons.Rounded.Mic,
                 contentDescription = stringResource(if (listening) R.string.capture_stop else R.string.capture_dictate),

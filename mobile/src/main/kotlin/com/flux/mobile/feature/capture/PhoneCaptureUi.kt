@@ -16,6 +16,8 @@ data class PhoneCaptureUi(
     val voiceError: VoiceError? = null,
     /** In-app recognition could not run: the sheet opens the system dictation once, with this error as fallback. */
     val systemDictation: VoiceError? = null,
+    /** "Nueva nota" inside a category: the note is saved there whatever the classifier says. */
+    val fixedCategoryId: String? = null,
     val errorMessage: Int? = null,
 ) {
     /** Questions pause the countdown: the note is saved only after the user answers (or taps Guardar). */
@@ -54,7 +56,8 @@ internal fun PhoneCaptureUi.notANote() = copy(
 
 internal fun PhoneCaptureUi.previewing(classification: Classification, corrected: Boolean) = copy(
     phase = CapturePhase.PREVIEW,
-    classification = classification,
-    corrected = corrected,
+    classification = fixedCategoryId?.let(classification::inCategory) ?: classification,
+    // A category chosen by the user is never moved by the later reclassification.
+    corrected = corrected || fixedCategoryId != null,
     secondsLeft = PhoneCaptureUi.AUTO_SAVE_SECONDS,
 )

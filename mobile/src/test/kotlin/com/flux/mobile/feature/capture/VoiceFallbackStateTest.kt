@@ -37,4 +37,17 @@ class VoiceFallbackStateTest {
         assertEquals("hola", state.text)
         assertNull(state.classification)
     }
+
+    @Test
+    fun `a note created inside a category is previewed in it`() {
+        val classification = com.flux.core.model.Classification(
+            categoryId = "tasks",
+            title = "Pan",
+            confidence = 0.9,
+            engine = com.flux.core.model.ClassifierEngine.LOCAL,
+        )
+        val state = PhoneCaptureUi(fixedCategoryId = "shopping").previewing(classification, corrected = false)
+        assertEquals("shopping", state.classification?.categoryId)
+        assertEquals(true, state.corrected)
+    }
 }

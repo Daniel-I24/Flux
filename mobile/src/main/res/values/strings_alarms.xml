@@ -61,4 +61,6 @@
     <string name="preferences_theme">Tema</string>
     <string name="shortcut_dictate">Dictar nota</string>
     <string name="shortcut_new_note">Nueva nota</string>
+    <string name="notes_new_in">Nueva nota en %1$s</string>
+    <string name="categories_edit_named">Editar %1$s</string>
 </resources>

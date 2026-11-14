@@ -2,9 +2,7 @@ package com.flux.mobile.feature.capture
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flux.core.data.speech.VoiceError
 import com.flux.core.data.speech.VoiceRecognizer
-import com.flux.core.data.speech.VoiceState
 import com.flux.core.domain.usecase.CaptureNoteUseCase
 import com.flux.core.domain.usecase.ObserveCategoriesUseCase
 import com.flux.core.domain.usecase.ResolveAmbiguityUseCase
@@ -27,7 +25,7 @@ import kotlinx.coroutines.launch
 /** The phone's own capture, voice or text, with the same classification, questions and countdown as the watch. */
 @HiltViewModel
 class PhoneCaptureViewModel @Inject constructor(
-    private val recognizer: VoiceRecognizer,
+    recognizer: VoiceRecognizer,
     observeCategories: ObserveCategoriesUseCase,
     private val capture: CaptureNoteUseCase,
     private val resolve: ResolveAmbiguityUseCase,
@@ -39,41 +37,15 @@ class PhoneCaptureViewModel @Inject constructor(
     private var saving = false
 
     val uiState: StateFlow<PhoneCaptureUi> = state.asStateFlow()
-    val level: StateFlow<Float> = recognizer.level
     val categories: StateFlow<List<Category>> = observeCategories().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    init {
-        viewModelScope.launch { recognizer.state.collect(::onVoice) }
-    }
-
-    private fun onVoice(voice: VoiceState) {
-        state.update { it.after(voice) }
-        if (voice is VoiceState.Heard) classify()
-    }
+    /** Voice input; whatever it hears is classified like typed text. */
+    val voice = PhoneCaptureVoice(recognizer, state, onHeard = ::classify).also { it.observe(viewModelScope) }
 
     fun setText(text: String) = state.update { it.copy(text = text, errorMessage = null) }
 
-    fun canListenInApp() = recognizer.isAvailable()
-
-    /** Microphone permission already granted. */
-    fun listen() {
-        state.update { it.copy(phase = CapturePhase.LISTENING, voiceError = null, errorMessage = null) }
-        recognizer.start()
-    }
-
-    fun stopListening() = recognizer.stop()
-
-    fun permissionDenied() = state.update { it.copy(phase = CapturePhase.EDITING, voiceError = VoiceError.NO_PERMISSION) }
-
-    fun requestSystemDictation() = state.update { it.copy(systemDictation = VoiceError.UNAVAILABLE) }
-
-    fun systemDictationHandled(failed: Boolean) = state.update { it.afterSystemDictation(failed) }
-
-    fun heardFromSystem(text: String?) {
-        if (text.isNullOrBlank()) return
-        state.update { it.copy(text = text) }
-        classify()
-    }
+    /** "Nueva nota" inside a category (null = the classifier decides). */
+    fun fixCategory(categoryId: String?) = state.update { it.copy(fixedCategoryId = categoryId) }
 
     fun classify() {
         val text = state.value.text.trim()
@@ -121,7 +93,7 @@ class PhoneCaptureViewModel @Inject constructor(
     /** The sheet closed: this ViewModel outlives it, so the next "Nueva nota" must start clean. */
     fun reset() {
         work?.cancel()
-        recognizer.release()
+        voice.release()
         saving = false
         state.value = PhoneCaptureUi()
     }
@@ -140,7 +112,7 @@ class PhoneCaptureViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        recognizer.release()
+        voice.release()
         super.onCleared()
     }
 

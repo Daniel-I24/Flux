@@ -43,6 +43,7 @@ fun CaptureSheet(
     onDismiss: () -> Unit,
     onAlarmSaved: (Long) -> Unit = {},
     listenOnOpen: Boolean = false,
+    fixedCategoryId: String? = null,
     viewModel: PhoneCaptureViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -57,6 +58,7 @@ fun CaptureSheet(
     val onMic = rememberMicAction(viewModel)
     // "Dictar nota" from the launcher or quick settings: listening starts by itself, once.
     LaunchedEffect(Unit) { if (listenOnOpen) onMic() }
+    LaunchedEffect(fixedCategoryId) { viewModel.fixCategory(fixedCategoryId) }
 
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
@@ -83,7 +85,7 @@ private fun rememberMicAction(viewModel: PhoneCaptureViewModel): () -> Unit {
     val context = LocalContext.current
     val system = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val heard = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()
-        if (result.resultCode == Activity.RESULT_OK) viewModel.heardFromSystem(heard)
+        if (result.resultCode == Activity.RESULT_OK) viewModel.voice.heardFromSystem(heard)
     }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val openSystem: () -> Unit = {
@@ -91,15 +93,15 @@ private fun rememberMicAction(viewModel: PhoneCaptureViewModel): () -> Unit {
             .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             .putExtra(RecognizerIntent.EXTRA_LANGUAGE, VoiceErrorPolicy.PRIMARY_LANGUAGE)
         val failed = runCatching { system.launch(intent) }.isFailure
-        viewModel.systemDictationHandled(failed)
+        viewModel.voice.systemDictationHandled(failed)
     }
     // FLUX's own recognizer could not run (no Spanish, no service): the system dictation is next.
     LaunchedEffect(state.systemDictation) { if (state.systemDictation != null) openSystem() }
     val listen: () -> Unit = {
-        if (viewModel.canListenInApp()) viewModel.listen() else viewModel.requestSystemDictation()
+        if (viewModel.voice.canListenInApp()) viewModel.voice.listen() else viewModel.voice.requestSystemDictation()
     }
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) listen() else viewModel.permissionDenied()
+        if (granted) listen() else viewModel.voice.permissionDenied()
     }
     return {
         val granted = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED

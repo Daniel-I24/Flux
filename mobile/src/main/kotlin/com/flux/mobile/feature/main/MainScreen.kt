@@ -77,7 +77,14 @@ fun MainScreen(linkRequest: LinkLaunch? = null, capture: CaptureRequest = Captur
                     onRequestHandled = { notesRequest = null },
                     modifier = modifier,
                 )
-                MainTab.CATEGORIES -> CategoriesScreen(snackbar = snackbar, modifier = modifier)
+                MainTab.CATEGORIES -> CategoriesScreen(
+                    snackbar = snackbar,
+                    onOpenNotes = { categoryId ->
+                        notesRequest = NotesRequest(categoryId, System.nanoTime())
+                        tab = MainTab.NOTES
+                    },
+                    modifier = modifier,
+                )
                 MainTab.SETTINGS -> SettingsScreen(snackbar = snackbar, modifier = modifier)
             }
         }

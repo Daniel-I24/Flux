@@ -20,13 +20,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.flux.core.designsystem.category.displayName
 import com.flux.core.designsystem.theme.FluxSpacing
+import com.flux.core.model.Category
 import com.flux.mobile.R
-import com.flux.mobile.feature.capture.CaptureSheet
 import com.flux.mobile.launch.CaptureLaunch
 import com.flux.mobile.ui.common.SnackbarEventEffect
 import com.flux.mobile.ui.common.alarmConfirmation
@@ -43,16 +43,12 @@ fun NotesScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val event by viewModel.event.collectAsStateWithLifecycle()
     var editingId by rememberSaveable { mutableStateOf<String?>(null) }
-    var creating by rememberSaveable { mutableStateOf(false) }
-    // Applied only when Inicio asks for a category: coming back to the tab keeps the user's filters.
-    var listenOnOpen by rememberSaveable { mutableStateOf(false) }
+    var newNote by rememberSaveable(stateSaver = NewNote.saver) { mutableStateOf<NewNote?>(null) }
+    // Inicio or Categorías ask for a category; a launcher shortcut or quick settings opens a capture.
     LaunchedEffect(request?.token) {
         request ?: return@LaunchedEffect
         if (request.capture == null) viewModel.setCategory(request.categoryId)
-        request.capture?.let {
-            listenOnOpen = it == CaptureLaunch.DICTATE
-            creating = true
-        }
+        request.capture?.let { newNote = NewNote(listen = it == CaptureLaunch.DICTATE) }
         // Handled once: coming back to the tab keeps the user's filters and opens nothing.
         onRequestHandled()
     }
@@ -70,10 +66,10 @@ fun NotesScreen(
             )
             NotesSectionsList(state, viewModel, onOpen = { editingId = it })
         }
-        ExtendedFloatingActionButton(
-            onClick = { creating = true },
-            icon = { Icon(Icons.Rounded.Mic, contentDescription = null) },
-            text = { Text(stringResource(R.string.notes_new)) },
+        NewNoteButton(
+            category = state.categories.firstOrNull { it.id == state.query.categoryId },
+            // The note goes to the category being shown when "Nueva nota" was tapped.
+            onClick = { newNote = NewNote(categoryId = state.query.categoryId) },
             modifier = Modifier.align(Alignment.BottomEnd).padding(FluxSpacing.lg),
         )
     }
@@ -86,19 +82,7 @@ fun NotesScreen(
             onDismiss = { editingId = null },
         )
     }
-    // Without this the search field takes the focus back and opens the keyboard.
-    val focus = LocalFocusManager.current
-    if (creating) {
-        CaptureSheet(
-            onDismiss = {
-                creating = false
-                listenOnOpen = false
-                focus.clearFocus()
-            },
-            onAlarmSaved = viewModel::announceAlarm,
-            listenOnOpen = listenOnOpen,
-        )
-    }
+    newNote?.let { NewNoteSheet(it, onClose = { newNote = null }, onAlarmSaved = viewModel::announceAlarm) }
 }
 
 /** "Nota eliminada · Deshacer", "Completada · Deshacer" and errors in the shared snackbar. */
@@ -119,4 +103,15 @@ private fun NotesEventEffect(event: NotesEvent?, snackbar: SnackbarHostState, vi
             is NotesEvent.Scheduled -> snackbar.showSnackbar(context.alarmConfirmation(current.dueAt))
         }
     }
+}
+
+/** "Nueva nota", or "Nueva nota en Compras" while a category is shown (the note is saved there). */
+@Composable
+private fun NewNoteButton(category: Category?, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    ExtendedFloatingActionButton(
+        onClick = onClick,
+        icon = { Icon(Icons.Rounded.Mic, contentDescription = null) },
+        text = { Text(category?.let { stringResource(R.string.notes_new_in, it.displayName()) } ?: stringResource(R.string.notes_new)) },
+        modifier = modifier,
+    )
 }
