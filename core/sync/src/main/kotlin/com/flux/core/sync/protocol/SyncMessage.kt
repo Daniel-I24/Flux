@@ -2,6 +2,7 @@ package com.flux.core.sync.protocol
 
 import com.flux.core.model.Classification
 import com.flux.core.model.Note
+import com.flux.core.model.ThemePalette
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -80,4 +81,9 @@ sealed interface SyncMessage {
     @Serializable
     @SerialName("reminder_due")
     data class ReminderDue(val noteId: String) : SyncMessage
+
+    /** v1.2, watch → phone: the user picked a theme on the watch (the phone keeps the newest). */
+    @Serializable
+    @SerialName("theme_changed")
+    data class ThemeChanged(val palette: ThemePalette, val changedAt: Long) : SyncMessage
 }

@@ -52,4 +52,11 @@
     <string name="permission_popups">Ventanas emergentes y pantalla de bloqueo</string>
     <string name="permission_popups_why">Algunas marcas piden esto aparte para mostrar la alarma sobre otras apps o con el celular bloqueado.</string>
     <string name="permission_popups_steps">Toca Abrir ajustes y activa «Ventanas emergentes», «Mostrar en pantalla de bloqueo» y «Abrir ventanas en segundo plano».</string>
+    <string name="theme_andean_sunset">Atardecer andino</string>
+    <string name="theme_andean_sunset_description">Cálido: terracota, ocre y durazno.</string>
+    <string name="theme_night_jungle">Selva nocturna</string>
+    <string name="theme_night_jungle_description">Verdes profundos con acentos vivos.</string>
+    <string name="preferences_title">Tus alarmas y tu tema</string>
+    <string name="preferences_subtitle">Puedes cambiarlos cuando quieras en Ajustes. El tema se aplica también en el reloj.</string>
+    <string name="preferences_theme">Tema</string>
 </resources>

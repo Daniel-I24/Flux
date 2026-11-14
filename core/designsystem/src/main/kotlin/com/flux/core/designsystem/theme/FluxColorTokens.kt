@@ -3,53 +3,14 @@ package com.flux.core.designsystem.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * FLUX "Aurora" palette (v1.1, N-057): violet, lagoon and ember. Every text pair passes WCAG AA
- * (contrast table in DECISIONS.md). Screens never use these directly: they read the theme roles.
+ * Colors shared by every theme: status, category choices and pure black/white. The theme colors
+ * live in [AndeanSunset] and [NightJungle] (v1.2, replacing "Aurora"); screens read the roles.
  */
 object FluxColorTokens {
-    // Violet (primary)
-    val Violet10 = Color(0xFF1B1260)
-    val Violet20 = Color(0xFF24127A)
-    val Violet30 = Color(0xFF3B2BB0)
-    val Violet40 = Color(0xFF4C3BCF)
-    val Violet80 = Color(0xFFC5BBFF)
-    val Violet90 = Color(0xFFE6E1FF)
-
-    // Lagoon (secondary)
-    val Lagoon10 = Color(0xFF00363B)
-    val Lagoon20 = Color(0xFF00373C)
-    val Lagoon30 = Color(0xFF004F56)
-    val Lagoon40 = Color(0xFF00727D)
-    val Lagoon80 = Color(0xFF6ED6DF)
-    val Lagoon90 = Color(0xFFC7F0F2)
-
-    // Ember (tertiary: the voice lava and highlights)
-    val Ember10 = Color(0xFF3D1000)
-    val Ember20 = Color(0xFF5B1A00)
-    val Ember30 = Color(0xFF8A2E0E)
-    val Ember40 = Color(0xFFB4401A)
-    val Ember80 = Color(0xFFFFB59A)
-    val Ember90 = Color(0xFFFFDCCF)
-
-    // Ink (neutrals with a violet tint)
-    val Ink0 = Color(0xFF000000)
-    val Ink6 = Color(0xFF0F0D16)
-    val Ink10 = Color(0xFF16131F)
-    val Ink15 = Color(0xFF1E1A2A)
-    val Ink20 = Color(0xFF2A2638)
-    val Ink30 = Color(0xFF4A4560)
-    val Ink50 = Color(0xFF7A7590)
-    val Ink60 = Color(0xFF8F89A6)
-    val Ink80 = Color(0xFFC0BAD3)
-    val Ink90 = Color(0xFFE8E4F3)
-    val Ink92 = Color(0xFFECE8F5)
-    val Ink96 = Color(0xFFF7F5FC)
-    val Ink100 = Color(0xFFFFFFFF)
+    val Black = Color(0xFF000000)
+    val White = Color(0xFFFFFFFF)
 
     // Errors and status
-    val Red20 = Color(0xFF690005)
-    val Red40 = Color(0xFFBA1A1A)
-    val Red80 = Color(0xFFFFB4AB)
     val Green400 = Color(0xFF4ADE80)
     val Green700 = Color(0xFF15803D)
     val Amber400 = Color(0xFFFBBF24)

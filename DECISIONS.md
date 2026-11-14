@@ -90,30 +90,73 @@ Cada decisión con una línea de justificación, en orden cronológico. Las deci
 | N-084 | Cuándo suena, a la vista | La lista muestra el ícono de alarma y «Hoy · 18:00»; con fecha sin alarma, «… · sin aviso»; sin fecha, «Sin recordatorio» en color discreto. Al guardar con alarma, el snackbar dice «Sonará hoy a las 18:00» y el reloj «Sonará: Hoy 18:00». Todas las horas se escriben en 24 h con dos dígitos (`FluxLocale.TIME_24H`) | Antes una nota sin fecha no mostraba nada, y las horas salían como «8:00» o «8:00 p. m.» según el dispositivo. |
 | N-085 | Estado de la IA | Una fila: punto de color + «IA en la nube activa», «Conectando con la IA…», «IA local (sin servidor)», «IA local (sin sesión)» o «IA local (sin servidor configurado)», con una línea de ayuda. La comprobación rápida (3 s) que no responde se toma como servidor despertando y se repite en segundo plano esperando hasta 60 s; sin token de Firebase no se consulta el servidor. Solo se guardan en caché los éxitos. Al abrir la app se despierta el servidor. Registros `FluxAi` solo con estado y duración | La tarjeta decía «sin conexión con el servidor» con internet: el servidor gratuito tarda en arrancar (medido: 21,7 s la primera llamada, 0,46 s la segunda) y el límite de 3 s, guardado 60 s en caché, lo daba por caído. |
 | N-086 | Sección «Avanzado» | El modo demostración se mueve a «Avanzado», al final de Ajustes y plegada; «Cargar ejemplos» pide confirmación | Es requisito del proyecto pero no es una opción del día a día; cargarlo por error creaba 5 notas y una alarma. |
+| N-087 | Alarmas del reloj | Canal nuevo `flux_watch_alarm` de importancia alta que vibra por sí mismo, alarma insistente a pantalla completa limitada a la duración configurada y `turnScreenOn`/`showWhenLocked` en el manifiesto | En v1.1 el canal era mudo y sin vibración y el reloj nunca pedía notificaciones: si la pantalla completa no abría, el reloj no avisaba. |
+| N-088 | Alarmas exactas | `USE_EXACT_ALARM` (Android 13+) y `SCHEDULE_EXACT_ALARM` solo hasta Android 12 | FLUX es una app de recordatorios: el permiso se concede al instalar y la alarma sigue siendo exacta aunque el sistema congele la app (Samsung Freecess). Se distribuye fuera de Play; si se publica allí, la política de Play admite apps de recordatorios. |
+| N-089 | Aviso del celular al reloj | Mensaje `reminder_due` cuando el celular empieza a sonar; el reloj alerta con lo primero que llegue (su alarma local o el mensaje) y nunca dos veces | Respaldo si la alarma local se retrasa. Los mensajes de Data Layer ya se entregan de inmediato y despiertan la app (UFZ «bindService» en el log); `MessageOptions` no existe en play-services-wearable 19.0.0. |
+| N-090 | Alarma encima de la app en uso | Con «Aparecer encima» (`SYSTEM_ALERT_WINDOW`) el servicio abre la pantalla de alarma directamente; canal nuevo `flux_alarm_ringing_v2` | Con el celular desbloqueado Android convierte la pantalla completa en un aviso que se oculta; un canal rebajado por el usuario o la marca en v1.1 queda reemplazado. |
+| N-091 | Voz | Una sola sesión de reconocimiento por proceso, con pausa antes de reabrir, un reintento si está ocupado, es-CO → es-ES → dictado del sistema → entrada de Wear; un mensaje por error | El log del Galaxy Watch4 mostró una segunda sesión ignorada («capacity is full») y «ocupado» mostrado como «no disponible». |
+| N-092 | Notas que no son notas | Detector local conservador (no queda ninguna palabra con contenido tras quitar saludos y muletillas) más `isNote` opcional del servidor | Ninguno de los dos bloquea una idea sin fecha; el campo opcional mantiene compatibles las versiones anteriores. |
+| N-093 | Anticipación | Global en Ajustes y por nota (`alarmLeadMinutes`, nulo = global; Room v3 con migración automática). Si la anticipación ya pasó, una nota nueva, editada o pospuesta suena a su hora; la sincronización y la restauración no | Así una alarma que ya sonó antes no vuelve a sonar. Las pantallas de alarma se cierran cuando cambia la hora, no cuando la hora está en el futuro. |
+| N-094 | Permisos | Modelo compartido (`PermissionChecks`): micrófono, notificaciones, alarmas exactas (Android 12), pantalla completa, aparecer encima, batería sin restricciones e inicio automático y ventanas emergentes de cada marca (solo si el celular tiene esa pantalla) | Estado en vivo y la pantalla exacta del sistema; Android no informa el estado de las pantallas de marca, por eso se marcan «Revisar». |
+| N-095 | Temas | Se eliminan «Aurora» y se crean «Atardecer andino» (terracota, ocre, durazno) y «Selva nocturna» (verdes profundos, lima y orquídea), cada uno claro y oscuro; el modo (sistema, claro, oscuro) elige la variante. El reloj usa la variante oscura sobre negro | Ajustes guardados sin tema reciben «Atardecer andino». El tema se elige en cualquiera de las dos apps y gana el más reciente (`paletteChangedAt`). Contraste en la tabla de abajo y en `FluxPaletteContrastTest`. |
 
-## Contraste de la paleta (N-057)
+## Contraste de los temas (N-095)
 
-Calculado con la fórmula de luminancia relativa de WCAG 2.1. AA para texto normal exige 4,5:1. El reloj usa los roles del tema oscuro sobre negro.
+Calculado con la fórmula de luminancia relativa de WCAG 2.1. AA exige 4,5:1 para texto y 3:1 para botones sobre la superficie (última fila de cada variante). El reloj usa la variante oscura sobre negro.
 
-| Tema | Par | Colores | Contraste |
-|---|---|---|---|
-| Claro | onPrimary / primary | #FFFFFF / #4C3BCF | 7,4:1 |
-| Claro | onPrimaryContainer / primaryContainer | #1B1260 / #E6E1FF | 12,7:1 |
-| Claro | onSecondary / secondary | #FFFFFF / #00727D | 5,7:1 |
-| Claro | onSecondaryContainer / secondaryContainer | #00363B / #C7F0F2 | 10,8:1 |
-| Claro | onTertiary / tertiary | #FFFFFF / #B4401A | 5,7:1 |
-| Claro | onTertiaryContainer / tertiaryContainer | #3D1000 / #FFDCCF | 12,9:1 |
-| Claro | onBackground / background | #16131F / #F7F5FC | 16,9:1 |
-| Claro | onSurface / surface | #16131F / #FFFFFF | 18,3:1 |
-| Claro | onSurfaceVariant / surfaceVariant | #4A4560 / #ECE8F5 | 7,5:1 |
-| Claro | onError / error | #FFFFFF / #BA1A1A | 6,5:1 |
-| Oscuro | onPrimary / primary | #24127A / #C5BBFF | 8,3:1 |
-| Oscuro | onPrimaryContainer / primaryContainer | #E6E1FF / #3B2BB0 | 7,7:1 |
-| Oscuro | onSecondary / secondary | #00373C / #6ED6DF | 7,7:1 |
-| Oscuro | onSecondaryContainer / secondaryContainer | #C7F0F2 / #004F56 | 7,6:1 |
-| Oscuro | onTertiary / tertiary | #5B1A00 / #FFB59A | 7,7:1 |
-| Oscuro | onTertiaryContainer / tertiaryContainer | #FFDCCF / #8A2E0E | 6,6:1 |
-| Oscuro | onBackground / background | #E8E4F3 / #0F0D16 | 15,4:1 |
-| Oscuro | onSurface / surface | #E8E4F3 / #16131F | 14,7:1 |
-| Oscuro | onSurfaceVariant / surfaceVariant | #C0BAD3 / #2A2638 | 7,8:1 |
-| Oscuro | onError / error | #690005 / #FFB4AB | 7,7:1 |
+| Tema | Variante | Par | Colores | Contraste |
+|---|---|---|---|---|
+| Atardecer andino | Claro | onPrimary / primary | #FFFFFF / #A0442A | 6,3:1 |
+| Atardecer andino | Claro | onPrimaryContainer / primaryContainer | #3A0B00 / #FFDBCF | 13,3:1 |
+| Atardecer andino | Claro | onSecondary / secondary | #FFFFFF / #7A5900 | 6,4:1 |
+| Atardecer andino | Claro | onSecondaryContainer / secondaryContainer | #261900 / #FFDEA1 | 13,3:1 |
+| Atardecer andino | Claro | onTertiary / tertiary | #FFFFFF / #8B4A2F | 6,7:1 |
+| Atardecer andino | Claro | onTertiaryContainer / tertiaryContainer | #331200 / #FFDCC7 | 13,3:1 |
+| Atardecer andino | Claro | onSurface / background | #231917 / #FFF8F5 | 16,4:1 |
+| Atardecer andino | Claro | onSurface / surface | #231917 / #FFFBFF | 16,8:1 |
+| Atardecer andino | Claro | onSurfaceVariant / surfaceVariant | #53433F / #F5DED6 | 7,3:1 |
+| Atardecer andino | Claro | onSurfaceVariant / surface | #53433F / #FFFBFF | 9,1:1 |
+| Atardecer andino | Claro | onError / error | #FFFFFF / #BA1A1A | 6,5:1 |
+| Atardecer andino | Claro | primary / surface | #A0442A / #FFFBFF | 6,1:1 |
+| Atardecer andino | Oscuro | onPrimary / primary | #561F0F / #FFB59E | 7,7:1 |
+| Atardecer andino | Oscuro | onPrimaryContainer / primaryContainer | #FFDBCF / #7E2E17 | 7,1:1 |
+| Atardecer andino | Oscuro | onSecondary / secondary | #3F2E00 / #EEC06C | 7,7:1 |
+| Atardecer andino | Oscuro | onSecondaryContainer / secondaryContainer | #FFDEA1 / #5C4300 | 7,2:1 |
+| Atardecer andino | Oscuro | onTertiary / tertiary | #522300 / #FFB68C | 7,7:1 |
+| Atardecer andino | Oscuro | onTertiaryContainer / tertiaryContainer | #FFDCC7 / #713500 | 7,4:1 |
+| Atardecer andino | Oscuro | onSurface / background | #F1DFDA / #1A110F | 14,4:1 |
+| Atardecer andino | Oscuro | onSurface / surface | #F1DFDA / #1F1513 | 13,9:1 |
+| Atardecer andino | Oscuro | onSurfaceVariant / surfaceVariant | #E2CCC5 / #53433F | 6,1:1 |
+| Atardecer andino | Oscuro | onSurfaceVariant / surface | #E2CCC5 / #1F1513 | 11,6:1 |
+| Atardecer andino | Oscuro | onError / error | #690005 / #FFB4AB | 7,7:1 |
+| Atardecer andino | Oscuro | primary / surface | #FFB59E / #1F1513 | 10,5:1 |
+| Atardecer andino | Reloj | onSurface / negro | #F1DFDA / #000000 | 16,3:1 |
+| Atardecer andino | Reloj | onSurfaceVariant / negro | #E2CCC5 / #000000 | 13,7:1 |
+| Atardecer andino | Reloj | primary / negro | #FFB59E / #000000 | 12,4:1 |
+| Selva nocturna | Claro | onPrimary / primary | #FFFFFF / #1B6B44 | 6,5:1 |
+| Selva nocturna | Claro | onPrimaryContainer / primaryContainer | #002111 / #A6F2C2 | 13,1:1 |
+| Selva nocturna | Claro | onSecondary / secondary | #FFFFFF / #4A6600 | 6,6:1 |
+| Selva nocturna | Claro | onSecondaryContainer / secondaryContainer | #141F00 / #CDEE7F | 13,2:1 |
+| Selva nocturna | Claro | onTertiary / tertiary | #FFFFFF / #A23A72 | 6,2:1 |
+| Selva nocturna | Claro | onTertiaryContainer / tertiaryContainer | #3D0026 / #FFD8EA | 13,3:1 |
+| Selva nocturna | Claro | onSurface / background | #171D19 / #F5FBF5 | 16,3:1 |
+| Selva nocturna | Claro | onSurface / surface | #171D19 / #FBFDF8 | 16,7:1 |
+| Selva nocturna | Claro | onSurfaceVariant / surfaceVariant | #404943 / #DCE5DC | 7,2:1 |
+| Selva nocturna | Claro | onSurfaceVariant / surface | #404943 / #FBFDF8 | 9,1:1 |
+| Selva nocturna | Claro | onError / error | #FFFFFF / #BA1A1A | 6,5:1 |
+| Selva nocturna | Claro | primary / surface | #1B6B44 / #FBFDF8 | 6,3:1 |
+| Selva nocturna | Oscuro | onPrimary / primary | #00391F / #6EE7A0 | 8,5:1 |
+| Selva nocturna | Oscuro | onPrimaryContainer / primaryContainer | #A6F2C2 / #005232 | 7,1:1 |
+| Selva nocturna | Oscuro | onSecondary / secondary | #253600 / #B1D266 | 7,6:1 |
+| Selva nocturna | Oscuro | onSecondaryContainer / secondaryContainer | #CDEE7F / #384E00 | 7,1:1 |
+| Selva nocturna | Oscuro | onTertiary / tertiary | #5E1143 / #FFAED7 | 7,5:1 |
+| Selva nocturna | Oscuro | onTertiaryContainer / tertiaryContainer | #FFD8EA / #842B5A | 6,6:1 |
+| Selva nocturna | Oscuro | onSurface / background | #DDE5DE / #0B1410 | 14,6:1 |
+| Selva nocturna | Oscuro | onSurface / surface | #DDE5DE / #0F1A14 | 13,9:1 |
+| Selva nocturna | Oscuro | onSurfaceVariant / surfaceVariant | #BFC9C0 / #2A3A31 | 7,1:1 |
+| Selva nocturna | Oscuro | onSurfaceVariant / surface | #BFC9C0 / #0F1A14 | 10,5:1 |
+| Selva nocturna | Oscuro | onError / error | #690005 / #FFB4AB | 7,7:1 |
+| Selva nocturna | Oscuro | primary / surface | #6EE7A0 / #0F1A14 | 11,5:1 |
+| Selva nocturna | Reloj | onSurface / negro | #DDE5DE / #000000 | 16,3:1 |
+| Selva nocturna | Reloj | onSurfaceVariant / negro | #BFC9C0 / #000000 | 12,3:1 |
+| Selva nocturna | Reloj | primary / negro | #6EE7A0 / #000000 | 13,6:1 |

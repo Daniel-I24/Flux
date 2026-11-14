@@ -33,7 +33,7 @@ class TutorialFlowTest {
         store = store,
     )
 
-    private fun settingsViewModel() = WatchSettingsViewModel(store, mockk(relaxed = true), mockk(relaxed = true))
+    private fun settingsViewModel() = WatchSettingsViewModel(store, mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true))
 
     @Before
     fun setUp() = Dispatchers.setMain(UnconfinedTestDispatcher())

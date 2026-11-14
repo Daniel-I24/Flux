@@ -4,6 +4,7 @@ import com.flux.core.data.prefs.PreferencesStore
 import com.flux.core.model.AppSettings
 import com.flux.core.model.BundledSound
 import com.flux.core.model.SoundRef
+import com.flux.core.model.ThemePalette
 import com.flux.core.model.VibrationPattern
 import com.flux.core.sync.protocol.AccountState
 import com.flux.core.sync.protocol.QuietWindow
@@ -43,6 +44,9 @@ data class WatchSettings(
     val theme: WatchTheme = WatchTheme.DEFAULT,
     /** The 2–3 screen welcome was seen (repeatable from Ajustes). */
     val tutorialDone: Boolean = false,
+    /** v1.2: theme shared with the phone (newest choice wins); older settings get the default. */
+    val palette: ThemePalette = ThemePalette.ANDEAN_SUNSET,
+    val paletteChangedAt: Long = 0,
 )
 
 @Singleton

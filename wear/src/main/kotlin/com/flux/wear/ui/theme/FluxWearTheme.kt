@@ -3,45 +3,52 @@ package com.flux.wear.ui.theme
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material3.ColorScheme
 import androidx.wear.compose.material3.MaterialTheme
-import com.flux.core.designsystem.theme.FluxColorTokens as T
+import com.flux.core.designsystem.theme.FluxColorTokens
+import com.flux.core.designsystem.theme.FluxRoles
+import com.flux.core.designsystem.theme.roles
+import com.flux.core.model.ThemePalette
 
-/** Wear OS is always dark: the "Aurora" dark tokens on true black for OLED and glanceability. */
-private val FluxWearColorScheme = ColorScheme(
-    primary = T.Violet80,
-    onPrimary = T.Violet20,
-    primaryContainer = T.Violet30,
-    onPrimaryContainer = T.Violet90,
-    secondary = T.Lagoon80,
-    onSecondary = T.Lagoon20,
-    secondaryContainer = T.Lagoon30,
-    onSecondaryContainer = T.Lagoon90,
-    tertiary = T.Ember80,
-    onTertiary = T.Ember20,
-    tertiaryContainer = T.Ember30,
-    onTertiaryContainer = T.Ember90,
-    background = T.Ink0,
-    onBackground = T.Ink90,
-    onSurface = T.Ink90,
-    onSurfaceVariant = T.Ink80,
-    surfaceContainerLow = T.Ink10,
-    surfaceContainer = T.Ink15,
-    surfaceContainerHigh = T.Ink20,
-    outline = T.Ink60,
-    error = T.Red80,
-    onError = T.Red20,
+/** Wear OS is always dark: the palette's dark variant on true black, for OLED and glanceability. */
+private fun FluxRoles.toWearScheme() = ColorScheme(
+    primary = primary,
+    onPrimary = onPrimary,
+    primaryContainer = primaryContainer,
+    onPrimaryContainer = onPrimaryContainer,
+    secondary = secondary,
+    onSecondary = onSecondary,
+    secondaryContainer = secondaryContainer,
+    onSecondaryContainer = onSecondaryContainer,
+    tertiary = tertiary,
+    onTertiary = onTertiary,
+    tertiaryContainer = tertiaryContainer,
+    onTertiaryContainer = onTertiaryContainer,
+    background = FluxColorTokens.Black,
+    onBackground = onSurface,
+    onSurface = onSurface,
+    onSurfaceVariant = onSurfaceVariant,
+    surfaceContainerLow = containerLow,
+    surfaceContainer = container,
+    surfaceContainerHigh = containerHigh,
+    outline = outline,
+    error = error,
+    onError = onError,
 )
 
-/** "Alto contraste" setting: brighter accents and pure white text. */
-private val FluxWearHighContrastScheme = FluxWearColorScheme.copy(
-    primary = T.Ink100,
-    onPrimary = T.Ink0,
-    primaryContainer = T.Ink100,
-    onPrimaryContainer = T.Ink0,
-    onSurfaceVariant = T.Ink100,
-    surfaceContainer = T.Ink20,
+/** "Alto contraste" setting: pure white accents and text on the same palette. */
+private fun ColorScheme.highContrast() = copy(
+    primary = FluxColorTokens.White,
+    onPrimary = FluxColorTokens.Black,
+    primaryContainer = FluxColorTokens.White,
+    onPrimaryContainer = FluxColorTokens.Black,
+    onSurfaceVariant = FluxColorTokens.White,
 )
 
 @Composable
-fun FluxWearTheme(highContrast: Boolean = false, content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = if (highContrast) FluxWearHighContrastScheme else FluxWearColorScheme, content = content)
+fun FluxWearTheme(
+    palette: ThemePalette = ThemePalette.ANDEAN_SUNSET,
+    highContrast: Boolean = false,
+    content: @Composable () -> Unit,
+) {
+    val scheme = palette.roles().dark.toWearScheme()
+    MaterialTheme(colorScheme = if (highContrast) scheme.highContrast() else scheme, content = content)
 }

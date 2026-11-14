@@ -48,7 +48,7 @@ class AlertActivity : ComponentActivity() {
                     !state.loading && !silent && ringJob == null -> ring(state)
                 }
             }
-            FluxWearTheme(highContrast = state.settings.theme == WatchTheme.HIGH_CONTRAST) {
+            FluxWearTheme(palette = state.settings.palette, highContrast = state.settings.theme == WatchTheme.HIGH_CONTRAST) {
                 AlertScreen(note = state.note, onComplete = viewModel::complete, onSnooze = viewModel::snooze)
             }
         }

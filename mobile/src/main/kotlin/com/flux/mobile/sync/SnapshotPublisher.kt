@@ -80,6 +80,8 @@ class SnapshotPublisher @Inject constructor(
         alarmDurationSeconds = settings.alarmDurationSeconds,
         phoneAppVersion = BuildConfig.VERSION_CODE,
         alarmLeadMinutes = settings.alarmLeadMinutes,
+        palette = settings.palette,
+        paletteChangedAt = settings.paletteChangedAt,
     )
 
     /** Custom tone files live only on the phone (and v1.0 watches cannot decode them). */

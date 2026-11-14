@@ -12,6 +12,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.flux.core.designsystem.theme.FluxTheme
 import com.flux.core.model.ThemeMode
+import com.flux.core.model.ThemePalette
 import com.flux.mobile.feature.settings.AccountSettings
 import com.flux.mobile.feature.settings.AdvancedSettings
 import com.flux.mobile.feature.settings.AiSettings
@@ -34,7 +35,9 @@ class SettingsUiTest {
     @Test
     fun `theme selection reports the chosen mode`() {
         var chosen: ThemeMode? = null
-        compose.setContent { FluxTheme { AppearanceSettings(ThemeMode.SYSTEM, onTheme = { chosen = it }) } }
+        compose.setContent {
+            FluxTheme { AppearanceSettings(ThemeMode.SYSTEM, ThemePalette.ANDEAN_SUNSET, onTheme = { chosen = it }, onPalette = {}) }
+        }
         compose.onNodeWithText("Sistema").assertIsSelected()
         compose.onNodeWithText("Oscuro").performClick()
         assertEquals(ThemeMode.DARK, chosen)

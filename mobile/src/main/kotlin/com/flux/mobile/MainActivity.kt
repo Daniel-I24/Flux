@@ -26,9 +26,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         linkLaunch.handle(intent)
         setContent {
-            val themeMode by appViewModel.themeMode.collectAsStateWithLifecycle()
+            val theme by appViewModel.theme.collectAsStateWithLifecycle()
             val linkRequest by linkLaunch.request.collectAsStateWithLifecycle()
-            FluxTheme(themeMode = themeMode) { FluxApp(linkRequest = linkRequest) }
+            FluxTheme(themeMode = theme.mode, palette = theme.palette) { FluxApp(linkRequest = linkRequest) }
         }
     }
 

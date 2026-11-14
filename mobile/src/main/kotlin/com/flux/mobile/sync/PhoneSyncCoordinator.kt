@@ -1,5 +1,6 @@
 package com.flux.mobile.sync
 
+import com.flux.core.domain.usecase.ApplyRemotePaletteUseCase
 import com.flux.core.domain.usecase.ClassifyNoteUseCase
 import com.flux.core.domain.usecase.CurrentAccountIdUseCase
 import com.flux.core.domain.usecase.UnlinkWatchUseCase
@@ -21,6 +22,7 @@ class PhoneSyncCoordinator @Inject constructor(
     private val currentAccountId: CurrentAccountIdUseCase,
     private val unlinkWatch: UnlinkWatchUseCase,
     private val noteHandler: PhoneNoteMessageHandler,
+    private val applyPalette: ApplyRemotePaletteUseCase,
 ) {
     suspend fun handle(incoming: Incoming) {
         val node = incoming.sourceNodeId
@@ -33,6 +35,8 @@ class PhoneSyncCoordinator @Inject constructor(
             }
             is SyncMessage.Unlink -> if (message.accountId == currentAccountId()) unlinkWatch()
             is SyncMessage.NoteCapture, is SyncMessage.NoteAction -> noteHandler.handle(node, message)
+            // The settings change republishes the snapshot, so the watch gets the final theme back.
+            is SyncMessage.ThemeChanged -> applyPalette(message.palette, message.changedAt)
             else -> Unit
         }
     }

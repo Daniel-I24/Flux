@@ -36,6 +36,7 @@ private enum class SettingsPage { MAIN, PROFILE, ROUTINE }
 fun SettingsScreen(snackbar: SnackbarHostState, modifier: Modifier = Modifier, viewModel: SettingsViewModel = hiltViewModel()) {
     var page by rememberSaveable { mutableStateOf(SettingsPage.MAIN) }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val synced: SyncedSettingsViewModel = hiltViewModel()
     val message by viewModel.message.collectAsStateWithLifecycle()
     val context = LocalContext.current
     SnackbarEventEffect(message, onConsumed = viewModel::consumeMessage) { snackbar.showSnackbar(context.getString(it)) }
@@ -62,7 +63,7 @@ fun SettingsScreen(snackbar: SnackbarHostState, modifier: Modifier = Modifier, v
                 BackgroundHelpCard()
             }
             ReminderSettings(state.settings, state.profile?.routine, viewModel)
-            AppearanceSettings(state.settings.themeMode, viewModel::setTheme)
+            AppearanceSettings(state.settings.themeMode, state.settings.palette, viewModel::setTheme, synced::selectPalette)
             AiSettings(state.ai, viewModel::refreshAi)
             TutorialSettings(onRepeat = viewModel::repeatTutorial)
             AdvancedSettings(onLoadDemo = viewModel::loadDemo, onClearDemo = viewModel::clearDemo)

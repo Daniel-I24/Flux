@@ -2,6 +2,7 @@ package com.flux.wear.feature.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.flux.core.model.ThemePalette
 import com.flux.core.model.VibrationPattern
 import com.flux.wear.data.PhoneState
 import com.flux.wear.data.WatchSettings
@@ -9,6 +10,7 @@ import com.flux.wear.data.WatchStateStore
 import com.flux.wear.data.WatchTheme
 import com.flux.wear.sync.LinkRequests
 import com.flux.wear.sync.PhoneLauncher
+import com.flux.wear.sync.WatchThemeSync
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,6 +30,7 @@ class WatchSettingsViewModel @Inject constructor(
     private val store: WatchStateStore,
     private val linkRequests: LinkRequests,
     private val launcher: PhoneLauncher,
+    private val themeSync: WatchThemeSync,
 ) : ViewModel() {
     private var finishing = false
 
@@ -40,6 +43,10 @@ class WatchSettingsViewModel @Inject constructor(
     fun setSoundEnabled(enabled: Boolean) = update { it.copy(soundEnabled = enabled) }
 
     fun setHighContrast(enabled: Boolean) = update { it.copy(theme = if (enabled) WatchTheme.HIGH_CONTRAST else WatchTheme.DEFAULT) }
+
+    fun setPalette(palette: ThemePalette) {
+        viewModelScope.launch { themeSync.pick(palette) }
+    }
 
     /** Saves first and only then leaves: leaving pops this screen and would cancel a save still in progress. */
     fun finishTutorial(onSaved: () -> Unit) {

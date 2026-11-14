@@ -10,6 +10,7 @@ import com.flux.core.model.AppSettings
 import com.flux.core.model.BundledSound
 import com.flux.core.model.SoundRef
 import com.flux.core.model.ThemeMode
+import com.flux.core.model.ThemePalette
 import com.flux.core.model.VibrationPattern
 import java.nio.file.Files
 import kotlinx.coroutines.test.runTest
@@ -39,6 +40,9 @@ class SettingsUpgradeTest {
         assertFalse(settings.quietHoursEnabled)
         assertEquals(AppSettings.DEFAULT_ALARM_SECONDS, settings.alarmDurationSeconds)
         assertFalse(settings.tutorialDone)
+        // v1.2: nobody keeps a theme that no longer exists, and reminders keep ringing on time.
+        assertEquals(ThemePalette.ANDEAN_SUNSET, settings.palette)
+        assertEquals(0, settings.alarmLeadMinutes)
     }
 
     private companion object {

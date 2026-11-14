@@ -29,6 +29,11 @@ object FluxSizes {
     val categoryDot = 10.dp
     val borderThin = 1.dp
     val strokeThin = 2.dp
+    val hairline = 1.dp
+    val selectedBorder = 2.dp
+
+    /** A theme color sample in the theme picker. */
+    val swatch = 24.dp
 }
 
 val FluxShapes = Shapes(

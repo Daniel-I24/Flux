@@ -24,6 +24,7 @@ internal object MessageValidator {
         is SyncMessage.NoteAck -> message.noteId.isValidId()
         is SyncMessage.NoteAction -> message.noteId.isValidId() && (message.snoozeMinutes ?: 1) in 1..MAX_SNOOZE_MINUTES
         is SyncMessage.ReminderDue -> message.noteId.isValidId()
+        is SyncMessage.ThemeChanged -> message.changedAt > 0
     }
 
     fun isValid(snapshot: WatchSnapshot): Boolean =

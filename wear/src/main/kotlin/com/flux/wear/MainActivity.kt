@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
         val startRoute = if (dictate) WatchRoutes.DICTATE else WatchRoutes.HOME
         setContent {
             val settings by stateStore.observeSettings().collectAsStateWithLifecycle(WatchSettings())
-            FluxWearTheme(highContrast = settings.theme == WatchTheme.HIGH_CONTRAST) {
+            FluxWearTheme(palette = settings.palette, highContrast = settings.theme == WatchTheme.HIGH_CONTRAST) {
                 WatchApp(startRoute = startRoute)
             }
         }

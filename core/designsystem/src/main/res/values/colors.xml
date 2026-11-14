@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Window colors used before Compose draws (splash, system bars). Mirrors FluxColorTokens (Aurora). -->
-    <color name="flux_window_background_light">#FFF7F5FC</color>
-    <color name="flux_window_background_dark">#FF0F0D16</color>
-    <color name="flux_brand">#FF4C3BCF</color>
+    <!-- Window colors used before Compose draws (splash, system bars). Mirror the default theme, Atardecer andino. -->
+    <color name="flux_window_background_light">#FFFFF8F5</color>
+    <color name="flux_window_background_dark">#FF1A110F</color>
+    <color name="flux_brand">#FFA0442A</color>
 </resources>

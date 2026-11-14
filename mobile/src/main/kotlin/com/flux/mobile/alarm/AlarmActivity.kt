@@ -33,7 +33,7 @@ class AlarmActivity : ComponentActivity() {
             val state by viewModel.uiState.collectAsStateWithLifecycle()
             val settings by observeSettings().collectAsStateWithLifecycle(AppSettings())
             LaunchedEffect(state.handled, state.loading) { if (!state.loading && state.handled) finish() }
-            FluxTheme(themeMode = settings.themeMode) {
+            FluxTheme(themeMode = settings.themeMode, palette = settings.palette) {
                 AlarmScreen(state = state, onComplete = viewModel::complete, onSnooze = viewModel::snooze)
             }
         }

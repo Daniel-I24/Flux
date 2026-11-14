@@ -3,6 +3,7 @@ package com.flux.core.sync.protocol
 import com.flux.core.domain.port.Clock
 import com.flux.core.domain.port.IdGenerator
 import com.flux.core.model.Note
+import com.flux.core.model.ThemePalette
 import javax.inject.Inject
 
 /** Factory: the only place that builds envelopes, so ids, version and timestamps are always set. */
@@ -27,4 +28,6 @@ class SyncMessageFactory @Inject constructor(
     fun snooze(noteId: String, minutes: Int) = envelope(SyncMessage.NoteAction(noteId, NoteActionType.SNOOZE, minutes))
 
     fun reminderDue(noteId: String) = envelope(SyncMessage.ReminderDue(noteId))
+
+    fun themeChanged(palette: ThemePalette, changedAt: Long) = envelope(SyncMessage.ThemeChanged(palette, changedAt))
 }

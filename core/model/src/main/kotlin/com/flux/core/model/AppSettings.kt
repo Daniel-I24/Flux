@@ -5,6 +5,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
+/** v1.2 color themes (DECISIONS.md); [ThemeMode] picks their light or dark variant. */
+@Serializable
+enum class ThemePalette { ANDEAN_SUNSET, NIGHT_JUNGLE }
+
 /** Preferences shared by both apps (each keeps its own copy in DataStore). */
 @Serializable
 data class AppSettings(
@@ -19,6 +23,10 @@ data class AppSettings(
     val tutorialDone: Boolean = false,
     /** v1.2: how many minutes before a reminder's time it rings (notes may override it). */
     val alarmLeadMinutes: Int = DEFAULT_ALARM_LEAD_MINUTES,
+    /** v1.2: settings saved by v1.1 have no palette and get the default one. */
+    val palette: ThemePalette = ThemePalette.ANDEAN_SUNSET,
+    /** When [palette] last changed (on either device): the newest choice wins in sync. */
+    val paletteChangedAt: Long = 0,
 ) {
     companion object {
         const val DEFAULT_SNOOZE_MINUTES = 5

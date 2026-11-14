@@ -43,7 +43,7 @@ private fun note(id: String, title: String, inMinutes: Long) = Note(
 internal fun SettingsPreview() = FluxWearTheme {
     WatchSettingsContent(
         WatchSettingsUiState(phone = PhoneState(userName = "Ana"), linkedAccount = "account"),
-        WatchSettingsActions({}, {}, {}, {}, {}, {}, {}),
+        WatchSettingsActions({}, {}, {}, {}, {}, {}, {}, {}),
     )
 }
 

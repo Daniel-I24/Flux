@@ -64,6 +64,9 @@ class SnapshotApplier @Inject constructor(
                 alarmLeadMinutes = snapshot.alarmLeadMinutes,
             ),
         )
+        if (snapshot.paletteChangedAt > stateStore.settings().paletteChangedAt) {
+            stateStore.updateSettings { it.copy(palette = snapshot.palette, paletteChangedAt = snapshot.paletteChangedAt) }
+        }
         agenda.forEach { note ->
             if (!note.hasPendingAlarm) return@forEach alarms.cancel(note.id)
             // Overdue or already rung notes never ring again (and a ringing one keeps ringing).

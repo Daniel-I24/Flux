@@ -23,12 +23,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.core.model.ThemeMode
+import com.flux.core.model.ThemePalette
 import com.flux.mobile.R
+import com.flux.mobile.ui.common.ThemePicker
 
 /** A card with its title; [header] replaces the plain title (e.g. a foldable one). */
 @Composable
@@ -79,13 +82,14 @@ fun AccountSettings(email: String?, localAccount: Boolean, onProfile: () -> Unit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppearanceSettings(theme: ThemeMode, onTheme: (ThemeMode) -> Unit) {
+fun AppearanceSettings(theme: ThemeMode, palette: ThemePalette, onTheme: (ThemeMode) -> Unit, onPalette: (ThemePalette) -> Unit) {
     val labels = mapOf(
         ThemeMode.SYSTEM to R.string.settings_theme_system,
         ThemeMode.LIGHT to R.string.settings_theme_light,
         ThemeMode.DARK to R.string.settings_theme_dark,
     )
     SettingsSection(stringResource(R.string.settings_appearance)) {
+        ThemePicker(palette, onPalette, dark = MaterialTheme.colorScheme.surface.luminance() < HALF)
         SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
             ThemeMode.entries.forEachIndexed { index, mode ->
                 SegmentedButton(
@@ -109,3 +113,5 @@ fun TutorialSettings(onRepeat: () -> Unit) {
         OutlinedButton(onClick = onRepeat) { Text(stringResource(R.string.settings_tutorial_repeat)) }
     }
 }
+
+private const val HALF = 0.5f

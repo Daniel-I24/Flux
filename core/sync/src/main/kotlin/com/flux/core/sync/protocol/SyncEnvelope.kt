@@ -3,6 +3,7 @@ package com.flux.core.sync.protocol
 import com.flux.core.model.AppSettings
 import com.flux.core.model.Category
 import com.flux.core.model.Note
+import com.flux.core.model.ThemePalette
 import com.flux.core.model.VibrationPattern
 import kotlinx.serialization.Serializable
 
@@ -37,6 +38,9 @@ data class WatchSnapshot(
     val phoneAppVersion: Int = 0,
     /** v1.2: global "Avisarme" lead in minutes, so the watch rings at the same moment as the phone. */
     val alarmLeadMinutes: Int = AppSettings.DEFAULT_ALARM_LEAD_MINUTES,
+    /** v1.2: theme shared by both apps, with when it was picked (newest wins). */
+    val palette: ThemePalette = ThemePalette.ANDEAN_SUNSET,
+    val paletteChangedAt: Long = 0,
 )
 
 @Serializable
