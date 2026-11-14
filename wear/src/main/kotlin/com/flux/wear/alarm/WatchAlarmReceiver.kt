@@ -3,9 +3,7 @@ package com.flux.wear.alarm
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.flux.core.domain.usecase.GetNoteUseCase
 import com.flux.core.domain.usecase.RescheduleAlarmsUseCase
-import com.flux.wear.surface.SurfaceRefresher
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -26,22 +24,14 @@ private fun BroadcastReceiver.runAsync(block: suspend () -> Unit) {
     }
 }
 
-/** A reminder is due on the watch: full-screen alert with haptics. */
+/** The watch's own exact alarm (setAlarmClock wakes the app even when the system froze it). */
 @AndroidEntryPoint
 class WatchAlarmReceiver : BroadcastReceiver() {
-    @Inject lateinit var getNote: GetNoteUseCase
-
-    @Inject lateinit var alertNotifier: WatchAlertNotifier
-
-    @Inject lateinit var surfaces: SurfaceRefresher
+    @Inject lateinit var alert: WatchReminderAlert
 
     override fun onReceive(context: Context, intent: Intent) {
         val noteId = intent.getStringExtra(WatchAlarmTarget.EXTRA_NOTE_ID) ?: return
-        runAsync {
-            getNote(noteId)?.takeIf { it.hasPendingAlarm }?.let { alertNotifier.show(it) }
-            // The reminder is now overdue: the tile and the complication move to the next one.
-            surfaces.refresh()
-        }
+        runAsync { alert.fire(noteId, source = "local") }
     }
 }
 

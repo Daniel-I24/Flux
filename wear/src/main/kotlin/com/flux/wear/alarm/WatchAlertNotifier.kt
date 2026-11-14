@@ -1,13 +1,15 @@
 package com.flux.wear.alarm
 
 import android.annotation.SuppressLint
-import android.app.NotificationChannel
+import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.flux.core.data.alarm.ActiveAlarm
+import com.flux.core.data.alarm.AlarmLog
 import com.flux.core.data.alarm.AlarmTarget
 import com.flux.core.designsystem.R as DesignR
 import com.flux.core.domain.policy.QuietHoursPolicy
@@ -23,42 +25,58 @@ import java.time.Instant
 import javax.inject.Inject
 
 /**
- * Posts the reminder with a full-screen intent (AlertActivity handles sound and the
- * user's vibration pattern). During FLUX quiet hours it is delivered silently.
+ * Posts the reminder as an insistent alarm with a full-screen intent: the screen turns on with
+ * AlertActivity (Posponer / Completar, the user's vibration) and, if the system only shows the
+ * notification, its channel still vibrates until the configured duration ends. The local alarm
+ * and the phone's "ringing" message may both arrive: the second one is ignored.
  */
 class WatchAlertNotifier @Inject constructor(
     @ApplicationContext private val context: Context,
     private val target: AlarmTarget,
+    private val channels: WatchAlarmChannels,
     private val stateStore: WatchStateStore,
+    private val activeAlarm: ActiveAlarm,
     private val clock: Clock,
 ) {
     private val manager = NotificationManagerCompat.from(context)
 
     @SuppressLint("MissingPermission")
     suspend fun show(note: Note) {
-        if (!manager.areNotificationsEnabled()) return
-        val quiet = isQuiet(stateStore.phoneState().quietHours)
-        ensureChannels()
         val id = target.notificationId(note.id)
+        if (activeAlarm.noteId.value == note.id || isPosted(id)) return AlarmLog.info("watch alert skipped=duplicate")
+        if (!manager.areNotificationsEnabled()) return AlarmLog.info("watch alert blocked=notifications_off")
+        channels.ensure()
+        val phone = stateStore.phoneState()
+        val quiet = isQuiet(phone.quietHours)
         val alert = PendingIntent.getActivity(
             context,
             id,
             AlertActivity.intent(context, note.id, silent = quiet),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        val builder = NotificationCompat.Builder(context, if (quiet) QUIET_CHANNEL else ALERT_CHANNEL)
+        val builder = NotificationCompat.Builder(context, if (quiet) WatchAlarmChannels.QUIET else WatchAlarmChannels.ALARM)
             .setSmallIcon(DesignR.drawable.ic_stat_flux)
             .setContentTitle(note.title)
             .setContentText(context.getString(R.string.alert_subtitle))
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(if (quiet) NotificationCompat.PRIORITY_LOW else NotificationCompat.PRIORITY_MAX)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(alert)
             .setAutoCancel(true)
+            .setTimeoutAfter(phone.alarmDurationSeconds * MILLIS_PER_SECOND)
             .addAction(0, context.getString(R.string.alert_complete), action(note.id, WatchReminderActionReceiver.ACTION_COMPLETE, id))
             .addAction(0, context.getString(R.string.alert_snooze), action(note.id, WatchReminderActionReceiver.ACTION_SNOOZE, id))
-        if (!quiet) builder.setFullScreenIntent(alert, true)
-        manager.notify(id, builder.build())
+        if (!quiet) builder.setOngoing(true).setVibrate(WatchAlarmChannels.VIBRATION_PATTERN).setFullScreenIntent(alert, true)
+        val notification = builder.build().apply { if (!quiet) flags = flags or Notification.FLAG_INSISTENT }
+        manager.notify(id, notification)
+        AlarmLog.info("watch alert posted quiet=$quiet fullScreen=${canUseFullScreen()} channelBlocked=${channels.isAlarmChannelBlocked()}")
     }
+
+    private fun isPosted(id: Int): Boolean =
+        context.getSystemService(NotificationManager::class.java).activeNotifications.any { it.id == id }
+
+    private fun canUseFullScreen(): Boolean = android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE ||
+        context.getSystemService(NotificationManager::class.java).canUseFullScreenIntent()
 
     private fun isQuiet(window: QuietWindow?): Boolean {
         window ?: return false
@@ -73,26 +91,7 @@ class WatchAlertNotifier @Inject constructor(
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
 
-    private fun ensureChannels() {
-        val system = context.getSystemService(NotificationManager::class.java)
-        if (system.getNotificationChannel(ALERT_CHANNEL) == null) {
-            // Sound and vibration are produced by AlertActivity with the user's watch settings.
-            system.createNotificationChannel(
-                NotificationChannel(ALERT_CHANNEL, context.getString(R.string.channel_alerts), NotificationManager.IMPORTANCE_HIGH).apply {
-                    setSound(null, null)
-                    enableVibration(false)
-                },
-            )
-        }
-        if (system.getNotificationChannel(QUIET_CHANNEL) == null) {
-            system.createNotificationChannel(
-                NotificationChannel(QUIET_CHANNEL, context.getString(R.string.channel_quiet), NotificationManager.IMPORTANCE_LOW),
-            )
-        }
-    }
-
     private companion object {
-        const val ALERT_CHANNEL = "flux_watch_alert"
-        const val QUIET_CHANNEL = "flux_watch_quiet"
+        const val MILLIS_PER_SECOND = 1_000L
     }
 }
