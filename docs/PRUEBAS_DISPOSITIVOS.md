@@ -43,7 +43,7 @@ Toca **Nueva nota** y escribe cada frase en el campo de texto; luego toca *Conti
 | A4.4 | `pagar arriendo hoy cuarto para las 5` | 16:45 | |
 | A4.5 | `reunión a las 8` | Pregunta **¿A qué hora?** con chips *Hoy · 20:00* / *Mañana · 8:00*. La cuenta regresiva se detiene hasta que eliges | |
 | A4.6 | `reunión mañana a las 8` | Mañana 8:00 **sin preguntar** | |
-| A4.7 | `recordarme comprar regalo` (sin hora) | Pregunta **¿Cuándo te aviso?** con opciones, *Elegir fecha y hora* y *Sin recordatorio* | |
+| A4.7 | `recuérdame llamar a mamá` y luego `salir de mi casa a las` (hora incompleta) | Pregunta **¿Cuándo te aviso?** con opciones, *Elegir fecha y hora* y *Sin recordatorio* | |
 | A4.8 | `idea para una app de recetas` | Categoría Ideas, sin fecha, sin preguntas | |
 | A4.9 | Abre una nota → Editar → Fecha y luego Hora | Selectores en **español** aunque el celular esté en inglés | |
 
@@ -124,7 +124,7 @@ Crea `alarma prueba hoy a las HH:MM` con la hora de dentro de 2 minutos.
 | C2 | Inicio del reloj | Hora, estado discreto (*Conectado*), botón grande *Dictar nota*, próximo recordatorio, *Agenda* y *Vencidos* | |
 | C3 | *Dictar nota* → di "cita con el dentista mañana a las 4 p. m." | Lava de colores que reacciona a tu voz; luego vista previa *Mañana · 16:00*, Salud, y se guarda sola | |
 | C4 | Dicta "reunión a las 8" | Botones grandes *¿A qué hora?*; no se guarda hasta que eliges | |
-| C5 | Dicta "comprar regalo" | *¿Cuándo te aviso?* con *Sin recordatorio* | |
+| C5 | Dicta "recuérdame llamar a mamá" | *¿Cuándo te aviso?* con *Sin recordatorio* | |
 | C6 | Dicta y quédate en silencio | *No entendí la frase…* con *Dictar de nuevo*. **Nunca** se guarda ":20" ni "Nota sin título" | |
 | C7 | Debe ser solo por voz | No hay botón *Escribir* (solo existe en debug) | |
 | C8 | La nota dictada en C3 | Aparece en el celular en *Próximos* en pocos segundos (*Enviada al celular*) | |
