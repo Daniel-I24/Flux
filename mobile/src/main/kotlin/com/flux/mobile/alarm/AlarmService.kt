@@ -9,6 +9,7 @@ import androidx.core.app.ServiceCompat
 import com.flux.core.data.alarm.ActiveAlarm
 import com.flux.core.designsystem.sound.AlarmRinger
 import com.flux.core.domain.usecase.Reminder
+import com.flux.mobile.sync.ReminderSync
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +33,8 @@ class AlarmService : Service() {
     @Inject lateinit var channels: AlarmChannels
 
     @Inject lateinit var activeAlarm: ActiveAlarm
+
+    @Inject lateinit var reminderSync: ReminderSync
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val ringer by lazy { AlarmRinger(this) }
@@ -70,6 +73,7 @@ class AlarmService : Service() {
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK,
             )
             activeAlarm.start(noteId)
+            launch { reminderSync.ringing(noteId) }
             withContext(Dispatchers.IO) { ringer.start(reminder.sound, settings.vibration) }
             val handled = activeAlarm.awaitHandled(noteId, settings.alarmDurationSeconds * MILLIS_PER_SECOND)
             ringer.stop()

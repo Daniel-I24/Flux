@@ -25,4 +25,6 @@ class SyncMessageFactory @Inject constructor(
     fun complete(noteId: String) = envelope(SyncMessage.NoteAction(noteId, NoteActionType.COMPLETE))
 
     fun snooze(noteId: String, minutes: Int) = envelope(SyncMessage.NoteAction(noteId, NoteActionType.SNOOZE, minutes))
+
+    fun reminderDue(noteId: String) = envelope(SyncMessage.ReminderDue(noteId))
 }

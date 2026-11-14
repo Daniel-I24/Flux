@@ -6,6 +6,7 @@ import com.flux.core.domain.usecase.SnoozeNoteUseCase
 import com.flux.core.sync.datalayer.Incoming
 import com.flux.core.sync.protocol.NoteActionType
 import com.flux.core.sync.protocol.SyncMessage
+import com.flux.wear.alarm.WatchReminderAlert
 import com.flux.wear.data.WatchStateStore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,6 +20,7 @@ class WatchSyncCoordinator @Inject constructor(
     private val stateStore: WatchStateStore,
     private val complete: CompleteNoteUseCase,
     private val snooze: SnoozeNoteUseCase,
+    private val reminderAlert: WatchReminderAlert,
 ) {
     suspend fun handle(incoming: Incoming) {
         when (val message = incoming.envelope.message) {
@@ -30,6 +32,7 @@ class WatchSyncCoordinator @Inject constructor(
                 NoteActionType.SNOOZE -> snooze(message.noteId, message.snoozeMinutes ?: stateStore.phoneState().snoozeMinutes)
             }
             is SyncMessage.Status -> monitor.onStatus(message)
+            is SyncMessage.ReminderDue -> reminderAlert.fire(message.noteId, source = "phone")
             else -> Unit
         }
     }

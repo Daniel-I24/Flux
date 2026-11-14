@@ -72,4 +72,12 @@ sealed interface SyncMessage {
     @Serializable
     @SerialName("note_action")
     data class NoteAction(val noteId: String, val action: NoteActionType, val snoozeMinutes: Int? = null) : SyncMessage
+
+    /**
+     * v1.2, phone → watch: a reminder started ringing on the phone. The watch shows its own alert
+     * unless its local alarm already did (older watches ignore the unknown type).
+     */
+    @Serializable
+    @SerialName("reminder_due")
+    data class ReminderDue(val noteId: String) : SyncMessage
 }
