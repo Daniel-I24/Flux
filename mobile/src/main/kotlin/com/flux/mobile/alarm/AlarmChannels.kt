@@ -1,5 +1,6 @@
 package com.flux.mobile.alarm
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -19,7 +20,9 @@ class AlarmChannels @Inject constructor(@ApplicationContext private val context:
 
     fun ensure() {
         if (manager.getNotificationChannel(RINGING) != null) return
-        manager.notificationChannels.filter { it.id.startsWith(LEGACY_PREFIX) }.forEach { manager.deleteNotificationChannel(it.id) }
+        manager.notificationChannels
+            .filter { it.id.startsWith(LEGACY_PREFIX) || it.id in LEGACY_IDS }
+            .forEach { manager.deleteNotificationChannel(it.id) }
         manager.createNotificationChannels(
             listOf(
                 silent(RINGING, R.string.channel_alarm, R.string.channel_alarm_description, NotificationManager.IMPORTANCE_HIGH),
@@ -33,6 +36,7 @@ class AlarmChannels @Inject constructor(@ApplicationContext private val context:
     private fun silent(id: String, name: Int, description: Int, importance: Int) =
         NotificationChannel(id, context.getString(name), importance).apply {
             this.description = context.getString(description)
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             setSound(null, null)
             enableVibration(false)
             setBypassDnd(false)
@@ -51,10 +55,12 @@ class AlarmChannels @Inject constructor(@ApplicationContext private val context:
     }
 
     companion object {
-        const val RINGING = "flux_alarm_ringing"
+        /** v2: phones (vivo, Xiaomi…) or users that lowered the v1.1 channel get a fresh high-importance one. */
+        const val RINGING = "flux_alarm_ringing_v2"
         const val QUIET = "flux_alarm_quiet"
         const val MISSED = "flux_alarm_missed"
         const val FALLBACK = "flux_alarm_fallback"
         private const val LEGACY_PREFIX = "flux_reminder_"
+        private val LEGACY_IDS = setOf("flux_alarm_ringing")
     }
 }

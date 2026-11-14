@@ -36,6 +36,8 @@ class AlarmService : Service() {
 
     @Inject lateinit var reminderSync: ReminderSync
 
+    @Inject lateinit var presenter: AlarmPresenter
+
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val ringer by lazy { AlarmRinger(this) }
     private var ringJob: Job? = null
@@ -73,6 +75,7 @@ class AlarmService : Service() {
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK,
             )
             activeAlarm.start(noteId)
+            presenter.present(noteId)
             launch { reminderSync.ringing(noteId) }
             withContext(Dispatchers.IO) { ringer.start(reminder.sound, settings.vibration) }
             val handled = activeAlarm.awaitHandled(noteId, settings.alarmDurationSeconds * MILLIS_PER_SECOND)

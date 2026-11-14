@@ -25,7 +25,7 @@ class AlarmNotifications @Inject constructor(
 
     fun idOf(noteId: String): Int = target.notificationId(noteId)
 
-    /** Shown while the alarm service rings; opens the full-screen alarm even on the lock screen. */
+    /** Shown while the alarm service rings: insistent, full screen on the lock screen, heads-up otherwise. */
     fun ringing(reminder: Reminder, snoozeMinutes: Int): Notification = builder(reminder, AlarmChannels.RINGING, snoozeMinutes)
         .setCategory(NotificationCompat.CATEGORY_ALARM)
         .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -33,6 +33,7 @@ class AlarmNotifications @Inject constructor(
         .setAutoCancel(false)
         .setFullScreenIntent(alarmScreen(reminder.note.id), true)
         .build()
+        .apply { flags = flags or Notification.FLAG_INSISTENT }
 
     /** Placeholder required to enter the foreground immediately, before the note is loaded. */
     fun starting(): Notification = NotificationCompat.Builder(context, AlarmChannels.RINGING)
