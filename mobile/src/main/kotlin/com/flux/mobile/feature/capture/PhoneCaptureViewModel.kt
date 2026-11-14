@@ -65,7 +65,9 @@ class PhoneCaptureViewModel @Inject constructor(
 
     fun permissionDenied() = state.update { it.copy(phase = CapturePhase.EDITING, voiceError = VoiceError.NO_PERMISSION) }
 
-    fun voiceUnavailable() = state.update { it.copy(phase = CapturePhase.EDITING, voiceError = VoiceError.UNAVAILABLE) }
+    fun requestSystemDictation() = state.update { it.copy(systemDictation = VoiceError.UNAVAILABLE) }
+
+    fun systemDictationHandled(failed: Boolean) = state.update { it.afterSystemDictation(failed) }
 
     fun heardFromSystem(text: String?) {
         if (text.isNullOrBlank()) return

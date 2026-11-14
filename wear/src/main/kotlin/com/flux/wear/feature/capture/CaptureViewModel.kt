@@ -10,9 +10,12 @@ import com.flux.core.model.Category
 import com.flux.core.model.DefaultCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -39,12 +42,21 @@ class CaptureViewModel @Inject constructor(
         .map { it.ifEmpty { DefaultCategory.all() } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), DefaultCategory.all())
 
+    private val systemDictationRequests = Channel<VoiceError>(Channel.CONFLATED)
+
+    /** In-app recognition could not run: the screen tries the system dictation, then Wear's voice input. */
+    val systemDictation: Flow<VoiceError> = systemDictationRequests.receiveAsFlow()
+
     init {
         viewModelScope.launch {
             recognizer.state.collect { voice ->
                 when (voice) {
                     is VoiceState.Heard -> machine.send(CaptureEvent.SpeechResult(voice.text))
-                    is VoiceState.Failed -> machine.send(CaptureEvent.SpeechFailed(voice.error.toFailure()))
+                    is VoiceState.Failed -> if (voice.error.trySystemDictation) {
+                        systemDictationRequests.trySend(voice.error)
+                    } else {
+                        machine.send(CaptureEvent.SpeechFailed(voice.error.toFailure()))
+                    }
                     else -> Unit
                 }
             }
@@ -73,13 +85,6 @@ class CaptureViewModel @Inject constructor(
     override fun onCleared() {
         recognizer.release()
         super.onCleared()
-    }
-
-    private fun VoiceError.toFailure(): CaptureFailure = when (this) {
-        VoiceError.NO_PERMISSION -> CaptureFailure.NO_PERMISSION
-        VoiceError.NO_NETWORK -> CaptureFailure.NO_NETWORK
-        VoiceError.NOT_UNDERSTOOD -> CaptureFailure.NOT_UNDERSTOOD
-        VoiceError.BUSY, VoiceError.UNAVAILABLE -> CaptureFailure.UNAVAILABLE
     }
 
     private companion object {

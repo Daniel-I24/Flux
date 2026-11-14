@@ -72,7 +72,9 @@ private fun VoiceErrorMessage(error: VoiceError, onRetry: () -> Unit, onOpenSett
         VoiceError.NO_PERMISSION -> R.string.capture_error_permission
         VoiceError.NO_NETWORK -> R.string.capture_error_network
         VoiceError.NOT_UNDERSTOOD -> R.string.capture_error_not_understood
-        VoiceError.BUSY, VoiceError.UNAVAILABLE -> R.string.capture_error_unavailable
+        VoiceError.BUSY -> R.string.capture_error_busy
+        VoiceError.LANGUAGE -> R.string.capture_error_language
+        VoiceError.UNAVAILABLE -> R.string.capture_error_unavailable
     }
     Text(stringResource(message), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
     TextButton(onClick = onRetry) { Text(stringResource(R.string.action_retry_voice)) }

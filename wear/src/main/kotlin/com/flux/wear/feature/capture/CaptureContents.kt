@@ -108,6 +108,8 @@ private fun CaptureFailure.message(): Int = when (this) {
     CaptureFailure.NOT_UNDERSTOOD -> R.string.capture_error_not_understood
     CaptureFailure.NO_PERMISSION -> R.string.capture_error_permission
     CaptureFailure.NO_NETWORK -> R.string.capture_error_network
+    CaptureFailure.BUSY -> R.string.capture_error_busy
+    CaptureFailure.LANGUAGE -> R.string.capture_error_language
     CaptureFailure.UNAVAILABLE -> R.string.capture_error_unavailable
     CaptureFailure.NOT_SAVED -> R.string.capture_error_not_saved
 }

@@ -4,9 +4,6 @@ import com.flux.core.domain.usecase.ResolveAmbiguityUseCase
 import com.flux.core.model.Classification
 import com.flux.core.model.Note
 
-/** Each failure has its own message and a "Reintentar" that fixes it. */
-enum class CaptureFailure { NOT_UNDERSTOOD, NO_PERMISSION, NO_NETWORK, UNAVAILABLE, NOT_SAVED }
-
 sealed interface CaptureEvent {
     data object StartDictation : CaptureEvent
     data class SpeechResult(val text: String?) : CaptureEvent

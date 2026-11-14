@@ -2,10 +2,12 @@
 <resources>
     <string name="capture_listening_hint">Prueba: «comprar pan mañana a las 8 a. m.»</string>
     <string name="capture_done_speaking">Listo</string>
-    <string name="capture_error_not_understood">No entendí la frase. Habla cerca del reloj y vuelve a intentarlo.</string>
+    <string name="capture_error_not_understood">No te escuché, intenta de nuevo.</string>
+    <string name="capture_error_busy">El micrófono está ocupado. Espera un momento e intenta de nuevo.</string>
+    <string name="capture_error_language">El dictado en español no está disponible en este reloj.</string>
     <string name="capture_error_permission">FLUX necesita el micrófono para dictar tus notas.</string>
     <string name="capture_error_network">Sin conexión para reconocer la voz. Conecta el reloj o el celular a internet.</string>
-    <string name="capture_error_unavailable">El reconocimiento de voz no está disponible en este reloj.</string>
+    <string name="capture_error_unavailable">No hay un servicio de dictado disponible en este reloj.</string>
     <string name="capture_open_settings">Abrir ajustes</string>
     <string name="capture_redictate">Dictar de nuevo</string>
     <string name="capture_question_time">¿A qué hora?</string>

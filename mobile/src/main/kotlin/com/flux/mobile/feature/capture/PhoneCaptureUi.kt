@@ -13,6 +13,8 @@ data class PhoneCaptureUi(
     val secondsLeft: Int = AUTO_SAVE_SECONDS,
     val corrected: Boolean = false,
     val voiceError: VoiceError? = null,
+    /** In-app recognition could not run: the sheet opens the system dictation once, with this error as fallback. */
+    val systemDictation: VoiceError? = null,
     val errorMessage: Int? = null,
 ) {
     /** Questions pause the countdown: the note is saved only after the user answers (or taps Guardar). */
@@ -27,9 +29,20 @@ data class PhoneCaptureUi(
 internal fun PhoneCaptureUi.after(voice: VoiceState): PhoneCaptureUi = when (voice) {
     is VoiceState.Listening -> if (voice.partial.isBlank()) this else copy(text = voice.partial)
     is VoiceState.Heard -> copy(text = voice.text, phase = CapturePhase.EDITING)
-    is VoiceState.Failed -> copy(phase = CapturePhase.EDITING, voiceError = voice.error)
+    is VoiceState.Failed -> if (voice.error.trySystemDictation) {
+        copy(phase = CapturePhase.EDITING, systemDictation = voice.error)
+    } else {
+        copy(phase = CapturePhase.EDITING, voiceError = voice.error)
+    }
     VoiceState.Idle -> this
 }
+
+/** The system dictation was opened (its result arrives later) or could not be: the request is consumed. */
+internal fun PhoneCaptureUi.afterSystemDictation(failed: Boolean) = copy(
+    phase = CapturePhase.EDITING,
+    voiceError = if (failed) systemDictation ?: VoiceError.UNAVAILABLE else null,
+    systemDictation = null,
+)
 
 internal fun PhoneCaptureUi.previewing(classification: Classification, corrected: Boolean) = copy(
     phase = CapturePhase.PREVIEW,

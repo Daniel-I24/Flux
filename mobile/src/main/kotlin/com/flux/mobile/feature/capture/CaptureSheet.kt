@@ -32,7 +32,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.flux.core.data.speech.VoiceRecognizer
+import com.flux.core.data.speech.VoiceErrorPolicy
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.mobile.R
 
@@ -70,7 +70,7 @@ fun CaptureSheet(onDismiss: () -> Unit, onAlarmSaved: (Long) -> Unit = {}, viewM
     }
 }
 
-/** Asks for the microphone if needed, then listens in FLUX or, without a recognition service, in the system screen. */
+/** Asks for the microphone if needed, then listens in FLUX or, when FLUX cannot, in the system dictation screen. */
 @Composable
 private fun rememberMicAction(viewModel: PhoneCaptureViewModel): () -> Unit {
     val context = LocalContext.current
@@ -78,15 +78,18 @@ private fun rememberMicAction(viewModel: PhoneCaptureViewModel): () -> Unit {
         val heard = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()
         if (result.resultCode == Activity.RESULT_OK) viewModel.heardFromSystem(heard)
     }
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val openSystem: () -> Unit = {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            .putExtra(RecognizerIntent.EXTRA_LANGUAGE, VoiceErrorPolicy.PRIMARY_LANGUAGE)
+        val failed = runCatching { system.launch(intent) }.isFailure
+        viewModel.systemDictationHandled(failed)
+    }
+    // FLUX's own recognizer could not run (no Spanish, no service): the system dictation is next.
+    LaunchedEffect(state.systemDictation) { if (state.systemDictation != null) openSystem() }
     val listen: () -> Unit = {
-        if (viewModel.canListenInApp()) {
-            viewModel.listen()
-        } else {
-            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-                .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                .putExtra(RecognizerIntent.EXTRA_LANGUAGE, VoiceRecognizer.PRIMARY_LANGUAGE)
-            runCatching { system.launch(intent) }.onFailure { viewModel.voiceUnavailable() }
-        }
+        if (viewModel.canListenInApp()) viewModel.listen() else viewModel.requestSystemDictation()
     }
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) listen() else viewModel.permissionDenied()
