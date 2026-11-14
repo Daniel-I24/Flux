@@ -25,6 +25,7 @@ import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.mobile.BuildConfig
 import com.flux.mobile.R
 import com.flux.mobile.feature.link.WatchLinkPanel
+import com.flux.mobile.feature.permissions.BackgroundHelpCard
 import com.flux.mobile.feature.permissions.PermissionsList
 import com.flux.mobile.ui.common.SnackbarEventEffect
 
@@ -56,7 +57,10 @@ fun SettingsScreen(snackbar: SnackbarHostState, modifier: Modifier = Modifier, v
                 onSignOut = viewModel::signOut,
             )
             SettingsSection(stringResource(R.string.settings_watch)) { WatchLinkPanel() }
-            SettingsSection(stringResource(R.string.settings_permissions)) { PermissionsList() }
+            SettingsSection(stringResource(R.string.settings_permissions)) {
+                PermissionsList()
+                BackgroundHelpCard()
+            }
             ReminderSettings(state.settings, state.profile?.routine, viewModel)
             AppearanceSettings(state.settings.themeMode, viewModel::setTheme)
             AiSettings(state.ai, viewModel::refreshAi)

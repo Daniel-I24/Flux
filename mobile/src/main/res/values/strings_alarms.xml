@@ -16,4 +16,12 @@
     <string name="sound_custom">Tono propio</string>
     <string name="sound_import_failed">No se pudo usar ese archivo. Elige un audio (mp3, m4a, ogg, opus, aac o wav) de máximo 10 MB.</string>
     <string name="sound_missing">El tono propio ya no existe: sonará el tono predeterminado.</string>
+    <!-- Battery and autostart help: generic, with brands only as examples. -->
+    <string name="background_help_title">Si los recordatorios llegan tarde</string>
+    <string name="background_help_intro">Algunos celulares cierran las apps en segundo plano para ahorrar batería. Haz esto para FLUX y para la app de tu reloj (Galaxy Wearable, Pixel Watch u otra):</string>
+    <string name="background_help_battery">1. Batería: elige «Sin restricciones» o «No optimizar».</string>
+    <string name="background_help_autostart">2. Si tu celular tiene «Inicio automático» o «Actividad en segundo plano» (Xiaomi, Oppo, Vivo, Huawei y otros), actívalo.</string>
+    <string name="background_help_sleeping">3. No la pongas en «Apps en suspensión» ni en «Suspensión profunda» (Samsung) ni en listas parecidas.</string>
+    <string name="background_help_where">Los nombres cambian según la marca: búscalos en Ajustes → Apps → FLUX → Batería.</string>
+    <string name="background_help_open">Abrir ajustes de FLUX</string>
 </resources>
