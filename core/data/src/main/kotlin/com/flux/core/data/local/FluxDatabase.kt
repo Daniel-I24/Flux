@@ -13,9 +13,10 @@ import com.flux.core.data.local.entity.OutboxEntity
 /** Same schema on phone and watch: the phone owns notes, the watch caches its agenda and queues captures. */
 @Database(
     entities = [NoteEntity::class, CategoryEntity::class, OutboxEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 1, to = 2)],
+    // 2 → 3 (v1.2): notes.alarmLeadMinutes, nullable, so every existing note keeps the global lead.
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3)],
 )
 abstract class FluxDatabase : RoomDatabase() {
     abstract fun notes(): NoteDao

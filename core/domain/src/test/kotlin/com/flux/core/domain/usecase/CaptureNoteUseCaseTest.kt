@@ -8,6 +8,7 @@ import com.flux.core.domain.FixedClock
 import com.flux.core.domain.SequentialIds
 import com.flux.core.domain.port.ClassificationRequest
 import com.flux.core.domain.port.NoteClassifier
+import com.flux.core.domain.timing
 import com.flux.core.model.AppError
 import com.flux.core.model.Classification
 import com.flux.core.model.ClassifierEngine
@@ -43,7 +44,7 @@ class CaptureNoteUseCaseTest {
                 }, clock),
                 { true },
             )
-        return CaptureNoteUseCase(classify, CreateNoteUseCase(notes, FakeAlarms(), clock, SequentialIds()), queued::add)
+        return CaptureNoteUseCase(classify, CreateNoteUseCase(notes, FakeAlarms(), clock, SequentialIds(), timing(clock)), queued::add)
     }
 
     @Test

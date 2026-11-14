@@ -33,8 +33,7 @@ class AndroidAlarmScheduler @Inject constructor(
 ) : AlarmScheduler {
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
-    override fun schedule(note: Note) {
-        val at = note.dueAt ?: return
+    override fun schedule(note: Note, at: Long) {
         // A rescheduled (snoozed) reminder must stop ringing and leave the screen on this device.
         activeAlarm.stop(note.id)
         NotificationManagerCompat.from(context).cancel(target.notificationId(note.id))

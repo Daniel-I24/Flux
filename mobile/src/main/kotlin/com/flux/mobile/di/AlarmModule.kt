@@ -2,8 +2,10 @@ package com.flux.mobile.di
 
 import com.flux.core.data.alarm.AlarmTarget
 import com.flux.core.data.alarm.AndroidAlarmScheduler
+import com.flux.core.domain.port.AlarmLeadProvider
 import com.flux.core.domain.port.AlarmScheduler
 import com.flux.mobile.alarm.PhoneAlarmTarget
+import com.flux.mobile.alarm.SettingsAlarmLead
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,4 +17,6 @@ abstract class AlarmModule {
     @Binds abstract fun alarmScheduler(impl: AndroidAlarmScheduler): AlarmScheduler
 
     @Binds abstract fun alarmTarget(impl: PhoneAlarmTarget): AlarmTarget
+
+    @Binds abstract fun alarmLead(impl: SettingsAlarmLead): AlarmLeadProvider
 }

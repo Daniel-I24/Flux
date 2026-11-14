@@ -5,6 +5,7 @@ import com.flux.core.domain.port.Clock
 import com.flux.core.domain.port.IdGenerator
 import com.flux.core.domain.repository.NoteRepository
 import com.flux.core.model.AppError
+import com.flux.core.model.AppSettings
 import com.flux.core.model.Classification
 import com.flux.core.model.DeviceSource
 import com.flux.core.model.FluxResult
@@ -18,6 +19,7 @@ class CreateNoteUseCase @Inject constructor(
     private val alarms: AlarmScheduler,
     private val clock: Clock,
     private val ids: IdGenerator,
+    private val timing: AlarmTiming,
 ) {
     suspend operator fun invoke(
         text: String,
@@ -25,6 +27,7 @@ class CreateNoteUseCase @Inject constructor(
         source: DeviceSource,
         noteId: String? = null,
         categoryCorrected: Boolean = false,
+        alarmLeadMinutes: Int? = null,
     ): Note {
         val now = clock.now()
         val note = Note(
@@ -38,11 +41,12 @@ class CreateNoteUseCase @Inject constructor(
             source = source,
             engine = classification.engine,
             categoryCorrected = categoryCorrected,
+            alarmLeadMinutes = alarmLeadMinutes,
             createdAt = now,
             updatedAt = now,
         )
         notes.upsert(note)
-        if (note.hasPendingAlarm) alarms.schedule(note)
+        timing.next(note, fallbackToDue = true)?.let { alarms.schedule(note, it) }
         return note
     }
 }
@@ -52,13 +56,14 @@ class UpdateNoteUseCase @Inject constructor(
     private val notes: NoteRepository,
     private val alarms: AlarmScheduler,
     private val clock: Clock,
+    private val timing: AlarmTiming,
 ) {
     suspend operator fun invoke(id: String, change: (Note) -> Note): FluxResult<Note> {
         val current = notes.getNote(id) ?: return FluxResult.Failure(AppError.NotFound)
         val updated = change(current).copy(updatedAt = maxOf(clock.now(), current.updatedAt + 1))
         notes.upsert(updated)
         // An overdue note keeps no alarm: editing it must not make it ring again right away.
-        if (updated.hasPendingAlarm && updated.dueAt!! > clock.now()) alarms.schedule(updated) else alarms.cancel(id)
+        timing.next(updated, fallbackToDue = true)?.let { alarms.schedule(updated, it) } ?: alarms.cancel(id)
         return FluxResult.Success(updated)
     }
 }
@@ -98,6 +103,8 @@ data class NoteEdit(
     val dueAt: Long?,
     val requiresAlarm: Boolean,
     val sound: SoundRef?,
+    /** Own "Avisarme" lead; null = the global one. */
+    val alarmLeadMinutes: Int? = null,
 )
 
 class EditNoteUseCase @Inject constructor(private val update: UpdateNoteUseCase) {
@@ -113,6 +120,7 @@ class EditNoteUseCase @Inject constructor(private val update: UpdateNoteUseCase)
                 dueAt = edit.dueAt,
                 requiresAlarm = edit.requiresAlarm && edit.dueAt != null,
                 sound = edit.sound,
+                alarmLeadMinutes = edit.alarmLeadMinutes?.takeIf { it in AppSettings.ALARM_LEAD_OPTIONS },
             )
         }
     }

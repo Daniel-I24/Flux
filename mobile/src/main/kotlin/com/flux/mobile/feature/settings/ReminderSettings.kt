@@ -25,12 +25,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.flux.core.designsystem.theme.FluxSizes
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.core.model.AppSettings
 import com.flux.core.model.DailyRoutine
 import com.flux.core.model.VibrationPattern
 import com.flux.mobile.R
+import com.flux.mobile.ui.common.AlarmLeadPicker
 import com.flux.mobile.ui.common.formatted
 import com.flux.mobile.ui.sound.SoundPicker
 
@@ -52,6 +54,9 @@ fun ReminderSettings(settings: AppSettings, routine: DailyRoutine?, viewModel: S
         SoundPicker(selected = settings.defaultSound, onSelect = { it?.let(viewModel::setDefaultSound) })
         Text(stringResource(R.string.settings_vibration), style = MaterialTheme.typography.titleSmall)
         VibrationChoice(settings.vibration, viewModel::setVibration)
+        Text(stringResource(R.string.alarm_lead_title), style = MaterialTheme.typography.titleSmall)
+        val lead: AlarmLeadViewModel = hiltViewModel()
+        AlarmLeadPicker(settings.alarmLeadMinutes, lead::select)
         Text(stringResource(R.string.settings_snooze), style = MaterialTheme.typography.titleSmall)
         SnoozeChoice(settings.snoozeMinutes, viewModel::setSnooze)
         Text(stringResource(R.string.settings_alarm_duration), style = MaterialTheme.typography.titleSmall)

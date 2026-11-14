@@ -4,6 +4,7 @@ import com.flux.core.domain.FakeAlarms
 import com.flux.core.domain.FakeNoteRepository
 import com.flux.core.domain.FixedClock
 import com.flux.core.domain.note
+import com.flux.core.domain.timing
 import com.flux.core.model.BundledSound
 import com.flux.core.model.SoundRef
 import kotlinx.coroutines.test.runTest
@@ -12,7 +13,7 @@ import org.junit.Test
 
 class ApplyRemoteNoteTest {
     private val notes = FakeNoteRepository()
-    private val apply = ApplyRemoteNoteUseCase(notes, FakeAlarms(), FixedClock(nowMillis = 1_000))
+    private val apply = ApplyRemoteNoteUseCase(notes, FakeAlarms(), timing(FixedClock(nowMillis = 1_000)))
     private val tone = SoundRef.Custom("tone_1.mp3", "Mi tono")
 
     @Test

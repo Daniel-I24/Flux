@@ -23,6 +23,8 @@ data class NoteEntity(
     val createdAt: Long,
     val updatedAt: Long,
     val deletedAt: Long?,
+    /** v1.2 (schema 3): minutes before dueAt; null = the global setting. */
+    @ColumnInfo(defaultValue = "NULL") val alarmLeadMinutes: Int? = null,
 )
 
 @Entity(tableName = "categories")

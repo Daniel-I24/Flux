@@ -27,6 +27,8 @@ data class PhoneState(
     val alarmDurationSeconds: Int = AppSettings.DEFAULT_ALARM_SECONDS,
     /** versionCode of the phone app (0 = v1.0 phone, which does not send it). */
     val phoneAppVersion: Int = 0,
+    /** v1.2: global "Avisarme" lead chosen on the phone (0 for older phones). */
+    val alarmLeadMinutes: Int = AppSettings.DEFAULT_ALARM_LEAD_MINUTES,
 )
 
 @Serializable

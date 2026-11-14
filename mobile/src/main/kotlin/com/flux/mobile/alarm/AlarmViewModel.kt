@@ -4,12 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flux.core.data.alarm.ActiveAlarm
-import com.flux.core.domain.port.Clock
 import com.flux.core.domain.usecase.ObserveCategoriesUseCase
 import com.flux.core.domain.usecase.ObserveNoteUseCase
 import com.flux.core.domain.usecase.ObserveSettingsUseCase
 import com.flux.core.model.Category
 import com.flux.core.model.Note
+import com.flux.core.model.alertHandled
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,8 +36,15 @@ class AlarmViewModel @Inject constructor(
     observeSettings: ObserveSettingsUseCase,
     activeAlarm: ActiveAlarm,
     private val actions: ReminderActions,
-    private val clock: Clock,
 ) : ViewModel() {
+    /** The reminder's time when this alert opened; a different time later means it was snoozed or moved. */
+    private var openedDueAt: Long? = null
+
+    private fun ringingDueAt(note: Note?): Long? {
+        if (openedDueAt == null) openedDueAt = note?.dueAt
+        return openedDueAt
+    }
+
     private val noteId: String = checkNotNull(savedState[PhoneAlarmTarget.EXTRA_NOTE_ID])
 
     val uiState: StateFlow<AlarmUiState> = combine(
@@ -52,7 +59,7 @@ class AlarmViewModel @Inject constructor(
             snoozeMinutes = settings.snoozeMinutes,
             ringing = ringing == noteId,
             loading = false,
-            handled = note == null || !note.isActive || note.completed || (note.dueAt ?: 0) > clock.now(),
+            handled = note.alertHandled(ringingDueAt(note)),
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), AlarmUiState())
 

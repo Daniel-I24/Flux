@@ -5,6 +5,7 @@ import com.flux.core.domain.FakeNoteRepository
 import com.flux.core.domain.FixedClock
 import com.flux.core.domain.SequentialIds
 import com.flux.core.domain.note
+import com.flux.core.domain.timing
 import com.flux.core.model.AppError
 import com.flux.core.model.BundledSound
 import com.flux.core.model.Classification
@@ -22,7 +23,7 @@ class NoteCommandsTest {
     private val notes = FakeNoteRepository()
     private val alarms = FakeAlarms()
     private val clock = FixedClock(nowMillis = 1_000_000)
-    private val update = UpdateNoteUseCase(notes, alarms, clock)
+    private val update = UpdateNoteUseCase(notes, alarms, clock, timing(clock))
 
     @Test
     fun `creating a note with an alarm schedules it`() = runTest {
@@ -35,7 +36,14 @@ class NoteCommandsTest {
                 confidence = 1.0,
                 engine = ClassifierEngine.LOCAL
             )
-        val created = CreateNoteUseCase(notes, alarms, clock, SequentialIds())("Recuérdame tomar agua", classification, DeviceSource.WATCH)
+        val created =
+            CreateNoteUseCase(
+                notes,
+                alarms,
+                clock,
+                SequentialIds(),
+                timing(clock)
+            )("Recuérdame tomar agua", classification, DeviceSource.WATCH)
         assertEquals("id-1", created.id)
         assertEquals(1_010_000L, alarms.scheduled["id-1"])
         assertEquals(created, notes.getNote("id-1"))
@@ -44,7 +52,7 @@ class NoteCommandsTest {
     @Test
     fun `an explicit id makes creation idempotent`() = runTest {
         val classification = Classification("tasks", "x", confidence = 1.0, engine = ClassifierEngine.LOCAL)
-        val create = CreateNoteUseCase(notes, alarms, clock, SequentialIds())
+        val create = CreateNoteUseCase(notes, alarms, clock, SequentialIds(), timing(clock))
         create("x", classification, DeviceSource.WATCH, noteId = "watch-123")
         create("x", classification, DeviceSource.WATCH, noteId = "watch-123")
         assertEquals(1, notes.store.value.size)
@@ -108,7 +116,7 @@ class NoteCommandsTest {
 
     @Test
     fun `remote notes merge with last write wins and are idempotent`() = runTest {
-        val apply = ApplyRemoteNoteUseCase(notes, alarms, clock)
+        val apply = ApplyRemoteNoteUseCase(notes, alarms, timing(clock))
         assertTrue(apply(note("a", updatedAt = 10, dueAt = 2_000_000, alarm = true)))
         assertFalse(apply(note("a", updatedAt = 10, dueAt = 2_000_000, alarm = true)))
         assertFalse(apply(note("a", updatedAt = 5)))
@@ -119,7 +127,7 @@ class NoteCommandsTest {
 
     @Test
     fun `an overdue note never rings again when it is synced or edited`() = runTest {
-        val apply = ApplyRemoteNoteUseCase(notes, alarms, clock)
+        val apply = ApplyRemoteNoteUseCase(notes, alarms, timing(clock))
         assertTrue(apply(note("late", updatedAt = 10, dueAt = 500, alarm = true)))
         assertTrue("late" !in alarms.scheduled)
         EditNoteUseCase(update)("late", NoteEdit("Otra", "", "tasks", dueAt = 500, requiresAlarm = true, sound = null))

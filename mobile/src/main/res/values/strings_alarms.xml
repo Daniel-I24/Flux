@@ -24,4 +24,10 @@
     <string name="background_help_sleeping">3. No la pongas en «Apps en suspensión» ni en «Suspensión profunda» (Samsung) ni en listas parecidas.</string>
     <string name="background_help_where">Los nombres cambian según la marca: búscalos en Ajustes → Apps → FLUX → Batería.</string>
     <string name="background_help_open">Abrir ajustes de FLUX</string>
+    <string name="alarm_lead_title">Avisarme</string>
+    <string name="alarm_lead_hint">La alarma suena este tiempo antes de la hora de la nota.</string>
+    <string name="alarm_lead_exact">A la hora exacta</string>
+    <string name="alarm_lead_minutes">%1$d min antes</string>
+    <string name="alarm_lead_hour">1 h antes</string>
+    <string name="alarm_lead_default">Como en Ajustes (%1$s)</string>
 </resources>

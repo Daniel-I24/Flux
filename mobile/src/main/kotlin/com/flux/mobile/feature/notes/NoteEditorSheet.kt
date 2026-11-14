@@ -34,11 +34,13 @@ import com.flux.core.designsystem.category.displayName
 import com.flux.core.designsystem.theme.FluxSizes
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.core.domain.usecase.NoteEdit
+import com.flux.core.model.AppSettings
 import com.flux.core.model.Category
 import com.flux.core.model.Note
 import com.flux.core.model.SoundRef
 import com.flux.mobile.R
 import com.flux.mobile.feature.home.CategoryDot
+import com.flux.mobile.ui.common.AlarmLeadPicker
 import com.flux.mobile.ui.common.DateTimePickerDialogs
 import com.flux.mobile.ui.common.DueDateField
 import com.flux.mobile.ui.sound.SoundPicker
@@ -46,13 +48,20 @@ import com.flux.mobile.ui.sound.SoundPicker
 /** Edit title, text, category, date, alarm and the reminder's own sound. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteEditorSheet(note: Note, categories: List<Category>, onSave: (NoteEdit) -> Unit, onDismiss: () -> Unit) {
+fun NoteEditorSheet(
+    note: Note,
+    categories: List<Category>,
+    onSave: (NoteEdit) -> Unit,
+    onDismiss: () -> Unit,
+    globalLeadMinutes: Int = AppSettings.DEFAULT_ALARM_LEAD_MINUTES,
+) {
     var title by rememberSaveable { mutableStateOf(note.title) }
     var text by rememberSaveable { mutableStateOf(note.text) }
     var categoryId by rememberSaveable { mutableStateOf(note.categoryId) }
     var reminder by rememberSaveable(stateSaver = ReminderDraft.saver) { mutableStateOf(ReminderDraft(note.dueAt, note.requiresAlarm)) }
     // SoundRef is not Parcelable: kept across recompositions, reset if another note is opened.
     var sound by remember(note.id) { mutableStateOf(note.sound) }
+    var lead by remember(note.id) { mutableStateOf(note.alarmLeadMinutes) }
     val titleValid = title.isNotBlank() && title.length <= Note.MAX_TITLE_LENGTH
 
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
@@ -92,10 +101,11 @@ fun NoteEditorSheet(note: Note, categories: List<Category>, onSave: (NoteEdit) -
                 }
             }
             ReminderFields(reminder, onChange = { reminder = it }, sound = sound, onSound = { sound = it })
+            if (reminder.requiresAlarm) LeadField(lead, globalLeadMinutes) { lead = it }
             Button(
                 onClick = {
                     val alarm = reminder.requiresAlarm
-                    onSave(NoteEdit(title, text, categoryId, reminder.dueAt, alarm, sound.takeIf { alarm }))
+                    onSave(NoteEdit(title, text, categoryId, reminder.dueAt, alarm, sound.takeIf { alarm }, lead))
                 },
                 enabled = titleValid,
                 modifier = Modifier.fillMaxWidth().padding(bottom = FluxSpacing.lg),
@@ -123,4 +133,11 @@ private fun ReminderFields(reminder: ReminderDraft, onChange: (ReminderDraft) ->
         Text(stringResource(R.string.editor_sound), style = MaterialTheme.typography.titleSmall)
         SoundPicker(selected = sound, onSelect = onSound, defaultLabel = stringResource(R.string.sound_use_category))
     }
+}
+
+/** The note's own "Avisarme" lead, or the global one. */
+@Composable
+private fun LeadField(lead: Int?, globalLeadMinutes: Int, onSelect: (Int?) -> Unit) {
+    Text(stringResource(R.string.alarm_lead_title), style = MaterialTheme.typography.titleSmall)
+    AlarmLeadPicker(lead, onSelect = onSelect, globalMinutes = globalLeadMinutes)
 }

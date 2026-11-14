@@ -34,7 +34,8 @@ interface NoteClassifier {
 
 /** Exact alarms (AlarmManager on Android); rescheduled after reboot by the app. */
 interface AlarmScheduler {
-    fun schedule(note: Note)
+    /** Rings [note] at [at] (epoch millis), already adjusted by its lead (see AlarmTiming). */
+    fun schedule(note: Note, at: Long)
     fun cancel(noteId: String)
 }
 

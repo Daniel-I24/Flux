@@ -35,6 +35,8 @@ data class WatchSnapshot(
     val alarmDurationSeconds: Int = AppSettings.DEFAULT_ALARM_SECONDS,
     /** v1.1: versionCode of the phone app, to warn when the two apps differ. */
     val phoneAppVersion: Int = 0,
+    /** v1.2: global "Avisarme" lead in minutes, so the watch rings at the same moment as the phone. */
+    val alarmLeadMinutes: Int = AppSettings.DEFAULT_ALARM_LEAD_MINUTES,
 )
 
 @Serializable

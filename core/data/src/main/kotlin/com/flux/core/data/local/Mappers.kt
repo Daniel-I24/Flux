@@ -35,6 +35,7 @@ fun NoteEntity.toModel() = Note(
     engine = enumOr(engine, ClassifierEngine.LOCAL),
     categoryCorrected = categoryCorrected,
     sound = soundJson?.let(::decodeSound),
+    alarmLeadMinutes = alarmLeadMinutes,
     createdAt = createdAt,
     updatedAt = updatedAt,
     deletedAt = deletedAt,
@@ -56,6 +57,7 @@ fun Note.toEntity() = NoteEntity(
     createdAt = createdAt,
     updatedAt = updatedAt,
     deletedAt = deletedAt,
+    alarmLeadMinutes = alarmLeadMinutes,
 )
 
 fun CategoryEntity.toModel() = Category(

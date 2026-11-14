@@ -3,11 +3,11 @@ package com.flux.wear.feature.alert
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flux.core.domain.port.Clock
 import com.flux.core.domain.usecase.GetReminderUseCase
 import com.flux.core.domain.usecase.ObserveNoteUseCase
 import com.flux.core.model.Note
 import com.flux.core.model.SoundRef
+import com.flux.core.model.alertHandled
 import com.flux.wear.alarm.ReminderActions
 import com.flux.wear.data.PhoneState
 import com.flux.wear.data.WatchSettings
@@ -39,8 +39,15 @@ class AlertViewModel @Inject constructor(
     private val getReminder: GetReminderUseCase,
     private val store: WatchStateStore,
     private val actions: ReminderActions,
-    private val clock: Clock,
 ) : ViewModel() {
+    /** The reminder's time when this alert opened; a different time later means it was snoozed or moved. */
+    private var openedDueAt: Long? = null
+
+    private fun ringingDueAt(note: Note?): Long? {
+        if (openedDueAt == null) openedDueAt = note?.dueAt
+        return openedDueAt
+    }
+
     private val noteId: String = checkNotNull(savedState[AlertActivity.EXTRA_NOTE_ID])
     private val sound = MutableStateFlow<SoundRef?>(null)
 
@@ -56,7 +63,7 @@ class AlertViewModel @Inject constructor(
             sound = resolved ?: settings.sound,
             durationSeconds = phone.alarmDurationSeconds,
             loading = resolved == null,
-            handled = note == null || !note.isActive || note.completed || (note.dueAt ?: 0) > clock.now(),
+            handled = note.alertHandled(ringingDueAt(note)),
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), AlertUiState())
 

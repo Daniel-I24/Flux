@@ -19,8 +19,20 @@ class CaptureNoteUseCase @Inject constructor(
 ) {
     suspend fun classify(text: String): FluxResult<Classification> = classifyNote(text)
 
-    suspend fun save(text: String, classification: Classification, categoryCorrected: Boolean = false): Note {
-        val note = create(text.trim(), classification, DeviceSource.PHONE, categoryCorrected = categoryCorrected)
+    suspend fun save(
+        text: String,
+        classification: Classification,
+        categoryCorrected: Boolean = false,
+        alarmLeadMinutes: Int? = null,
+    ): Note {
+        val note =
+            create(
+                text.trim(),
+                classification,
+                DeviceSource.PHONE,
+                categoryCorrected = categoryCorrected,
+                alarmLeadMinutes = alarmLeadMinutes
+            )
         if (note.engine == ClassifierEngine.LOCAL && !categoryCorrected) reclassification.enqueue(note.id)
         return note
     }

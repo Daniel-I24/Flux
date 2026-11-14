@@ -79,6 +79,7 @@ class SnapshotPublisher @Inject constructor(
         quietHours = part.profile?.routine?.takeIf { settings.quietHoursEnabled }?.let { QuietWindow(it.sleep.minutes, it.wakeUp.minutes) },
         alarmDurationSeconds = settings.alarmDurationSeconds,
         phoneAppVersion = BuildConfig.VERSION_CODE,
+        alarmLeadMinutes = settings.alarmLeadMinutes,
     )
 
     /** Custom tone files live only on the phone (and v1.0 watches cannot decode them). */

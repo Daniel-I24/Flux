@@ -5,6 +5,7 @@ import com.flux.core.data.repository.RoomCategoryRepository
 import com.flux.core.domain.port.AlarmScheduler
 import com.flux.core.domain.port.Clock
 import com.flux.core.domain.repository.NoteRepository
+import com.flux.core.domain.usecase.AlarmTiming
 import com.flux.core.model.Note
 import com.flux.core.sync.protocol.WatchSnapshot
 import com.flux.wear.data.PhoneState
@@ -28,6 +29,7 @@ class SnapshotApplier @Inject constructor(
     private val outbox: OutboxRepository,
     private val clock: Clock,
     private val surfaces: SurfaceRefresher,
+    private val timing: AlarmTiming,
 ) {
     private val mutex = Mutex()
     private var newestApplied = 0L
@@ -48,13 +50,7 @@ class SnapshotApplier @Inject constructor(
         // Atomic: an alert that is ringing must not see its note vanish for an instant and close itself.
         notes.replaceAll(agenda)
         val now = clock.now()
-        agenda.forEach { note ->
-            when {
-                !note.hasPendingAlarm -> alarms.cancel(note.id)
-                // Overdue notes are listed in Vencidos but never ring again (and a ringing one keeps ringing).
-                note.dueAt!! > now -> alarms.schedule(note)
-            }
-        }
+        // Saved first: the lead below is the one the phone just sent.
         stateStore.savePhoneState(
             PhoneState(
                 accountState = snapshot.accountState,
@@ -65,8 +61,14 @@ class SnapshotApplier @Inject constructor(
                 receivedAt = now,
                 alarmDurationSeconds = snapshot.alarmDurationSeconds,
                 phoneAppVersion = snapshot.phoneAppVersion,
+                alarmLeadMinutes = snapshot.alarmLeadMinutes,
             ),
         )
+        agenda.forEach { note ->
+            if (!note.hasPendingAlarm) return@forEach alarms.cancel(note.id)
+            // Overdue or already rung notes never ring again (and a ringing one keeps ringing).
+            timing.next(note, fallbackToDue = false)?.let { alarms.schedule(note, it) }
+        }
         surfaces.refresh()
     }
 }

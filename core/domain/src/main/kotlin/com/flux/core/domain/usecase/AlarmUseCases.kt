@@ -34,16 +34,14 @@ class RescheduleAlarmsUseCase @Inject constructor(
     private val notes: NoteRepository,
     private val alarms: AlarmScheduler,
     private val clock: Clock,
+    private val timing: AlarmTiming,
 ) {
     suspend operator fun invoke(ringMissed: Boolean = false): Int {
         val now = clock.now()
         // Missed recently (device off or restarting): ring right away. Older ones just stay in Vencidos.
         val from = if (ringMissed) now - MISSED_WINDOW_MS else now
-        val pending = notes.getPendingAlarms().filter { (it.dueAt ?: 0) > from }
-        pending.forEach { note ->
-            val due = note.dueAt?.coerceAtLeast(now + RING_DELAY_MS) ?: return@forEach
-            alarms.schedule(note.copy(dueAt = due))
-        }
+        val pending = notes.getPendingAlarms().mapNotNull { note -> timing.ringsAt(note)?.takeIf { it > from }?.let { note to it } }
+        pending.forEach { (note, at) -> alarms.schedule(note, at.coerceAtLeast(now + RING_DELAY_MS)) }
         return pending.size
     }
 

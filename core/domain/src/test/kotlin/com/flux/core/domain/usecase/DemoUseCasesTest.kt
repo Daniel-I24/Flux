@@ -5,6 +5,7 @@ import com.flux.core.domain.FakeNoteRepository
 import com.flux.core.domain.FixedClock
 import com.flux.core.domain.SequentialIds
 import com.flux.core.domain.note
+import com.flux.core.domain.timing
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -15,9 +16,9 @@ class DemoUseCasesTest {
     private val notes = FakeNoteRepository()
     private val alarms = FakeAlarms()
     private val clock = FixedClock(nowMillis = 1_000_000)
-    private val create = CreateNoteUseCase(notes, alarms, clock, SequentialIds())
+    private val create = CreateNoteUseCase(notes, alarms, clock, SequentialIds(), timing(clock))
     private val load = LoadDemoDataUseCase(create, clock)
-    private val clear = ClearDemoDataUseCase(notes, DeleteNoteUseCase(UpdateNoteUseCase(notes, alarms, clock), clock))
+    private val clear = ClearDemoDataUseCase(notes, DeleteNoteUseCase(UpdateNoteUseCase(notes, alarms, clock, timing(clock)), clock))
     private val examples = listOf(
         DemoNote("comprar leche", "Comprar leche", "shopping"),
         DemoNote("tomar la pastilla", "Tomar la pastilla", "health", dueInSeconds = 10, requiresAlarm = true),

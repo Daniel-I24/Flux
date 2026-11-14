@@ -1,11 +1,15 @@
 package com.flux.core.domain
 
+import com.flux.core.domain.port.AlarmLeadProvider
 import com.flux.core.domain.port.AlarmScheduler
 import com.flux.core.domain.port.Clock
 import com.flux.core.domain.port.IdGenerator
 import com.flux.core.domain.repository.CategoryRepository
 import com.flux.core.domain.repository.NoteRepository
 import com.flux.core.domain.repository.ProfileRepository
+import com.flux.core.domain.repository.SettingsRepository
+import com.flux.core.domain.usecase.AlarmTiming
+import com.flux.core.model.AppSettings
 import com.flux.core.model.Category
 import com.flux.core.model.ClassifierEngine
 import com.flux.core.model.DefaultCategory
@@ -16,6 +20,7 @@ import java.time.ZoneId
 import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class FixedClock(var nowMillis: Long = 1_760_799_600_000L) : Clock {
@@ -31,8 +36,8 @@ class SequentialIds : IdGenerator {
 class FakeAlarms : AlarmScheduler {
     val scheduled = mutableMapOf<String, Long?>()
     val cancelled = mutableListOf<String>()
-    override fun schedule(note: Note) {
-        scheduled[note.id] = note.dueAt
+    override fun schedule(note: Note, at: Long) {
+        scheduled[note.id] = at
     }
     override fun cancel(noteId: String) {
         scheduled.remove(noteId)
@@ -108,3 +113,20 @@ fun note(id: String, updatedAt: Long = 1L, dueAt: Long? = null, alarm: Boolean =
     createdAt = 1L,
     updatedAt = updatedAt,
 )
+
+/** Global "Avisarme" lead for tests (0 = at the exact time, like v1.1). */
+class FakeAlarmLead(var minutes: Int = 0) : AlarmLeadProvider {
+    override suspend fun globalLeadMinutes() = minutes
+}
+
+fun timing(clock: Clock, lead: FakeAlarmLead = FakeAlarmLead()) = AlarmTiming(lead, clock)
+
+class FakeSettingsRepository(var current: AppSettings = AppSettings()) : SettingsRepository {
+    override fun observeSettings(): Flow<AppSettings> = flowOf(current)
+
+    override suspend fun getSettings() = current
+
+    override suspend fun update(transform: (AppSettings) -> AppSettings) {
+        current = transform(current)
+    }
+}

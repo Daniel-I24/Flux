@@ -4,6 +4,7 @@ import com.flux.core.domain.FakeAlarms
 import com.flux.core.domain.FakeNoteRepository
 import com.flux.core.domain.FixedClock
 import com.flux.core.domain.note
+import com.flux.core.domain.timing
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -14,7 +15,7 @@ class AlarmRestoreTest {
     private val notes = FakeNoteRepository()
     private val alarms = FakeAlarms()
     private val clock = FixedClock(nowMillis = 100 * hour)
-    private val restore = RescheduleAlarmsUseCase(notes, alarms, clock)
+    private val restore = RescheduleAlarmsUseCase(notes, alarms, clock, timing(clock))
 
     private suspend fun seed() {
         notes.upsert(note("recent", dueAt = clock.nowMillis - 60_000, alarm = true))

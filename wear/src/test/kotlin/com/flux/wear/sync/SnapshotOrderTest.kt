@@ -5,6 +5,7 @@ import com.flux.core.data.repository.RoomCategoryRepository
 import com.flux.core.domain.port.AlarmScheduler
 import com.flux.core.domain.port.Clock
 import com.flux.core.domain.repository.NoteRepository
+import com.flux.core.domain.usecase.AlarmTiming
 import com.flux.core.model.VibrationPattern
 import com.flux.core.sync.protocol.AccountState
 import com.flux.core.sync.protocol.SyncProtocol
@@ -29,6 +30,7 @@ class SnapshotOrderTest {
         outbox,
         mockk<Clock>(relaxed = true),
         mockk<SurfaceRefresher>(relaxed = true),
+        mockk<AlarmTiming>(relaxed = true),
     )
 
     private fun snapshot(generatedAt: Long) = WatchSnapshot(
