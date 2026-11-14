@@ -40,7 +40,8 @@ class CaptureNoteUseCaseTest {
                         _
                     ->
                     null
-                }, clock)
+                }, clock),
+                { true },
             )
         return CaptureNoteUseCase(classify, CreateNoteUseCase(notes, FakeAlarms(), clock, SequentialIds()), queued::add)
     }

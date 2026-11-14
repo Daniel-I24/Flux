@@ -21,7 +21,7 @@ import org.junit.Test
 class LocalNoteClassifierTest {
     private val zone = ZoneId.of("America/Bogota")
     private val now = ZonedDateTime.of(2026, 10, 18, 10, 0, 0, 0, zone)
-    private val classifier = LocalNoteClassifier()
+    private val classifier = LocalNoteClassifier(SpanishNoteIntentDetector())
 
     private suspend fun classify(text: String, categories: List<Category> = DefaultCategory.all()): Classification {
         val result = classifier.classify(ClassificationRequest(text, now.toInstant().toEpochMilli(), zone, categories, profile = null))

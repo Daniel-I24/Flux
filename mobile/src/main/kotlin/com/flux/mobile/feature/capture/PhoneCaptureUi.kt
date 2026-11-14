@@ -3,6 +3,7 @@ package com.flux.mobile.feature.capture
 import com.flux.core.data.speech.VoiceError
 import com.flux.core.data.speech.VoiceState
 import com.flux.core.model.Classification
+import com.flux.mobile.R
 
 enum class CapturePhase { EDITING, LISTENING, CLASSIFYING, PREVIEW, SAVED }
 
@@ -42,6 +43,13 @@ internal fun PhoneCaptureUi.afterSystemDictation(failed: Boolean) = copy(
     phase = CapturePhase.EDITING,
     voiceError = if (failed) systemDictation ?: VoiceError.UNAVAILABLE else null,
     systemDictation = null,
+)
+
+/** Small talk or noise: no preview and nothing saved; the text stays so the user can fix it or dictate again. */
+internal fun PhoneCaptureUi.notANote() = copy(
+    phase = CapturePhase.EDITING,
+    classification = null,
+    errorMessage = R.string.capture_error_not_a_note,
 )
 
 internal fun PhoneCaptureUi.previewing(classification: Classification, corrected: Boolean) = copy(

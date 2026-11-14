@@ -3,6 +3,7 @@
     <string name="capture_listening_hint">Prueba: «comprar pan mañana a las 8 a. m.»</string>
     <string name="capture_done_speaking">Listo</string>
     <string name="capture_error_not_understood">No te escuché, intenta de nuevo.</string>
+    <string name="capture_error_not_a_note">Eso no parece una nota o recordatorio. Intenta de nuevo.</string>
     <string name="capture_error_busy">El micrófono está ocupado. Espera un momento e intenta de nuevo.</string>
     <string name="capture_error_language">El dictado en español no está disponible en este reloj.</string>
     <string name="capture_error_permission">FLUX necesita el micrófono para dictar tus notas.</string>

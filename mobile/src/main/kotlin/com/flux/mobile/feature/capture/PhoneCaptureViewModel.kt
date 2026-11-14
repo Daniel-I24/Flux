@@ -82,7 +82,8 @@ class PhoneCaptureViewModel @Inject constructor(
         work?.cancel()
         work = viewModelScope.launch {
             when (val result = capture.classify(text)) {
-                is FluxResult.Success -> showPreview(result.value, corrected = false)
+                is FluxResult.Success -> result.value.takeIf { it.isNote }?.let { showPreview(it, corrected = false) }
+                    ?: state.update { it.notANote() }
                 is FluxResult.Failure -> state.update { it.copy(phase = CapturePhase.EDITING, errorMessage = result.error.messageRes()) }
             }
         }

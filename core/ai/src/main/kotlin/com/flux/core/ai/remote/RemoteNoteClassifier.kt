@@ -102,6 +102,7 @@ class RemoteNoteClassifier(
                 confidence = answer.confidence.coerceIn(0.0, 1.0),
                 engine = engine,
                 ambiguities = ambiguities,
+                isNote = answer.isNote,
             ),
         )
     }

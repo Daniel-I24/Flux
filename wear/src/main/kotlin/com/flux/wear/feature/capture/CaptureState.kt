@@ -54,7 +54,12 @@ sealed interface CaptureState {
 
     data class Processing(val text: String) : CaptureState {
         override fun on(event: CaptureEvent): CaptureState = when (event) {
-            is CaptureEvent.Classified -> Preview.of(text, event.classification)
+            // Small talk or noise: nothing is saved, the user is asked to try again.
+            is CaptureEvent.Classified -> if (event.classification.isNote) {
+                Preview.of(text, event.classification)
+            } else {
+                Error(CaptureFailure.NOT_A_NOTE)
+            }
             CaptureEvent.Cancel -> Idle
             else -> this
         }

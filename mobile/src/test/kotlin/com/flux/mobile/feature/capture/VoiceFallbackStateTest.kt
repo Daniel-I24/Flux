@@ -28,4 +28,13 @@ class VoiceFallbackStateTest {
         assertEquals(VoiceError.NOT_UNDERSTOOD, state.voiceError)
         assertNull(state.systemDictation)
     }
+
+    @Test
+    fun `small talk shows its message, keeps the text and opens no preview`() {
+        val state = PhoneCaptureUi(text = "hola", phase = CapturePhase.CLASSIFYING).notANote()
+        assertEquals(CapturePhase.EDITING, state.phase)
+        assertEquals(com.flux.mobile.R.string.capture_error_not_a_note, state.errorMessage)
+        assertEquals("hola", state.text)
+        assertNull(state.classification)
+    }
 }

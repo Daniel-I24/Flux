@@ -112,6 +112,7 @@ private fun CaptureFailure.message(): Int = when (this) {
     CaptureFailure.LANGUAGE -> R.string.capture_error_language
     CaptureFailure.UNAVAILABLE -> R.string.capture_error_unavailable
     CaptureFailure.NOT_SAVED -> R.string.capture_error_not_saved
+    CaptureFailure.NOT_A_NOTE -> R.string.capture_error_not_a_note
 }
 
 /** A clear reason and the action that fixes it: retry, or open settings for the microphone permission. */

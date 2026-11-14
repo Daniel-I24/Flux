@@ -37,7 +37,8 @@ class ClassifyNoteUseCaseTest {
                     _
                 ->
                 null
-            }, FixedClock())
+            }, FixedClock()),
+            { true },
         )
 
     @Test

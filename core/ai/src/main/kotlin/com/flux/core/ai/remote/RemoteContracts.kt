@@ -36,6 +36,8 @@ internal data class RemoteClassifyResponse(
     val confidence: Double = 0.5,
     /** Server v1.1+: other categories that fit as well (asked to the user as an ambiguity). */
     val alternativeCategoryIds: List<String> = emptyList(),
+    /** Server v1.2+: false for greetings, small talk or noise. Older servers do not send it. */
+    val isNote: Boolean = true,
 )
 
 /** Server configuration injected from BuildConfig (never hard-coded). */

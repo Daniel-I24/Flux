@@ -15,6 +15,8 @@ data class Classification(
     val engine: ClassifierEngine,
     /** Questions for the user before saving; empty means the note can be saved with the countdown. */
     val ambiguities: List<Ambiguity> = emptyList(),
+    /** v1.2: false for greetings, small talk, noise or an empty phrase; nothing is saved then. */
+    val isNote: Boolean = true,
 ) {
     val needsAnswer: Boolean get() = ambiguities.isNotEmpty()
 }

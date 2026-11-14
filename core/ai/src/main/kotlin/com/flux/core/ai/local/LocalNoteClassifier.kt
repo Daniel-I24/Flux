@@ -17,7 +17,7 @@ import javax.inject.Inject
  * Offline classifier: weighted Spanish keyword rules + deterministic date parser.
  * Always succeeds, so it is the last strategy of the chain.
  */
-class LocalNoteClassifier @Inject constructor() : NoteClassifier {
+class LocalNoteClassifier @Inject constructor(private val intent: SpanishNoteIntentDetector) : NoteClassifier {
     override val engine = ClassifierEngine.LOCAL
 
     override suspend fun classify(request: ClassificationRequest): FluxResult<Classification> {
@@ -45,6 +45,7 @@ class LocalNoteClassifier @Inject constructor() : NoteClassifier {
                 confidence = confidenceOf(pick.score),
                 engine = engine,
                 ambiguities = ambiguities,
+                isNote = intent.isNote(text),
             ),
         )
     }

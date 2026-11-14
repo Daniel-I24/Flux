@@ -2,10 +2,12 @@ package com.flux.mobile.di
 
 import com.flux.core.ai.date.SpanishScheduleGapDetector
 import com.flux.core.ai.local.LocalNoteClassifier
+import com.flux.core.ai.local.SpanishNoteIntentDetector
 import com.flux.core.ai.remote.RemoteClassifierConfig
 import com.flux.core.ai.remote.RemoteCredentials
 import com.flux.core.ai.remote.RemoteNoteClassifier
 import com.flux.core.domain.port.NoteClassifier
+import com.flux.core.domain.port.NoteIntentDetector
 import com.flux.core.domain.port.ReclassificationQueue
 import com.flux.core.domain.port.RemoteAiStatus
 import com.flux.core.domain.port.ScheduleGapDetector
@@ -55,4 +57,6 @@ abstract class CredentialsModule {
     @Binds abstract fun remoteAiStatus(impl: ServerHealthChecker): RemoteAiStatus
 
     @Binds abstract fun scheduleGaps(impl: SpanishScheduleGapDetector): ScheduleGapDetector
+
+    @Binds abstract fun noteIntent(impl: SpanishNoteIntentDetector): NoteIntentDetector
 }

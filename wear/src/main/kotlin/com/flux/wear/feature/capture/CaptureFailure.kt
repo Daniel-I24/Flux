@@ -3,7 +3,7 @@ package com.flux.wear.feature.capture
 import com.flux.core.data.speech.VoiceError
 
 /** Each failure has its own message and a "Reintentar" that fixes it. */
-enum class CaptureFailure { NOT_UNDERSTOOD, NO_PERMISSION, NO_NETWORK, BUSY, LANGUAGE, UNAVAILABLE, NOT_SAVED }
+enum class CaptureFailure { NOT_UNDERSTOOD, NO_PERMISSION, NO_NETWORK, BUSY, LANGUAGE, UNAVAILABLE, NOT_SAVED, NOT_A_NOTE }
 
 /** Each recognizer error keeps its own meaning on screen (v1.1 showed "no disponible" for a busy service). */
 fun VoiceError.toFailure(): CaptureFailure = when (this) {
