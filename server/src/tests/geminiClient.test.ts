@@ -51,6 +51,21 @@ describe('GeminiClient', () => {
     expect('alternativeCategoryIds' in result).toBe(false);
   });
 
+  it('passes on small talk detected by the model, and asks the model to decide it', async () => {
+    const answer = JSON.stringify({ ...SAMPLE, title: 'Saludo', isNote: false });
+    const { client, fetchImpl } = clientWith(new Response(JSON.stringify(geminiAnswer(answer))));
+    await expect(client.classify({ ...validBody, text: 'Hola, ¿cómo estás?' })).resolves.toMatchObject({ isNote: false });
+    const body = JSON.parse((fetchImpl.mock.calls[0] as unknown as [string, RequestInit])[1].body as string);
+    expect(body.generationConfig.responseSchema.properties.isNote.type).toBe('BOOLEAN');
+    expect(body.generationConfig.responseSchema.required).toContain('isNote');
+    expect(body.systemInstruction.parts[0].text).toContain('isNote');
+  });
+
+  it('keeps answers without isNote valid, so a missing value still means a note', async () => {
+    const result = await clientWith(new Response(JSON.stringify(geminiAnswer(JSON.stringify(SAMPLE))))).client.classify(validBody);
+    expect(result.isNote).toBeUndefined();
+  });
+
   it('wraps HTTP and network failures', async () => {
     await expect(clientWith(new Response('{}', { status: 429 })).client.classify(validBody)).rejects.toBeInstanceOf(UpstreamError);
     await expect(clientWith(new Error('ECONNRESET')).client.classify(validBody)).rejects.toBeInstanceOf(UpstreamError);

@@ -35,6 +35,8 @@ export const ClassificationSchema = z.object({
   confidence: z.number().min(0).max(1),
   /** Other categories that fit just as well: the app asks the user (older apps ignore it). */
   alternativeCategoryIds: z.array(z.string().min(1).max(64)).max(3).optional(),
+  /** v1.2: false for greetings, small talk or noise. Optional: a missing value means a note (older apps ignore it). */
+  isNote: z.boolean().optional(),
 });
 
 export type Classification = z.infer<typeof ClassificationSchema>;
