@@ -59,4 +59,6 @@
     <string name="preferences_title">Tus alarmas y tu tema</string>
     <string name="preferences_subtitle">Puedes cambiarlos cuando quieras en Ajustes. El tema se aplica también en el reloj.</string>
     <string name="preferences_theme">Tema</string>
+    <string name="shortcut_dictate">Dictar nota</string>
+    <string name="shortcut_new_note">Nueva nota</string>
 </resources>

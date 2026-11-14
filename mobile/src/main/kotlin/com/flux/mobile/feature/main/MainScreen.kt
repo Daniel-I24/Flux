@@ -26,15 +26,23 @@ import com.flux.mobile.feature.home.HomeScreen
 import com.flux.mobile.feature.notes.NotesRequest
 import com.flux.mobile.feature.notes.NotesScreen
 import com.flux.mobile.feature.settings.SettingsScreen
+import com.flux.mobile.launch.CaptureRequest
 import com.flux.mobile.link.LinkLaunch
 
 /** Main area after onboarding: four tabs sharing one snackbar host (used for "Deshacer"). */
 @Composable
-fun MainScreen(linkRequest: LinkLaunch? = null) {
+fun MainScreen(linkRequest: LinkLaunch? = null, capture: CaptureRequest = CaptureRequest()) {
     var tab by rememberSaveable { mutableStateOf(MainTab.HOME) }
     // "Vincular" on the watch: Ajustes > Reloj takes it from here.
     LaunchedEffect(linkRequest) { if (linkRequest != null) tab = MainTab.SETTINGS }
     var notesRequest by remember { mutableStateOf<NotesRequest?>(null) }
+    // Launcher shortcut or quick settings: Notas opens the capture sheet.
+    LaunchedEffect(capture.launch) {
+        val launch = capture.launch ?: return@LaunchedEffect
+        notesRequest = NotesRequest(categoryId = null, token = System.nanoTime(), capture = launch)
+        tab = MainTab.NOTES
+        capture.consume()
+    }
     val snackbar = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
@@ -63,7 +71,12 @@ fun MainScreen(linkRequest: LinkLaunch? = null) {
                     onOpenSettings = { tab = MainTab.SETTINGS },
                     modifier = modifier,
                 )
-                MainTab.NOTES -> NotesScreen(snackbar = snackbar, request = notesRequest, modifier = modifier)
+                MainTab.NOTES -> NotesScreen(
+                    snackbar = snackbar,
+                    request = notesRequest,
+                    onRequestHandled = { notesRequest = null },
+                    modifier = modifier,
+                )
                 MainTab.CATEGORIES -> CategoriesScreen(snackbar = snackbar, modifier = modifier)
                 MainTab.SETTINGS -> SettingsScreen(snackbar = snackbar, modifier = modifier)
             }

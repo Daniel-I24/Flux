@@ -112,6 +112,18 @@
             </intent-filter>
         </service>
 
+        <!-- Quick settings button "Dictar nota". -->
+        <service
+            android:name=".launch.DictateTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_shortcut_mic"
+            android:label="@string/shortcut_dictate"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
         <receiver
             android:name=".alarm.ReminderReceiver"
             android:exported="false" />

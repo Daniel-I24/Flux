@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.mobile.R
 import com.flux.mobile.feature.capture.CaptureSheet
+import com.flux.mobile.launch.CaptureLaunch
 import com.flux.mobile.ui.common.SnackbarEventEffect
 import com.flux.mobile.ui.common.alarmConfirmation
 
@@ -35,6 +36,7 @@ import com.flux.mobile.ui.common.alarmConfirmation
 fun NotesScreen(
     snackbar: SnackbarHostState,
     request: NotesRequest?,
+    onRequestHandled: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: NotesViewModel = hiltViewModel()
 ) {
@@ -43,7 +45,17 @@ fun NotesScreen(
     var editingId by rememberSaveable { mutableStateOf<String?>(null) }
     var creating by rememberSaveable { mutableStateOf(false) }
     // Applied only when Inicio asks for a category: coming back to the tab keeps the user's filters.
-    LaunchedEffect(request?.token) { request?.let { viewModel.setCategory(it.categoryId) } }
+    var listenOnOpen by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(request?.token) {
+        request ?: return@LaunchedEffect
+        if (request.capture == null) viewModel.setCategory(request.categoryId)
+        request.capture?.let {
+            listenOnOpen = it == CaptureLaunch.DICTATE
+            creating = true
+        }
+        // Handled once: coming back to the tab keeps the user's filters and opens nothing.
+        onRequestHandled()
+    }
     NotesEventEffect(event, snackbar, viewModel)
 
     Box(modifier.fillMaxSize()) {
@@ -80,9 +92,11 @@ fun NotesScreen(
         CaptureSheet(
             onDismiss = {
                 creating = false
+                listenOnOpen = false
                 focus.clearFocus()
             },
             onAlarmSaved = viewModel::announceAlarm,
+            listenOnOpen = listenOnOpen,
         )
     }
 }

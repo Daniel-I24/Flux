@@ -10,6 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flux.core.designsystem.theme.FluxTheme
+import com.flux.mobile.launch.CaptureLaunchRequests
+import com.flux.mobile.launch.CaptureRequest
 import com.flux.mobile.link.LinkLaunchRequests
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -20,15 +22,21 @@ class MainActivity : ComponentActivity() {
 
     @Inject lateinit var linkLaunch: LinkLaunchRequests
 
+    @Inject lateinit var captureLaunch: CaptureLaunchRequests
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         linkLaunch.handle(intent)
+        captureLaunch.handle(intent)
         setContent {
             val theme by appViewModel.theme.collectAsStateWithLifecycle()
             val linkRequest by linkLaunch.request.collectAsStateWithLifecycle()
-            FluxTheme(themeMode = theme.mode, palette = theme.palette) { FluxApp(linkRequest = linkRequest) }
+            val captureRequest by captureLaunch.request.collectAsStateWithLifecycle()
+            FluxTheme(themeMode = theme.mode, palette = theme.palette) {
+                FluxApp(linkRequest = linkRequest, capture = CaptureRequest(captureRequest, captureLaunch::consume))
+            }
         }
     }
 
@@ -36,5 +44,6 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         linkLaunch.handle(intent)
+        captureLaunch.handle(intent)
     }
 }

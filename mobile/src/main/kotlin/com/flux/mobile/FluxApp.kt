@@ -8,18 +8,19 @@ import com.flux.core.designsystem.component.FluxLoadingState
 import com.flux.mobile.feature.main.MainScreen
 import com.flux.mobile.feature.onboarding.OnboardingHost
 import com.flux.mobile.feature.tutorial.TutorialScreen
+import com.flux.mobile.launch.CaptureRequest
 import com.flux.mobile.link.LinkLaunch
 import com.flux.mobile.navigation.AppDestination
 import com.flux.mobile.navigation.GateViewModel
 
 /** Root: onboarding until it is done, then the main app ([linkRequest] waits for it). */
 @Composable
-fun FluxApp(linkRequest: LinkLaunch? = null, gate: GateViewModel = hiltViewModel()) {
+fun FluxApp(linkRequest: LinkLaunch? = null, capture: CaptureRequest = CaptureRequest(), gate: GateViewModel = hiltViewModel()) {
     val destination by gate.destination.collectAsStateWithLifecycle()
     when (val current = destination) {
         AppDestination.Loading -> FluxLoadingState()
         is AppDestination.Onboarding -> OnboardingHost(current.step)
-        AppDestination.Main -> MainScreen(linkRequest)
+        AppDestination.Main -> MainScreen(linkRequest, capture)
         AppDestination.Tutorial -> TutorialScreen(onFinish = gate::finishTutorial)
     }
 }

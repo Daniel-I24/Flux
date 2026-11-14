@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.flux.mobile.data.firebase.FirebaseBootstrap
+import com.flux.mobile.launch.AppShortcuts
 import com.flux.mobile.startup.AppStartup
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -18,6 +19,8 @@ class FluxMobileApp :
 
     @Inject lateinit var workerFactory: HiltWorkerFactory
 
+    @Inject lateinit var shortcuts: AppShortcuts
+
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder().setWorkerFactory(workerFactory).build()
 
@@ -25,5 +28,6 @@ class FluxMobileApp :
         super.onCreate()
         firebase.initialize()
         startup.start()
+        shortcuts.publish()
     }
 }
