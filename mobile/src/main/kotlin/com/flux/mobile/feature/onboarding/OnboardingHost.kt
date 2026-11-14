@@ -27,6 +27,7 @@ fun OnboardingHost(step: OnboardingStep, viewModel: OnboardingViewModel = hiltVi
             OnboardingStep.ACCOUNT -> AccountScreen(onBack = { viewModel.back(current) })
             OnboardingStep.PROFILE -> ProfileStepScreen(onDone = { viewModel.next(current) }, onBack = { viewModel.back(current) })
             OnboardingStep.ROUTINE -> RoutineStepScreen(onDone = { viewModel.next(current) }, onBack = { viewModel.back(current) })
+            OnboardingStep.PREFERENCES -> PreferencesStepScreen(onDone = { viewModel.next(current) }, onBack = { viewModel.back(current) })
             OnboardingStep.PERMISSIONS -> PermissionsStepScreen(onDone = { viewModel.next(current) }, onBack = { viewModel.back(current) })
             OnboardingStep.WATCH -> WatchLinkStepScreen(onDone = { viewModel.next(current) }, onBack = { viewModel.back(current) })
             OnboardingStep.DONE -> Unit

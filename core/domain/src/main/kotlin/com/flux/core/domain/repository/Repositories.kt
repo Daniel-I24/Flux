@@ -28,7 +28,8 @@ interface SettingsRepository {
     suspend fun update(transform: (AppSettings) -> AppSettings)
 }
 
-enum class OnboardingStep { WELCOME, ACCOUNT, PROFILE, ROUTINE, PERMISSIONS, WATCH, DONE }
+/** Persisted by name: v1.2 inserted PREFERENCES (lead and theme) and older saved steps still resolve. */
+enum class OnboardingStep { WELCOME, ACCOUNT, PROFILE, ROUTINE, PREFERENCES, PERMISSIONS, WATCH, DONE }
 
 interface OnboardingRepository {
     fun observeStep(): Flow<OnboardingStep>
