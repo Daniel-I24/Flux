@@ -19,6 +19,7 @@ dependencies {
     api(projects.core.domain)
     api(projects.core.ai)
     api(projects.core.sync)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)

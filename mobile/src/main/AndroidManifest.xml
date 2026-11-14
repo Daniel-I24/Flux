@@ -30,6 +30,18 @@
 
     <!-- Android 11+ package visibility: find the speech recognition service and the dictation activity. -->
     <queries>
+        <!-- Brand screens for autostart, pop-ups and lock screen (OemSettings). -->
+        <package android:name="com.miui.securitycenter" />
+        <package android:name="com.vivo.permissionmanager" />
+        <package android:name="com.iqoo.secure" />
+        <package android:name="com.coloros.safecenter" />
+        <package android:name="com.oplus.safecenter" />
+        <package android:name="com.oneplus.security" />
+        <package android:name="com.huawei.systemmanager" />
+        <package android:name="com.samsung.android.lool" />
+        <intent>
+            <action android:name="miui.intent.action.APP_PERM_EDITOR" />
+        </intent>
         <intent>
             <action android:name="android.speech.RecognitionService" />
         </intent>

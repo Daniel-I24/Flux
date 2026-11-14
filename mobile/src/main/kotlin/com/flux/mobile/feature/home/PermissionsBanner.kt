@@ -22,9 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.flux.core.data.permissions.PermissionChecks
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.mobile.R
-import com.flux.mobile.feature.permissions.PermissionChecker
 
 /** Re-checked every time the app comes back: exact alarms, notifications and full screen can be revoked later. */
 @Composable
@@ -32,7 +32,7 @@ fun PermissionsBanner(onReview: () -> Unit) {
     val context = LocalContext.current
     var ready by remember { mutableStateOf(true) }
     LifecycleResumeEffect(Unit) {
-        ready = PermissionChecker.alarmsReady(context)
+        ready = PermissionChecks(context, isWatch = false).alarmsReady()
         onPauseOrDispose { }
     }
     if (ready) return

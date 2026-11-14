@@ -1,54 +1,33 @@
 package com.flux.mobile.feature.permissions
 
-import android.annotation.SuppressLint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Alarm
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.Fullscreen
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material3.Card
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.flux.core.data.permissions.AppPermission
+import com.flux.core.data.permissions.PermissionChecks
 import com.flux.core.designsystem.theme.FluxSpacing
-import com.flux.core.designsystem.theme.FluxThemeExtras
-import com.flux.mobile.R
 
-private data class PermissionCopy(val title: Int, val why: Int, val icon: androidx.compose.ui.graphics.vector.ImageVector)
-
-private val COPY = mapOf(
-    FluxPermission.NOTIFICATIONS to
-        PermissionCopy(R.string.permission_notifications, R.string.permission_notifications_why, Icons.Rounded.Notifications),
-    FluxPermission.EXACT_ALARMS to
-        PermissionCopy(R.string.permission_exact_alarms, R.string.permission_exact_alarms_why, Icons.Rounded.Alarm),
-    FluxPermission.FULL_SCREEN to
-        PermissionCopy(R.string.permission_full_screen, R.string.permission_full_screen_why, Icons.Rounded.Fullscreen),
-)
-
-/** One card per permission: what it is for, and a button that asks for it in context. */
-@SuppressLint("InlinedApi")
+/**
+ * One card per permission that applies to this phone, with its live state (refreshed when the
+ * user comes back from the system screen) and a button that asks for it or opens that screen.
+ * A runtime permission denied before opens its settings screen instead of the dialog.
+ */
 @Composable
 fun PermissionsList(modifier: Modifier = Modifier) {
     val context = LocalContext.current
+    val checks = remember(context) { PermissionChecks(context, isWatch = false) }
     var refresh by remember { mutableIntStateOf(0) }
+    var asked by remember { mutableStateOf(emptySet<AppPermission>()) }
     LifecycleResumeEffect(Unit) {
         refresh++
         onPauseOrDispose { }
@@ -56,40 +35,17 @@ fun PermissionsList(modifier: Modifier = Modifier) {
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { refresh++ }
 
     Column(modifier, verticalArrangement = Arrangement.spacedBy(FluxSpacing.md)) {
-        FluxPermission.entries.filter(PermissionChecker::isRequired).forEach { permission ->
-            val granted = refresh >= 0 && PermissionChecker.isGranted(context, permission)
-            PermissionCard(permission, granted) {
-                val runtime = PermissionChecker.runtimePermission(permission)
-                if (runtime !=
-                    null
-                ) {
+        checks.applicable().forEachIndexed { index, permission ->
+            val status = refresh.let { checks.status(permission) }
+            PermissionCard(index + 1, permission, status) {
+                val runtime = checks.runtimePermission(permission)
+                if (runtime != null && permission !in asked) {
+                    asked = asked + permission
                     launcher.launch(runtime)
                 } else {
-                    context.startActivity(PermissionChecker.settingsIntent(context, permission))
+                    runCatching { context.startActivity(checks.settingsIntent(permission)) }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun PermissionCard(permission: FluxPermission, granted: Boolean, onGrant: () -> Unit) {
-    val copy = COPY.getValue(permission)
-    Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(FluxSpacing.lg), verticalArrangement = Arrangement.spacedBy(FluxSpacing.sm)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(FluxSpacing.md)) {
-                Icon(copy.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                Text(stringResource(copy.title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                if (granted) {
-                    Icon(
-                        Icons.Rounded.CheckCircle,
-                        contentDescription = stringResource(R.string.permission_granted),
-                        tint = FluxThemeExtras.status.success
-                    )
-                }
-            }
-            Text(stringResource(copy.why), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (!granted) FilledTonalButton(onClick = onGrant) { Text(stringResource(R.string.permission_grant)) }
         }
     }
 }

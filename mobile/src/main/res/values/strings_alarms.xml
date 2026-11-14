@@ -30,4 +30,26 @@
     <string name="alarm_lead_minutes">%1$d min antes</string>
     <string name="alarm_lead_hour">1 h antes</string>
     <string name="alarm_lead_default">Como en Ajustes (%1$s)</string>
+    <string name="permission_numbered">%1$d. %2$s</string>
+    <string name="permission_pending">Pendiente</string>
+    <string name="permission_check">Revisar</string>
+    <string name="permission_open">Abrir ajustes</string>
+    <string name="permission_microphone">Micrófono</string>
+    <string name="permission_microphone_why">Para dictar tus notas con la voz. También puedes escribirlas.</string>
+    <string name="permission_microphone_steps">Toca Permitir y, en el aviso, elige «Mientras la app está en uso».</string>
+    <string name="permission_notifications_steps">Toca Permitir. Si antes lo negaste, se abre Notificaciones: activa «Permitir notificaciones» para FLUX.</string>
+    <string name="permission_exact_alarms_steps">Toca Permitir, busca FLUX y activa «Permitir alarmas y recordatorios».</string>
+    <string name="permission_full_screen_steps">Toca Permitir y activa «Permitir notificaciones de pantalla completa» para FLUX.</string>
+    <string name="permission_overlay">Aparecer encima</string>
+    <string name="permission_overlay_why">Para que la alarma aparezca sobre la app que estés usando, como una llamada entrante.</string>
+    <string name="permission_overlay_steps">Toca Permitir, busca FLUX en la lista y activa «Mostrar sobre otras apps».</string>
+    <string name="permission_battery">Batería sin restricciones</string>
+    <string name="permission_battery_why">Para que el sistema no detenga FLUX y las alarmas lleguen a tiempo.</string>
+    <string name="permission_battery_steps">Toca Permitir y confirma. Si se abre una lista, elige «Todas las apps», busca FLUX y elige «Sin restricciones» o «No optimizar».</string>
+    <string name="permission_autostart">Inicio automático</string>
+    <string name="permission_autostart_why">Tu celular puede impedir que FLUX se active solo. Sin esto, las alarmas pueden no sonar.</string>
+    <string name="permission_autostart_steps">Toca Abrir ajustes, busca FLUX y activa su interruptor. Android no nos deja comprobarlo: revísalo tú.</string>
+    <string name="permission_popups">Ventanas emergentes y pantalla de bloqueo</string>
+    <string name="permission_popups_why">Algunas marcas piden esto aparte para mostrar la alarma sobre otras apps o con el celular bloqueado.</string>
+    <string name="permission_popups_steps">Toca Abrir ajustes y activa «Ventanas emergentes», «Mostrar en pantalla de bloqueo» y «Abrir ventanas en segundo plano».</string>
 </resources>
