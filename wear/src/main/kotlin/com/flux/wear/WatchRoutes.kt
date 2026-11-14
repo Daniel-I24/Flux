@@ -11,4 +11,7 @@ object WatchRoutes {
     const val CATEGORIES = "categories"
     const val SETTINGS = "settings"
     const val TUTORIAL = "tutorial"
+
+    /** Permissions, battery and the double press of the button (after the tutorial and from Ajustes). */
+    const val SETUP = "setup"
 }

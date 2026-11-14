@@ -15,6 +15,7 @@ import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumnScope
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
+import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ListHeader
 import androidx.wear.compose.material3.OutlinedButton
 import androidx.wear.compose.material3.RadioButton
@@ -37,7 +38,7 @@ private fun VibrationPattern.labelRes(): Int = when (this) {
 
 /** Vibration, sound, theme and link status, all inside the watch app. */
 @Composable
-fun WatchSettingsScreen(onTutorial: () -> Unit, viewModel: WatchSettingsViewModel = hiltViewModel()) {
+fun WatchSettingsScreen(onTutorial: () -> Unit, onSetup: () -> Unit, viewModel: WatchSettingsViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val haptics = rememberHaptics()
     val context = LocalContext.current
@@ -53,6 +54,7 @@ fun WatchSettingsScreen(onTutorial: () -> Unit, viewModel: WatchSettingsViewMode
             sound = viewModel::setSoundEnabled,
             highContrast = viewModel::setHighContrast,
             tutorial = onTutorial,
+            setup = onSetup,
             link = {
                 haptics.tap()
                 viewModel.link { ok -> Toast.makeText(context, if (ok) opened else failed, Toast.LENGTH_SHORT).show() }
@@ -70,6 +72,7 @@ data class WatchSettingsActions(
     val sound: (Boolean) -> Unit,
     val highContrast: (Boolean) -> Unit,
     val tutorial: () -> Unit,
+    val setup: () -> Unit,
     val link: () -> Unit,
     val unlink: () -> Unit,
 )
@@ -81,6 +84,9 @@ fun WatchSettingsContent(state: WatchSettingsUiState, actions: WatchSettingsActi
     ScreenScaffold(scrollState = listState) { padding ->
         TransformingLazyColumn(state = listState, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
             item { ListHeader { Text(stringResource(R.string.settings_title)) } }
+            item {
+                Button(onClick = actions.setup, label = { Text(stringResource(R.string.setup_open)) }, modifier = Modifier.fillMaxWidth())
+            }
             item { ListHeader { Text(stringResource(R.string.settings_vibration)) } }
             items(VibrationPattern.entries, key = { it.name }) { pattern ->
                 RadioButton(

@@ -15,6 +15,7 @@ import com.flux.wear.feature.home.HomeScreen
 import com.flux.wear.feature.overdue.OverdueScreen
 import com.flux.wear.feature.settings.WatchSettingsScreen
 import com.flux.wear.feature.settings.WatchSettingsViewModel
+import com.flux.wear.feature.setup.WatchSetupScreen
 import com.flux.wear.feature.tutorial.WatchTutorialScreen
 
 /** Swipe-to-dismiss navigation (the scaffold shows the time); [startRoute] lets the tile open dictation directly. */
@@ -42,10 +43,26 @@ fun WatchApp(startRoute: String = WatchRoutes.HOME, navController: NavHostContro
             composable(WatchRoutes.AGENDA) { AgendaScreen() }
             composable(WatchRoutes.OVERDUE) { OverdueScreen() }
             composable(WatchRoutes.CATEGORIES) { CategoriesScreen(onDictate = { navController.navigate(WatchRoutes.DICTATE) }) }
-            composable(WatchRoutes.SETTINGS) { WatchSettingsScreen(onTutorial = { navController.navigate(WatchRoutes.TUTORIAL) }) }
+            composable(WatchRoutes.SETTINGS) {
+                WatchSettingsScreen(
+                    onTutorial = { navController.navigate(WatchRoutes.TUTORIAL) },
+                    onSetup = { navController.navigate(WatchRoutes.SETUP) },
+                )
+            }
             composable(WatchRoutes.TUTORIAL) {
+                // The tutorial goes on to the permissions, before the first note is dictated.
+                WatchTutorialScreen(onFinish = {
+                    navController.navigate(WatchRoutes.SETUP) {
+                        popUpTo(WatchRoutes.TUTORIAL) {
+                            inclusive =
+                                true
+                        }
+                    }
+                })
+            }
+            composable(WatchRoutes.SETUP) {
                 val settings: WatchSettingsViewModel = hiltViewModel()
-                WatchTutorialScreen(onFinish = { settings.finishTutorial(onSaved = navController::popBackOrHome) })
+                WatchSetupScreen(onDone = { settings.finishTutorial(onSaved = navController::popBackOrHome) })
             }
         }
     }

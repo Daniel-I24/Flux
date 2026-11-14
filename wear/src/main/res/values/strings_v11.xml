@@ -20,4 +20,23 @@
     <string name="tutorial_watch_2_body">FLUX elige la categoría y la hora. Si algo es ambiguo te pregunta; si no, se guarda solo en 5 segundos.</string>
     <string name="tutorial_watch_3_title">Alarmas en ambos</string>
     <string name="tutorial_watch_3_body">Suena en el reloj y en el celular. Posponer o Completar en uno la detiene en los dos.</string>
+    <string name="setup_title">Configura FLUX</string>
+    <string name="setup_intro">Para dictar y que las alarmas suenen y vibren a tiempo. Toca cada uno.</string>
+    <string name="setup_granted">✓ Listo</string>
+    <string name="setup_done">Listo</string>
+    <string name="setup_open">Permisos y alarmas</string>
+    <string name="setup_microphone">Micrófono</string>
+    <string name="setup_microphone_steps">Pendiente: toca y elige Permitir</string>
+    <string name="setup_notifications">Notificaciones</string>
+    <string name="setup_notifications_steps">Pendiente: toca y elige Permitir</string>
+    <string name="setup_exact_alarms">Alarmas exactas</string>
+    <string name="setup_exact_alarms_steps">Pendiente: activa el interruptor de FLUX</string>
+    <string name="setup_full_screen">Pantalla completa</string>
+    <string name="setup_full_screen_steps">Pendiente: activa el interruptor de FLUX</string>
+    <string name="setup_battery">Batería sin restricciones</string>
+    <string name="setup_battery_steps">Pendiente: toca y elige Permitir</string>
+    <string name="setup_double_press_title">Abrir FLUX con el botón</string>
+    <string name="setup_double_press_galaxy">Galaxy Watch: Ajustes → Funciones avanzadas → Personalizar teclas → Pulsar dos veces → FLUX.</string>
+    <string name="setup_double_press_pixel">Pixel Watch: Ajustes → Gestos → Pulsar dos veces el botón → FLUX (si tu versión lo permite).</string>
+    <string name="setup_double_press_other">Otros relojes: busca «botón» o «gestos» en Ajustes. El mosaico y la complicación de FLUX abren el dictado.</string>
 </resources>
