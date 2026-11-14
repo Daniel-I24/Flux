@@ -24,7 +24,7 @@ import com.flux.mobile.link.WatchCandidate
 
 /**
  * Every watch paired with this phone. With FLUX it links right away; without it, FLUX opens the
- * store on the watch. With none, it explains the system pairing (Galaxy Wearable, Pixel Watch).
+ * store on the watch. With none, it explains the system pairing (the watch's own app, whatever the brand).
  */
 @Composable
 fun WatchChooserDialog(

@@ -101,7 +101,7 @@
 
     <!-- Watch link -->
     <string name="link_searching">Buscando tu reloj…</string>
-    <string name="link_no_watch">Ningún reloj vinculado. Para vincular uno, primero emparéjalo con este celular desde la app del fabricante, como Galaxy Wearable o Pixel Watch.</string>
+    <string name="link_no_watch">Ningún reloj vinculado. Para vincular uno, primero emparéjalo con este celular desde la app de tu reloj (Galaxy Wearable, Pixel Watch u otra).</string>
     <string name="link_app_missing">FLUX no está instalada en %1$s.</string>
     <string name="link_install_on_watch">Instalar en el reloj</string>
     <string name="link_available">%1$s está listo para vincularse.</string>

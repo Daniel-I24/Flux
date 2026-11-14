@@ -20,7 +20,7 @@
     <string name="connection_ready_local_ai">Conectado · IA local</string>
     <string name="connection_offline">Sin celular</string>
     <string name="problem_no_phone_title">Empareja tu celular</string>
-    <string name="problem_no_phone">Este reloj no está emparejado con un celular. Hazlo con la app del fabricante, como Galaxy Wearable o Pixel Watch.</string>
+    <string name="problem_no_phone">Este reloj no está emparejado con un celular. Hazlo en el celular desde la app de tu reloj (Galaxy Wearable, Pixel Watch u otra).</string>
     <string name="problem_app_missing_title">Instala FLUX en el celular</string>
     <string name="problem_app_missing">El celular está emparejado, pero no tiene FLUX.</string>
     <string name="problem_open_on_phone">Abrir en el celular</string>

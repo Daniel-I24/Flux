@@ -2,7 +2,7 @@
 <resources>
     <string name="link_change">Cambiar de reloj</string>
     <string name="link_chooser_title">Elige tu reloj</string>
-    <string name="link_chooser_empty">No encontramos relojes. Empareja el reloj con este celular desde la app del fabricante, como Galaxy Wearable o Pixel Watch, e instala FLUX en el reloj.</string>
+    <string name="link_chooser_empty">No encontramos relojes. Empareja el reloj con este celular desde la app de tu reloj (Galaxy Wearable, Pixel Watch u otra) e instala FLUX en el reloj.</string>
     <string name="link_candidate_ready">Tiene FLUX: listo para vincular</string>
     <string name="link_candidate_no_app">Falta instalar FLUX en este reloj</string>
     <string name="link_choose">Vincular</string>
