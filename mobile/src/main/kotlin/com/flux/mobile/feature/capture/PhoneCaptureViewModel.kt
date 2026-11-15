@@ -107,7 +107,8 @@ class PhoneCaptureViewModel @Inject constructor(
     private fun showPreview(classification: Classification, corrected: Boolean) {
         work?.cancel()
         state.update { it.previewing(classification, corrected) }
-        if (classification.needsAnswer) return
+        // What is shown, not what arrived: a fixed category already removed the category question.
+        if (!state.value.counting) return
         work = viewModelScope.launch {
             while (state.value.secondsLeft > 0) {
                 delay(TICK_MS)
