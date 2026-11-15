@@ -1,6 +1,7 @@
 package com.flux.mobile.feature.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -26,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flux.core.designsystem.category.displayName
 import com.flux.core.designsystem.component.FluxEmptyState
 import com.flux.core.designsystem.component.FluxLoadingState
+import com.flux.core.designsystem.motion.enterOnce
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.mobile.R
 
@@ -46,12 +48,8 @@ fun HomeScreen(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(FluxSpacing.lg),
         verticalArrangement = Arrangement.spacedBy(FluxSpacing.lg),
     ) {
-        Text(
-            text = state.userName?.let { stringResource(R.string.home_greeting, it) } ?: stringResource(R.string.home_greeting_anonymous),
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.semantics { heading() },
-        )
-        WatchStatusCard(state.watch, onOpenSettings)
+        HomeHero(state.userName, state.upcoming.size, Modifier.enterOnce(index = 0))
+        Box(Modifier.enterOnce(index = 1)) { WatchStatusCard(state.watch, onOpenSettings) }
         PermissionsBanner(onOpenSettings)
         if (state.overdueCount > 0) OverdueCard(state.overdueCount, onOpen = { onOpenNotes(null) })
         SectionTitle(stringResource(R.string.home_upcoming))

@@ -34,6 +34,9 @@ object FluxSizes {
 
     /** A theme color sample in the theme picker. */
     val swatch = 24.dp
+
+    /** The category color on the edge of a note card. */
+    val accentStripe = 6.dp
 }
 
 val FluxShapes = Shapes(

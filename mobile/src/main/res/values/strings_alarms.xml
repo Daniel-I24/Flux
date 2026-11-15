@@ -63,4 +63,9 @@
     <string name="shortcut_new_note">Nueva nota</string>
     <string name="notes_new_in">Nueva nota en %1$s</string>
     <string name="categories_edit_named">Editar %1$s</string>
+    <plurals name="home_hero_upcoming">
+        <item quantity="one">Tienes %1$d recordatorio próximo.</item>
+        <item quantity="many">Tienes %1$d recordatorios próximos.</item>
+        <item quantity="other">Tienes %1$d recordatorios próximos.</item>
+    </plurals>
 </resources>

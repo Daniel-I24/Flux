@@ -1,7 +1,6 @@
 package com.flux.mobile.feature.main
 
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -19,7 +18,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.flux.core.designsystem.motion.FluxMotion
+import com.flux.core.designsystem.motion.fluxTabTransition
 import com.flux.core.designsystem.motion.rememberReducedMotion
 import com.flux.mobile.feature.categories.CategoriesScreen
 import com.flux.mobile.feature.home.HomeScreen
@@ -46,22 +45,15 @@ fun MainScreen(linkRequest: LinkLaunch? = null, capture: CaptureRequest = Captur
     val snackbar = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
-        bottomBar = {
-            NavigationBar {
-                MainTab.entries.forEach { item ->
-                    NavigationBarItem(
-                        selected = tab == item,
-                        onClick = { tab = item },
-                        icon = { Icon(item.icon, contentDescription = null) },
-                        label = { Text(stringResource(item.label)) },
-                    )
-                }
-            }
-        },
+        bottomBar = { MainNavigationBar(tab, onSelect = { tab = it }) },
     ) { padding ->
         val modifier = Modifier.padding(padding)
         val reduced = rememberReducedMotion()
-        Crossfade(targetState = tab, animationSpec = tween(if (reduced) 0 else FluxMotion.MEDIUM_MS), label = "tab") { current ->
+        AnimatedContent(
+            targetState = tab,
+            transitionSpec = { fluxTabTransition(reduced, forward = targetState.ordinal > initialState.ordinal) },
+            label = "tab",
+        ) { current ->
             when (current) {
                 MainTab.HOME -> HomeScreen(
                     onOpenNotes = { categoryId ->
@@ -87,6 +79,20 @@ fun MainScreen(linkRequest: LinkLaunch? = null, capture: CaptureRequest = Captur
                 )
                 MainTab.SETTINGS -> SettingsScreen(snackbar = snackbar, modifier = modifier)
             }
+        }
+    }
+}
+
+@Composable
+private fun MainNavigationBar(selected: MainTab, onSelect: (MainTab) -> Unit) {
+    NavigationBar {
+        MainTab.entries.forEach { item ->
+            NavigationBarItem(
+                selected = selected == item,
+                onClick = { onSelect(item) },
+                icon = { Icon(item.icon, contentDescription = null) },
+                label = { Text(stringResource(item.label)) },
+            )
         }
     }
 }

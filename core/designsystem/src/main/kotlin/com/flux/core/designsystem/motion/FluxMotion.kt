@@ -10,6 +10,16 @@ import androidx.compose.ui.platform.LocalContext
 object FluxMotion {
     const val SHORT_MS = 150
     const val MEDIUM_MS = 280
+    const val LONG_MS = 900
+
+    /** Pressed buttons and cards. */
+    const val PRESSED_SCALE = 0.96f
+    const val PRESS_BOUNCE = 0.55f
+
+    /** List entrance: delay between items, how many are staggered, and how far they rise. */
+    const val STAGGER_MS = 35L
+    const val STAGGER_MAX_ITEMS = 8
+    const val ENTER_OFFSET_PX = 48f
 }
 
 /** True when the user turned animations off ("Quitar animaciones" / animator scale 0). */

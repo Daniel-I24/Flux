@@ -26,6 +26,8 @@ class FluxPaletteContrastTest {
         "surface/variant text" to (surface to onSurfaceVariant),
         "containerHigh" to (containerHigh to onSurface),
         "error" to (error to onError),
+        // The home greeting sits on a primary → tertiary gradient.
+        "hero gradient end" to (tertiary to onPrimary),
     )
 
     @Test

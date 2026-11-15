@@ -16,6 +16,7 @@ import androidx.compose.material.icons.rounded.Watch
 import androidx.compose.material.icons.rounded.WatchOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,7 +41,7 @@ import com.flux.mobile.ui.common.dueDateLabel
 @Composable
 fun WatchStatusCard(watch: WatchLink, onOpenSettings: () -> Unit) {
     val linked = watch as? WatchLink.Linked
-    Card(Modifier.fillMaxWidth()) {
+    ElevatedCard(Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.padding(FluxSpacing.lg),
             verticalAlignment = Alignment.CenterVertically,

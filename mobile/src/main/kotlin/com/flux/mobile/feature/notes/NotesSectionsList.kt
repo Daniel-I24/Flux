@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +21,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import com.flux.core.designsystem.component.FluxEmptyState
 import com.flux.core.designsystem.component.FluxLoadingState
+import com.flux.core.designsystem.motion.enterOnce
 import com.flux.core.designsystem.motion.rememberReducedMotion
 import com.flux.core.designsystem.theme.FluxSizes
 import com.flux.core.designsystem.theme.FluxSpacing
@@ -38,7 +39,7 @@ fun NotesSectionsList(state: NotesUiState, viewModel: NotesViewModel, onOpen: (S
         sections.isEmpty -> NotesEmptyState(filtered = state.query.isFiltering())
         else -> LazyColumn(contentPadding = PaddingValues(bottom = FluxSizes.fab + FluxSpacing.xxl)) {
             val categories = state.categories.associateBy { it.id }
-            val row: @Composable LazyItemScope.(Note, Boolean) -> Unit = { note, overdue ->
+            val row: @Composable LazyItemScope.(Note, Int, Boolean) -> Unit = { note, index, overdue ->
                 NoteRow(
                     note = note,
                     category = categories[note.categoryId],
@@ -49,13 +50,13 @@ fun NotesSectionsList(state: NotesUiState, viewModel: NotesViewModel, onOpen: (S
                         onInOneHour = if (overdue) ({ viewModel.inOneHour(note.id) }) else null,
                         onReschedule = if (overdue) ({ onOpen(note.id) }) else null,
                     ),
-                    modifier = if (reduced) Modifier else Modifier.animateItem(),
+                    modifier = (if (reduced) Modifier else Modifier.animateItem()).enterOnce(index),
                 )
             }
-            section(R.string.notes_section_upcoming, sections.upcoming) { row(it, false) }
-            section(R.string.notes_section_pending, sections.pending) { row(it, false) }
-            section(R.string.notes_section_overdue, sections.overdue) { row(it, true) }
-            section(R.string.notes_section_completed, sections.completed) { row(it, false) }
+            section(R.string.notes_section_upcoming, sections.upcoming) { note, index -> row(note, index, false) }
+            section(R.string.notes_section_pending, sections.pending) { note, index -> row(note, index, false) }
+            section(R.string.notes_section_overdue, sections.overdue) { note, index -> row(note, index, true) }
+            section(R.string.notes_section_completed, sections.completed) { note, index -> row(note, index, false) }
         }
     }
 }
@@ -77,7 +78,7 @@ internal fun NotesEmptyState(filtered: Boolean) {
 private fun LazyListScope.section(
     @StringRes title: Int,
     notes: List<Note>,
-    content: @Composable LazyItemScope.(Note) -> Unit,
+    content: @Composable LazyItemScope.(Note, Int) -> Unit,
 ) {
     if (notes.isEmpty()) return
     stickyHeader(key = "header-$title") {
@@ -92,5 +93,5 @@ private fun LazyListScope.section(
                 .semantics { heading() },
         )
     }
-    items(notes, key = { it.id }) { note -> content(note) }
+    itemsIndexed(notes, key = { _, note -> note.id }) { index, note -> content(note, index) }
 }

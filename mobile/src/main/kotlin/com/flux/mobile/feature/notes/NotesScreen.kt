@@ -1,5 +1,6 @@
 package com.flux.mobile.feature.notes
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,15 +16,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flux.core.designsystem.category.displayName
+import com.flux.core.designsystem.motion.pressScale
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.core.model.Category
 import com.flux.mobile.R
@@ -110,10 +115,16 @@ private fun NotesEventEffect(event: NotesEvent?, snackbar: SnackbarHostState, vi
 /** "Nueva nota", or "Nueva nota en Compras" while a category is shown (the note is saved there). */
 @Composable
 private fun NewNoteButton(category: Category?, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val interaction = remember { MutableInteractionSource() }
+    val haptics = LocalHapticFeedback.current
     ExtendedFloatingActionButton(
-        onClick = onClick,
+        onClick = {
+            haptics.performHapticFeedback(HapticFeedbackType.ContextClick)
+            onClick()
+        },
+        interactionSource = interaction,
         icon = { Icon(Icons.Rounded.Mic, contentDescription = null) },
         text = { Text(category?.let { stringResource(R.string.notes_new_in, it.displayName()) } ?: stringResource(R.string.notes_new)) },
-        modifier = modifier,
+        modifier = modifier.pressScale(interaction),
     )
 }
