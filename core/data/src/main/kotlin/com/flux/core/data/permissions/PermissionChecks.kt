@@ -58,7 +58,7 @@ class PermissionChecks(private val context: Context, private val isWatch: Boolea
             AppPermission.AUTOSTART -> OemSettings.autostartIntent(context)
             AppPermission.BRAND_POPUPS -> OemSettings.popupsIntent(context)
             AppPermission.MICROPHONE -> null
-        }?.takeIf { context.packageManager.resolveActivity(it, 0) != null }
+        }?.takeIf(::opensRealScreen)
         return (intent ?: Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, forApp)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
@@ -72,9 +72,16 @@ class PermissionChecks(private val context: Context, private val isWatch: Boolea
         AppPermission.AUTOSTART, AppPermission.BRAND_POPUPS -> false
     }
 
+    /** Wear OS answers some settings actions with a placeholder that closes at once: those count as missing. */
+    private fun opensRealScreen(intent: Intent): Boolean {
+        val activity = context.packageManager.resolveActivity(intent, 0)?.activityInfo ?: return false
+        return !activity.name.endsWith(PLACEHOLDER_ACTIVITY)
+    }
+
     private fun granted(name: String) = ContextCompat.checkSelfPermission(context, name) == PackageManager.PERMISSION_GRANTED
 
     private companion object {
+        const val PLACEHOLDER_ACTIVITY = "FakeSettingsActivity"
         val ALARM_CRITICAL = listOf(AppPermission.NOTIFICATIONS, AppPermission.EXACT_ALARMS, AppPermission.FULL_SCREEN)
     }
 }

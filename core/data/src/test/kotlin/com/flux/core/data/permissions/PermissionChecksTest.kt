@@ -62,4 +62,20 @@ class PermissionChecksTest {
         assertEquals(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, intent.action)
         assertEquals("package:${context.packageName}", intent.dataString)
     }
+
+    @Test
+    fun `a Wear OS placeholder screen falls back to FLUX's app info`() {
+        val battery = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, "package:${context.packageName}".toUri())
+        shadowOf(context.packageManager).addResolveInfoForIntent(
+            battery,
+            ResolveInfo().apply {
+                activityInfo = ActivityInfo().apply {
+                    packageName = "com.google.android.apps.wearable.settings"
+                    name = "com.google.android.clockwork.settings.FakeSettingsActivity"
+                }
+            },
+        )
+        val intent = PermissionChecks(context, isWatch = true).settingsIntent(AppPermission.BATTERY)
+        assertEquals(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, intent.action)
+    }
 }

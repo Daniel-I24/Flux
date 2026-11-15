@@ -34,7 +34,7 @@
     <string name="setup_full_screen">Pantalla completa</string>
     <string name="setup_full_screen_steps">Pendiente: activa el interruptor de FLUX</string>
     <string name="setup_battery">Batería sin restricciones</string>
-    <string name="setup_battery_steps">Pendiente: toca y elige Permitir</string>
+    <string name="setup_battery_steps">Pendiente: toca y quita la optimización de batería de FLUX</string>
     <string name="setup_double_press_title">Abrir FLUX con el botón</string>
     <string name="setup_double_press_galaxy">Galaxy Watch: Ajustes → Funciones avanzadas → Personalizar teclas → Pulsar dos veces → FLUX.</string>
     <string name="setup_double_press_pixel">Pixel Watch: Ajustes → Gestos → Pulsar dos veces el botón → FLUX (si tu versión lo permite).</string>
