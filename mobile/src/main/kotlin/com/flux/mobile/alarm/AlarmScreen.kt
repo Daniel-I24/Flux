@@ -61,6 +61,7 @@ fun AlarmScreen(state: AlarmUiState, onComplete: () -> Unit, onSnooze: () -> Uni
             Text(
                 text = state.note?.title ?: stringResource(R.string.alarm_title_fallback),
                 style = MaterialTheme.typography.headlineMedium,
+                color = scheme.onSurface,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.semantics { heading() },
             )

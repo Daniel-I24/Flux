@@ -37,7 +37,11 @@ fun HomeHero(userName: String?, upcoming: Int, modifier: Modifier = Modifier) {
             modifier = Modifier.semantics { heading() },
         )
         Text(
-            text = pluralStringResource(R.plurals.home_hero_upcoming, upcoming, upcoming),
+            text = if (upcoming == 0) {
+                stringResource(R.string.home_hero_none)
+            } else {
+                pluralStringResource(R.plurals.home_hero_upcoming, upcoming, upcoming)
+            },
             style = MaterialTheme.typography.bodyLarge,
             color = colors.onPrimary,
         )

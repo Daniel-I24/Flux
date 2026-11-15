@@ -3,7 +3,19 @@ package com.flux.core.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-enum class ThemeMode { SYSTEM, LIGHT, DARK }
+enum class ThemeMode {
+    SYSTEM,
+    LIGHT,
+    DARK,
+    ;
+
+    /** [systemDark]: whether the phone itself is in dark mode. */
+    fun isDark(systemDark: Boolean): Boolean = when (this) {
+        SYSTEM -> systemDark
+        LIGHT -> false
+        DARK -> true
+    }
+}
 
 /** v1.2 color themes (DECISIONS.md); [ThemeMode] picks their light or dark variant. */
 @Serializable

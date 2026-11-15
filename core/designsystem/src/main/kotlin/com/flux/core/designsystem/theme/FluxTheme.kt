@@ -18,11 +18,7 @@ fun FluxTheme(
     palette: ThemePalette = ThemePalette.ANDEAN_SUNSET,
     content: @Composable () -> Unit,
 ) {
-    val dark = when (themeMode) {
-        ThemeMode.SYSTEM -> isSystemInDarkTheme()
-        ThemeMode.LIGHT -> false
-        ThemeMode.DARK -> true
-    }
+    val dark = themeMode.isDark(isSystemInDarkTheme())
     CompositionLocalProvider(LocalStatusColors provides if (dark) DarkStatusColors else LightStatusColors) {
         MaterialTheme(
             colorScheme = palette.roles().let { if (dark) it.dark else it.light }.toColorScheme(dark),

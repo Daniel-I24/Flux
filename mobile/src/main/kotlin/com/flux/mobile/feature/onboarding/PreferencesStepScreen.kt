@@ -9,7 +9,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flux.core.domain.repository.OnboardingStep
-import com.flux.core.model.ThemeMode
 import com.flux.mobile.R
 import com.flux.mobile.feature.settings.SyncedSettingsViewModel
 import com.flux.mobile.ui.common.AlarmLeadPicker
@@ -24,11 +23,7 @@ fun PreferencesStepScreen(
     synced: SyncedSettingsViewModel = hiltViewModel(),
 ) {
     val settings by synced.settings.collectAsStateWithLifecycle()
-    val dark = when (settings.themeMode) {
-        ThemeMode.SYSTEM -> isSystemInDarkTheme()
-        ThemeMode.LIGHT -> false
-        ThemeMode.DARK -> true
-    }
+    val dark = settings.themeMode.isDark(isSystemInDarkTheme())
     OnboardingScaffold(
         step = OnboardingViewModel.positionOf(OnboardingStep.PREFERENCES),
         totalSteps = OnboardingViewModel.VISIBLE_STEPS,

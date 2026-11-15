@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -62,7 +64,8 @@ fun NoteRow(note: Note, category: Category?, actions: NoteRowActions, modifier: 
     SwipeToDismissBox(
         state = swipe,
         enableDismissFromStartToEnd = false,
-        modifier = modifier.semantics {
+        // The margin is outside the swipe area, so the red "eliminar" background only shows under the card.
+        modifier = modifier.padding(horizontal = FluxSpacing.md, vertical = FluxSpacing.xs).semantics {
             customActions = listOf(
                 CustomAccessibilityAction(deleteLabel) {
                     actions.onDelete()
@@ -72,7 +75,11 @@ fun NoteRow(note: Note, category: Category?, actions: NoteRowActions, modifier: 
         },
         backgroundContent = {
             Box(
-                Modifier.fillMaxSize().background(MaterialTheme.colorScheme.errorContainer).padding(horizontal = FluxSpacing.lg),
+                Modifier
+                    .fillMaxSize()
+                    .clip(CardDefaults.elevatedShape)
+                    .background(MaterialTheme.colorScheme.errorContainer)
+                    .padding(horizontal = FluxSpacing.lg),
                 contentAlignment = Alignment.CenterEnd,
             ) { Icon(Icons.Rounded.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.onErrorContainer) }
         },
@@ -96,7 +103,7 @@ private fun NoteRowContent(note: Note, category: Category?, actions: NoteRowActi
     ElevatedCard(
         onClick = actions.onOpen,
         interactionSource = interaction,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = FluxSpacing.md, vertical = FluxSpacing.xs).pressScale(interaction),
+        modifier = Modifier.fillMaxWidth().pressScale(interaction),
     ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
             Box(Modifier.width(FluxSizes.accentStripe).fillMaxHeight().background(category?.color ?: MaterialTheme.colorScheme.primary))

@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flux.core.designsystem.theme.FluxTheme
 import com.flux.core.domain.usecase.ObserveSettingsUseCase
 import com.flux.core.model.AppSettings
+import com.flux.mobile.ui.common.ThemedSystemBars
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -33,6 +34,7 @@ class AlarmActivity : ComponentActivity() {
             val state by viewModel.uiState.collectAsStateWithLifecycle()
             val settings by observeSettings().collectAsStateWithLifecycle(AppSettings())
             LaunchedEffect(state.handled, state.loading) { if (!state.loading && state.handled) finish() }
+            ThemedSystemBars(settings.themeMode)
             FluxTheme(themeMode = settings.themeMode, palette = settings.palette) {
                 AlarmScreen(state = state, onComplete = viewModel::complete, onSnooze = viewModel::snooze)
             }

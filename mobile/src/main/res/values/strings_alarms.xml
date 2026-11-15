@@ -68,4 +68,5 @@
         <item quantity="many">Tienes %1$d recordatorios próximos.</item>
         <item quantity="other">Tienes %1$d recordatorios próximos.</item>
     </plurals>
+    <string name="home_hero_none">No tienes recordatorios próximos. Dicta uno cuando quieras.</string>
 </resources>

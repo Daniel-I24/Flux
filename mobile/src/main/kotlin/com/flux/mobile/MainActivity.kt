@@ -13,6 +13,7 @@ import com.flux.core.designsystem.theme.FluxTheme
 import com.flux.mobile.launch.CaptureLaunchRequests
 import com.flux.mobile.launch.CaptureRequest
 import com.flux.mobile.link.LinkLaunchRequests
+import com.flux.mobile.ui.common.ThemedSystemBars
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -32,6 +33,7 @@ class MainActivity : ComponentActivity() {
         captureLaunch.handle(intent)
         setContent {
             val theme by appViewModel.theme.collectAsStateWithLifecycle()
+            ThemedSystemBars(theme.mode)
             val linkRequest by linkLaunch.request.collectAsStateWithLifecycle()
             val captureRequest by captureLaunch.request.collectAsStateWithLifecycle()
             FluxTheme(themeMode = theme.mode, palette = theme.palette) {
