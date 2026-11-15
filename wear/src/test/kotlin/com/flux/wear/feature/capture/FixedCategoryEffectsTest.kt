@@ -13,7 +13,7 @@ class FixedCategoryEffectsTest {
         override suspend fun classify(text: String) =
             Classification("tasks", "Pan", confidence = 0.9, engine = ClassifierEngine.LOCAL, isNote = isNote)
 
-        override suspend fun save(text: String, classification: Classification, corrected: Boolean): SaveResult {
+        override suspend fun save(text: String, classification: Classification, corrected: Boolean, alarmLeadMinutes: Int?): SaveResult {
             savedCorrected = corrected
             return SaveResult(note = null, queued = false)
         }
@@ -24,7 +24,7 @@ class FixedCategoryEffectsTest {
         val effects = FixedCategoryEffects(base(), categoryId = "shopping")
         val classification = effects.classify("comprar pan")
         assertEquals("shopping", classification.categoryId)
-        effects.save("comprar pan", classification, corrected = false)
+        effects.save("comprar pan", classification, corrected = false, alarmLeadMinutes = null)
         assertTrue(savedCorrected == true)
     }
 

@@ -35,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.flux.core.data.speech.VoiceErrorPolicy
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.mobile.R
+import com.flux.mobile.feature.settings.SyncedSettingsViewModel
 
 /** "Nueva nota" by voice or text: the microphone permission is asked only when the mic is tapped. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,6 +49,7 @@ fun CaptureSheet(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
+    val settings by hiltViewModel<SyncedSettingsViewModel>().settings.collectAsStateWithLifecycle()
     val context = LocalContext.current
     LaunchedEffect(state.phase) {
         if (state.phase != CapturePhase.SAVED) return@LaunchedEffect
@@ -73,7 +75,9 @@ fun CaptureSheet(
                 CapturePhase.CLASSIFYING -> Box(Modifier.fillMaxWidth().padding(FluxSpacing.xl), Alignment.Center) {
                     CircularProgressIndicator()
                 }
-                CapturePhase.PREVIEW, CapturePhase.SAVED -> state.classification?.let { CapturePreview(state, it, categories, viewModel) }
+                CapturePhase.PREVIEW, CapturePhase.SAVED -> state.classification?.let {
+                    CapturePreview(state, it, categories, viewModel, globalLeadMinutes = settings.alarmLeadMinutes)
+                }
             }
         }
     }

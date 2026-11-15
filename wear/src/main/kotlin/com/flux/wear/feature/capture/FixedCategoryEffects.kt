@@ -12,6 +12,6 @@ class FixedCategoryEffects(private val base: CaptureEffects, private val categor
         return if (categoryId != null && classification.isNote) classification.inCategory(categoryId) else classification
     }
 
-    override suspend fun save(text: String, classification: Classification, corrected: Boolean): SaveResult =
-        base.save(text, classification, corrected || categoryId != null)
+    override suspend fun save(text: String, classification: Classification, corrected: Boolean, alarmLeadMinutes: Int?): SaveResult =
+        base.save(text, classification, corrected || categoryId != null, alarmLeadMinutes)
 }

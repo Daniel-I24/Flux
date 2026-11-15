@@ -22,7 +22,7 @@ class CaptureMachineTest {
         override suspend fun classify(
             text: String
         ) = Classification("reminders", "Tomar agua", confidence = 0.9, engine = ClassifierEngine.LOCAL)
-        override suspend fun save(text: String, classification: Classification, corrected: Boolean): SaveResult {
+        override suspend fun save(text: String, classification: Classification, corrected: Boolean, alarmLeadMinutes: Int?): SaveResult {
             saved = Triple(text, classification, corrected)
             val note = Note(
                 id = "n1",

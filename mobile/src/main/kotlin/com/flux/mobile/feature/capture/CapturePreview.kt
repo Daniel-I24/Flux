@@ -18,17 +18,25 @@ import com.flux.core.designsystem.category.displayName
 import com.flux.core.designsystem.component.CategoryBadge
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.core.model.Ambiguity
+import com.flux.core.model.AppSettings
 import com.flux.core.model.Category
 import com.flux.core.model.Classification
 import com.flux.mobile.R
 import com.flux.mobile.feature.home.CategoryDot
+import com.flux.mobile.ui.common.AlarmLeadPicker
 import com.flux.mobile.ui.common.alarmConfirmation
 import com.flux.mobile.ui.common.dueDateLabel
 
 /** What FLUX understood; ambiguities as chips (the countdown waits for the answer). */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun CapturePreview(state: PhoneCaptureUi, classification: Classification, categories: List<Category>, viewModel: PhoneCaptureViewModel) {
+fun CapturePreview(
+    state: PhoneCaptureUi,
+    classification: Classification,
+    categories: List<Category>,
+    viewModel: PhoneCaptureViewModel,
+    globalLeadMinutes: Int = AppSettings.DEFAULT_ALARM_LEAD_MINUTES,
+) {
     categories.firstOrNull { it.id == classification.categoryId }?.let { CategoryBadge(it) }
     Text(classification.title, style = MaterialTheme.typography.titleMedium)
     val question = classification.ambiguities.firstOrNull()
@@ -68,6 +76,21 @@ fun CapturePreview(state: PhoneCaptureUi, classification: Classification, catego
                 }
             }
         }
+    }
+    PreviewActions(state, classification, viewModel, globalLeadMinutes)
+}
+
+/** The note's own lead (when it rings), the auto-save countdown, and Editar / Guardar. */
+@Composable
+private fun PreviewActions(
+    state: PhoneCaptureUi,
+    classification: Classification,
+    viewModel: PhoneCaptureViewModel,
+    globalLeadMinutes: Int
+) {
+    if (classification.requiresAlarm && classification.dueAt != null) {
+        Text(stringResource(R.string.alarm_lead_title), style = MaterialTheme.typography.titleSmall)
+        AlarmLeadPicker(state.alarmLeadMinutes, viewModel::setLead, globalMinutes = globalLeadMinutes)
     }
     if (state.counting) {
         LinearProgressIndicator(

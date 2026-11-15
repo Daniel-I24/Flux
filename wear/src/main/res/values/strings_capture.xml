@@ -20,4 +20,9 @@
     <string name="capture_no_reminder">Sin recordatorio</string>
     <string name="capture_rings">Sonará: %1$s</string>
     <string name="capture_type_debug">Escribir (debug)</string>
+    <string name="lead_title">Avisar</string>
+    <string name="lead_phone">Como en el celular</string>
+    <string name="lead_exact">A la hora exacta</string>
+    <string name="lead_minutes">%1$d min antes</string>
+    <string name="lead_hour">1 h antes</string>
 </resources>

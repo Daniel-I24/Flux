@@ -18,10 +18,13 @@ data class PhoneCaptureUi(
     val systemDictation: VoiceError? = null,
     /** "Nueva nota" inside a category: the note is saved there whatever the classifier says. */
     val fixedCategoryId: String? = null,
+    /** This note's own "Avisarme" lead; null = the global one. Choosing it stops the countdown. */
+    val alarmLeadMinutes: Int? = null,
+    val leadChosen: Boolean = false,
     val errorMessage: Int? = null,
 ) {
     /** Questions pause the countdown: the note is saved only after the user answers (or taps Guardar). */
-    val counting: Boolean get() = phase == CapturePhase.PREVIEW && classification?.needsAnswer == false
+    val counting: Boolean get() = phase == CapturePhase.PREVIEW && classification?.needsAnswer == false && !leadChosen
 
     companion object {
         const val AUTO_SAVE_SECONDS = 5

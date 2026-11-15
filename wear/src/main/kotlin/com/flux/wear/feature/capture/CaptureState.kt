@@ -4,28 +4,6 @@ import com.flux.core.domain.usecase.ResolveAmbiguityUseCase
 import com.flux.core.model.Classification
 import com.flux.core.model.Note
 
-sealed interface CaptureEvent {
-    data object StartDictation : CaptureEvent
-    data class SpeechResult(val text: String?) : CaptureEvent
-    data class SpeechFailed(val failure: CaptureFailure) : CaptureEvent
-
-    /** Debug builds only: typed text instead of voice. */
-    data class TextEntered(val text: String) : CaptureEvent
-    data class Classified(val classification: Classification) : CaptureEvent
-    data object Tick : CaptureEvent
-    data class ChangeCategory(val categoryId: String) : CaptureEvent
-    data class AnswerTime(val dueAt: Long) : CaptureEvent
-    data class AnswerCategory(val categoryId: String) : CaptureEvent
-
-    /** A suggestion, a picked date and time, or null for "Sin recordatorio". */
-    data class AnswerReminder(val dueAt: Long?) : CaptureEvent
-    data object Confirm : CaptureEvent
-    data object Cancel : CaptureEvent
-    data class Saved(val note: Note, val queued: Boolean) : CaptureEvent
-    data object SaveFailed : CaptureEvent
-    data object Dismiss : CaptureEvent
-}
-
 /**
  * State pattern: each state decides the next one for every event. Unknown events
  * keep the current state, so impossible transitions cannot happen.
@@ -75,6 +53,8 @@ sealed interface CaptureState {
         val secondsLeft: Int,
         val corrected: Boolean,
         val paused: Boolean = false,
+        /** This note's own "Avisarme" lead; null = the one chosen on the phone. */
+        val alarmLeadMinutes: Int? = null,
     ) : CaptureState {
         override fun on(event: CaptureEvent): CaptureState = when (event) {
             CaptureEvent.Tick -> when {
@@ -93,6 +73,7 @@ sealed interface CaptureState {
                 RESOLVER.chooseCategory(classification, event.categoryId),
                 corrected || event.categoryId != classification.categoryId,
             )
+            is CaptureEvent.ChangeLead -> copy(alarmLeadMinutes = event.minutes, paused = true)
             CaptureEvent.Confirm -> Saving(copy(classification = RESOLVER.acceptDefaults(classification)))
             CaptureEvent.Cancel -> Idle
             CaptureEvent.StartDictation -> Listening

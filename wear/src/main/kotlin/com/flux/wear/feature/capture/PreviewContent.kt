@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
+import androidx.wear.compose.foundation.lazy.TransformingLazyColumnScope
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material3.CircularProgressIndicator
 import androidx.wear.compose.material3.FilledIconButton
@@ -75,18 +76,7 @@ fun PreviewContent(preview: CaptureState.Preview, categories: List<Category>, on
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
-            if (question !is Ambiguity.ReminderTime) {
-                item {
-                    Text(
-                        text =
-                        preview.classification.dueAt?.let { rememberDueDateLabel(it) } ?: stringResource(R.string.capture_no_reminder),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            }
+            reminderItems(preview, showDate = question !is Ambiguity.ReminderTime, onEvent)
             if (question != null) {
                 ambiguityQuestion(question, categories, onEvent, onPickDateTime = { pickingDate = true })
             } else {
@@ -130,5 +120,24 @@ private fun PreviewActions(onEvent: (CaptureEvent) -> Unit, onEditText: (() -> U
         FilledIconButton(onClick = { onEvent(CaptureEvent.Confirm) }) {
             Icon(Icons.Rounded.Check, contentDescription = stringResource(R.string.capture_save))
         }
+    }
+}
+
+/** When it rings (unless a question asks for it) and, for a reminder, its own lead. */
+private fun TransformingLazyColumnScope.reminderItems(preview: CaptureState.Preview, showDate: Boolean, onEvent: (CaptureEvent) -> Unit) {
+    if (showDate) {
+        item {
+            Text(
+                text =
+                preview.classification.dueAt?.let { rememberDueDateLabel(it) } ?: stringResource(R.string.capture_no_reminder),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.secondary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+    if (preview.classification.requiresAlarm && preview.classification.dueAt != null) {
+        item { LeadChip(preview.alarmLeadMinutes) { onEvent(CaptureEvent.ChangeLead(it)) } }
     }
 }

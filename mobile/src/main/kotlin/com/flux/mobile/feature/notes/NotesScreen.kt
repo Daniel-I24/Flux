@@ -27,6 +27,7 @@ import com.flux.core.designsystem.category.displayName
 import com.flux.core.designsystem.theme.FluxSpacing
 import com.flux.core.model.Category
 import com.flux.mobile.R
+import com.flux.mobile.feature.settings.SyncedSettingsViewModel
 import com.flux.mobile.launch.CaptureLaunch
 import com.flux.mobile.ui.common.SnackbarEventEffect
 import com.flux.mobile.ui.common.alarmConfirmation
@@ -80,6 +81,7 @@ fun NotesScreen(
             categories = state.categories,
             onSave = { change -> viewModel.save(note.id, change) { editingId = null } },
             onDismiss = { editingId = null },
+            globalLeadMinutes = hiltViewModel<SyncedSettingsViewModel>().settings.collectAsStateWithLifecycle().value.alarmLeadMinutes,
         )
     }
     newNote?.let { NewNoteSheet(it, onClose = { newNote = null }, onAlarmSaved = viewModel::announceAlarm) }

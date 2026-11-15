@@ -14,8 +14,8 @@ class WatchNoteSaver @Inject constructor(
     private val outbox: OutboxRepository,
     private val outboxSender: OutboxSender,
 ) {
-    suspend fun save(text: String, classification: Classification, corrected: Boolean): Note {
-        val note = createNote(text, classification, DeviceSource.WATCH, categoryCorrected = corrected)
+    suspend fun save(text: String, classification: Classification, corrected: Boolean, alarmLeadMinutes: Int? = null): Note {
+        val note = createNote(text, classification, DeviceSource.WATCH, categoryCorrected = corrected, alarmLeadMinutes = alarmLeadMinutes)
         outbox.enqueue(note)
         outboxSender.trigger()
         return note

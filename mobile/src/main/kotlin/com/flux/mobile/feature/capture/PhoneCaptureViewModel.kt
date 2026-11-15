@@ -44,6 +44,12 @@ class PhoneCaptureViewModel @Inject constructor(
 
     fun setText(text: String) = state.update { it.copy(text = text, errorMessage = null) }
 
+    /** The user is choosing: the countdown stops and "Guardar" saves. */
+    fun setLead(minutes: Int?) {
+        work?.cancel()
+        state.update { it.copy(alarmLeadMinutes = minutes, leadChosen = true) }
+    }
+
     /** "Nueva nota" inside a category (null = the classifier decides). */
     fun fixCategory(categoryId: String?) = state.update { it.copy(fixedCategoryId = categoryId) }
 
@@ -85,7 +91,7 @@ class PhoneCaptureViewModel @Inject constructor(
         saving = true
         work?.cancel()
         viewModelScope.launch {
-            capture.save(current.text, resolve.acceptDefaults(classification), current.corrected)
+            capture.save(current.text, resolve.acceptDefaults(classification), current.corrected, current.alarmLeadMinutes)
             state.update { it.copy(phase = CapturePhase.SAVED) }
         }
     }

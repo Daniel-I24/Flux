@@ -45,6 +45,6 @@ class WatchCaptureRepository @Inject constructor(
         return askReminderTime(text, (local as FluxResult.Success).value, routine = null)
     }
 
-    override suspend fun save(text: String, classification: Classification, corrected: Boolean): SaveResult =
-        SaveResult(note = saver.save(text, classification, corrected), queued = monitor.readyPhoneNode() == null)
+    override suspend fun save(text: String, classification: Classification, corrected: Boolean, alarmLeadMinutes: Int?): SaveResult =
+        SaveResult(note = saver.save(text, classification, corrected, alarmLeadMinutes), queued = monitor.readyPhoneNode() == null)
 }

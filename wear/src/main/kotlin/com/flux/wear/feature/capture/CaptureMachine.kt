@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 /** What the machine needs from the outside world (injected, so it is testable). */
 interface CaptureEffects {
     suspend fun classify(text: String): Classification
-    suspend fun save(text: String, classification: Classification, corrected: Boolean): SaveResult
+    suspend fun save(text: String, classification: Classification, corrected: Boolean, alarmLeadMinutes: Int?): SaveResult
 }
 
 data class SaveResult(val note: Note?, val queued: Boolean)
@@ -47,7 +47,7 @@ class CaptureMachine(
             is CaptureState.Preview -> scope.launch { tickWhilePreviewing() }
             is CaptureState.Saving -> scope.launch {
                 val preview = state.preview
-                val result = effects.save(preview.text, preview.classification, preview.corrected)
+                val result = effects.save(preview.text, preview.classification, preview.corrected, preview.alarmLeadMinutes)
                 send(result.note?.let { CaptureEvent.Saved(it, result.queued) } ?: CaptureEvent.SaveFailed)
             }
             else -> null
