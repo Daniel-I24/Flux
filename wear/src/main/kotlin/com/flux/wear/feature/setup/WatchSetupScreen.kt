@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
@@ -21,6 +22,7 @@ import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.ListHeader
+import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.Text
 import com.flux.core.data.permissions.AppPermission
@@ -79,7 +81,8 @@ fun PermissionChip(permission: AppPermission, status: PermissionStatus, onClick:
         onClick = onClick,
         enabled = !granted,
         icon = { Icon(copy.icon, contentDescription = null) },
-        label = { Text(stringResource(copy.title)) },
+        // Long words ("Notificaciones") were split anywhere on small square watches: break them by syllables.
+        label = { Text(stringResource(copy.title), style = MaterialTheme.typography.labelLarge.copy(hyphens = Hyphens.Auto)) },
         secondaryLabel = { Text(stringResource(if (granted) R.string.setup_granted else copy.steps)) },
         modifier = Modifier.fillMaxWidth(),
     )

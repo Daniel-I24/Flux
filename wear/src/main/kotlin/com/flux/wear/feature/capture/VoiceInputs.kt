@@ -64,7 +64,11 @@ fun rememberVoiceInputs(viewModel: CaptureViewModel): VoiceInputs {
             }
         },
         type = if (BuildConfig.DEBUG) {
-            { WearTextInput.launch(remoteInput::launch, WearTextInput.remoteInputIntent(prompt)) }
+            {
+                // Leaves "Idle" first, so cancelling the keyboard goes back instead of staying on "Escuchando…".
+                viewModel.beginDictation()
+                WearTextInput.launch(remoteInput::launch, WearTextInput.remoteInputIntent(prompt))
+            }
         } else {
             null
         },
