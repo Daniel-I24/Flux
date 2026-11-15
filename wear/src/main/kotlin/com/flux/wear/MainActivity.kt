@@ -3,12 +3,18 @@ package com.flux.wear
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.flux.core.designsystem.motion.isReducedMotion
 import com.flux.wear.data.WatchSettings
 import com.flux.wear.data.WatchStateStore
 import com.flux.wear.data.WatchTheme
+import com.flux.wear.ui.WatchIntro
 import com.flux.wear.ui.theme.FluxWearTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -22,10 +28,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val dictate = intent?.action == ACTION_DICTATE || intent?.getStringExtra(EXTRA_START) == START_DICTATE
         val startRoute = if (dictate) WatchRoutes.DICTATE else WatchRoutes.HOME
+        val reducedMotion = isReducedMotion()
         setContent {
             val settings by stateStore.observeSettings().collectAsStateWithLifecycle(WatchSettings())
             FluxWearTheme(palette = settings.palette, highContrast = settings.theme == WatchTheme.HIGH_CONTRAST) {
-                WatchApp(startRoute = startRoute)
+                // The intro plays when FLUX is opened from the launcher, not from the tile or complication.
+                var intro by rememberSaveable { mutableStateOf(!dictate && !reducedMotion) }
+                Crossfade(targetState = intro, label = "intro") { showing ->
+                    if (showing) WatchIntro(onDone = { intro = false }) else WatchApp(startRoute = startRoute)
+                }
             }
         }
     }

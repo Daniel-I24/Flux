@@ -14,4 +14,6 @@ object WatchDimens {
     val iconHero = 36.dp
     val progress = 40.dp
     val iconStatus = 48.dp
+    val introDot = 6.dp
+    val introPadding = 36.dp
 }

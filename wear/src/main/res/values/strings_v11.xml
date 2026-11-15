@@ -47,4 +47,5 @@
         <item quantity="many">%1$d pendientes</item>
         <item quantity="other">%1$d pendientes</item>
     </plurals>
+    <string name="intro_description">FLUX se está abriendo</string>
 </resources>
